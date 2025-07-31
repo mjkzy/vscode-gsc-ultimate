@@ -2,32 +2,73 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "GSC",
 	"patterns": [
-		{ "include": "#comments" },
-		{ "include2": "#include" },
-		{ "include2": "#using_animtree" },
-		{ "include": "#comments"},
-		{ "include": "#constants"},
-		{ "include": "#keywords"},
-		{ "include": "#functions"},
-		{ "include": "#variables"}
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#define"
+		},
+		{
+			"include2": "#include"
+		},
+		{
+			"include2": "#inline"
+		},
+		{
+			"include2": "#using_animtree"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#functions"
+		},
+		{
+			"include": "#variables"
+		}
 	],
 	"repository": {
-
 		"comments": {
 			"patterns": [
 				{
 					"begin": "/\\*",
 					"end": "\\*/",
-					"name":"comment.block.gsc"
+					"name": "comment.block.gsc"
 				},
 				{
 					"begin": "//",
 					"end": "\\n",
-					"name":"comment.line.double-slash.gsc"
+					"name": "comment.line.double-slash.gsc"
+				},
+				{
+					"begin": "/#",
+					"end": "#/",
+					"name": "comment.block.developerscript.gsc"
+				},
+				{
+					"begin": "/@",
+					"end": "@/",
+					"name": "comment.block.annotation.gsc"
 				}
 			]
 		},
-
+		"define": {
+			"comment": "Example: #define MACRO_NAME <value>",
+			"name": "meta.preprocessor.define.gsc",
+			"begin": "(#define)\\s+([A-Za-z_][A-Za-z_0-9]*)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.define.gsc"
+				},
+				"2": {
+					"name": "constant.language.c"
+				}
+			},
+			"end": "$"
+		},
 		"include": {
 			"comment": "Example: #include maps\\mp\\gametypes",
 			"name": "meta.preprocessor.include.gsc",
@@ -45,7 +86,23 @@
 				}
 			]
 		},
-
+		"inline": {
+			"comment": "Example: #inline maps\\mp\\gametypes",
+			"name": "meta.preprocessor.inline.gsc",
+			"begin": "(#inline)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.inline.gsc"
+				}
+			},
+			"end": ";",
+			"patterns": [
+				{
+					"name": "entity.name.class.gsc",
+					"match": "[A-Za-z_][A-Za-z_0-9]*(\\\\[A-Za-z_][A-Za-z_0-9]*)*"
+				}
+			]
+		},
 		"using_animtree": {
 			"comment": "Example: #using_animtree(\"drones\");",
 			"name": "meta.preprocessor.include.gsc",
@@ -62,7 +119,6 @@
 				}
 			]
 		},
-
 		"keywords": {
 			"patterns": [
 				{
@@ -75,8 +131,7 @@
 				}
 			]
 		},
-		
-		"constants":{
+		"constants": {
 			"patterns": [
 				{
 					"name": "constant.language.gsc",
@@ -85,7 +140,7 @@
 				{
 					"name": "storage.type.built-in.primitive.gsc",
 					"match": "\\b(int|float|bool|string)\\b"
-				},		
+				},
 				{
 					"name": "constant.numeric.gsc",
 					"match": "(?:\\b|\\s)(?:(?:[1-9][0-9]*|0)?\\.[0-9]+|[1-9][0-9]*|0)\\b"
@@ -98,9 +153,9 @@
 					"comment": "Localized string: &\"STRING_EXAMPLE\" ",
 					"match": "(&)(?=\"[^\"]*\")",
 					"captures": {
-					  	"1": {
+						"1": {
 							"name": "keyword.control.directive.include.gsc"
-					  	}
+						}
 					}
 				},
 				{
@@ -108,7 +163,6 @@
 				}
 			]
 		},
-
 		"strings": {
 			"name": "string.quoted.double.gsc",
 			"begin": "\"",
@@ -126,7 +180,6 @@
 				}
 			]
 		},
-
 		"functions": {
 			"patterns": [
 				{
@@ -140,7 +193,6 @@
 				}
 			]
 		},
-
 		"variables": {
 			"patterns": [
 				{

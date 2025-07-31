@@ -8,10 +8,14 @@ export enum GroupType {
     /** Unresolved group */
     Unknown,
 
-    /** Content surrounded by /##/ */
+    /** Content surrounded by /# #/ */
     DeveloperBlock,
-    /** Content surrounded by /##/ */
     DeveloperBlockInner,
+
+    /** Content surrounded by /@ @/ */
+    DeveloperBlock2,
+    DeveloperBlock2Inner,
+
     /** Content surrounded by {} */
     Scope,
     /** Content surrounded by () */
@@ -60,8 +64,16 @@ export enum GroupType {
     TerminatedStatement,
     /** Statement like #include path\name */
     PreprocessorStatement,
+    /** Statement like #inline path\name */
+    PreprocessorStatementInline,
+    /** Statement like #define <name> <condition> */
+    PreprocessorStatementDefine,
     /** Statement like #include path\name terminated with ; */
     TerminatedPreprocessorStatement,
+    /** Statement like #inline path\name terminated with ; */
+    TerminatedPreprocessorStatementInline,
+    /** Statement like #define <name> <condition> terminated with ; */
+    TerminatedPreprocessorStatementDefine,
     /** Parameters expression of preprocessor #using_animtree */
     PreprocessorAnimtreeParametersExpression,
 
@@ -98,7 +110,7 @@ export enum GroupType {
     FunctionScope,
 
     /** Keyword "if" and function parameter expression ()  */
-    IfDeclaration,  
+    IfDeclaration,
     /** If scope */
     IfScope,
 
@@ -148,7 +160,8 @@ export class GscFileParser {
 
     public static readonly scopeTypes: GroupType[] = [
         GroupType.FunctionScope, GroupType.IfScope, GroupType.ForScope, GroupType.ForEachScope, GroupType.WhileScope, GroupType.DoScope,
-        GroupType.SwitchScope, GroupType.CaseScope, GroupType.Scope, GroupType.DeveloperBlock, GroupType.DeveloperBlockInner
+        GroupType.SwitchScope, GroupType.CaseScope, GroupType.Scope, GroupType.DeveloperBlock, GroupType.DeveloperBlockInner,
+        GroupType.DeveloperBlock2, GroupType.DeveloperBlock2Inner
     ];
 
     public static readonly functionCallTypes = [
@@ -173,8 +186,7 @@ export class GscFileParser {
      * @param content File content of GSC file to be parsed
      * @returns Parsed data
      */
-    public static parse(content: string): GscData 
-    {
+    public static parse(content: string): GscData {
         var tokens = this.tokenize(content);
         var rootGroup = this.group(tokens);
         var data = this.analyze(rootGroup, content);
@@ -187,10 +199,9 @@ export class GscFileParser {
      * @param content The file content
      * @returns Array of tokens
      */
-    public static tokenize(content: string): GscToken[]
-    {
+    public static tokenize(content: string): GscToken[] {
         var tokens: GscToken[] = [];
-             
+
         var level: Level = Level.Default;
         var levelChangeStart = -1;
         var line = 0; // line number (starting from 0)
@@ -198,13 +209,13 @@ export class GscFileParser {
         var skip = 0;
         var sLastComment: string | undefined = undefined;
         var lastToken: GscToken | undefined = undefined;
-             
+
         const len = content.length;
 
         for (let i = 0; i <= len; i++) {
             const c = i < len ? content[i] : '';
-            const c_prev = i > 0 ? content[i-1] : '';
-            const c_next = i < len - 1 ? content[i+1] : '';
+            const c_prev = i > 0 ? content[i - 1] : '';
+            const c_next = i < len - 1 ? content[i + 1] : '';
 
             /* First we need to tokenize the big blocks:
                 /* multi-line comments * /
@@ -218,7 +229,7 @@ export class GscFileParser {
             // Count new lines and char
             // Windows: "\r\n"    Linux:  "\n"
             if (i > 0) {
-                if (content[i-1] === '\n') {
+                if (content[i - 1] === '\n') {
                     line++;
                     char = 0;
                 } else {
@@ -236,7 +247,7 @@ export class GscFileParser {
                 var text = content.substring(startOffset, endOffset);
                 const token: GscToken = {
                     index: tokens.length,
-                    name: text, 
+                    name: text,
                     offset: startOffset,
                     range: new vscode.Range(line, char - (i - startOffset), line, char - (i - endOffset)),
                     commentBefore: sLastComment,
@@ -259,9 +270,9 @@ export class GscFileParser {
                         level = Level.Default;
                     }
                     continue; // go to next char
-                    
+
                 case Level.MultiLineComment:
-                    if ((c === '*' && c_next === '/') || c === '') {
+                    if (((c === '*' || c === '#' || c === '@') && c_next === '/') || c === '') {
                         skip += 1;
                         sLastComment = content.substring(levelChangeStart + 2, i);
                         level = Level.Default;
@@ -344,8 +355,7 @@ export class GscFileParser {
             ****************************************************************************************************************************************************************/
             switch (c) {
                 case '/':
-
-                    switch(c_next) {
+                    switch (c_next) {
                         case '/':
                             level = Level.SingleLineComment;
                             levelChangeStart = i;
@@ -359,18 +369,29 @@ export class GscFileParser {
                             continue; // go to next char
 
                         case '#':
+                            level = Level.MultiLineComment;
+                            levelChangeStart = i;
+
                             addToken(TokenType.DeveloperStart, i, i + 2);
                             skip += 1;
                             continue; // go to next char
 
-                        case '=': 
+                        case '=':
                             addToken(TokenType.Assignment2, i, i + 2);  // /=
-                            skip += 1; 
-                            continue; 
+                            skip += 1;
+                            continue;
 
-                        default: 
+                        case "@":
+                            level = Level.MultiLineComment;
+                            levelChangeStart = i;
+
+                            addToken(TokenType.DeveloperStart2, i, i + 2);
+                            skip += 1;
+                            continue; // go to next char
+
+                        default:
                             addToken(TokenType.Operator, i, i + 1);     // /
-                            continue; 
+                            continue;
                     }
                     break;
 
@@ -383,17 +404,40 @@ export class GscFileParser {
                     else if (/^[a-zA-Z_]$/.test(c_next)) {
                         level = Level.PreprocessorName;
                         levelChangeStart = i;
-                        continue; 
+                        continue;
                     }
                     else if (c_next === '"') {
                         level = Level.CvarString;
                         levelChangeStart = i + 1;
                         skip += 1;
-                        continue; 
+                        continue;
                     }
                     else {
                         addToken(TokenType.Hashtag, i, i + 1);     // #
-                        continue; 
+                        continue;
+                    }
+                    break;
+
+                case '@':
+                    if (c_next === '/') {
+                        addToken(TokenType.DeveloperEnd2, i, i + 2);
+                        skip += 1;
+                        continue; // go to next char
+                    }
+                    else if (/^[a-zA-Z_]$/.test(c_next)) {
+                        level = Level.PreprocessorName;
+                        levelChangeStart = i;
+                        continue;
+                    }
+                    else if (c_next === '"') {
+                        level = Level.CvarString;
+                        levelChangeStart = i + 1;
+                        skip += 1;
+                        continue;
+                    }
+                    else {
+                        addToken(TokenType.AtSymbol, i, i + 1);     // @
+                        continue;
                     }
                     break;
 
@@ -432,7 +476,7 @@ export class GscFileParser {
                     if (/^[0-9]$/.test(c_next)) {
                         level = Level.Float;
                         levelChangeStart = i;
-                    // Structure variables like level.aaa
+                        // Structure variables like level.aaa
                     } else {
                         addToken(TokenType.Structure, i, i + 1);
                     }
@@ -459,19 +503,19 @@ export class GscFileParser {
 
 
 
-                case '+': 
-                case '-': 
+                case '+':
+                case '-':
                     switch (c_next) {
                         case '=': addToken(TokenType.Assignment2, i, i + 2); skip = 1; continue; // +=
-                        default: 
+                        default:
                             if (c === c_next) {
                                 addToken(TokenType.Assignment3, i, i + 2); skip = 1;             // ++ --
                             } else {
                                 addToken(TokenType.Operator, i, i + 1);                         // + -
                             }
                             continue; // go to next char
-                        }
-                        
+                    }
+
                 case '*':
                 case '%':
                 case '^':
@@ -527,7 +571,7 @@ export class GscFileParser {
                         case '=': addToken(TokenType.Operator, i, i + 2); skip = 1; continue;   // ==
                         default: addToken(TokenType.Assignment, i, i + 1); continue;             // =
                     }
-                    
+
                 case ';':
                     addToken(TokenType.Semicolon, i, i + 1);
                     continue; // go to next char
@@ -544,12 +588,12 @@ export class GscFileParser {
                 default:
 
                     // keyword name
-                    if (/^[a-zA-Z_]$/.test(c)) { 
+                    if (/^[a-zA-Z_]$/.test(c)) {
                         level = Level.Keyword;
                         levelChangeStart = i;
                     }
                     // Number  123  or  0.1  or  1337.1337  (these may contain decimal place later on)
-                    else if (/^[0-9]$/.test(c)) { 
+                    else if (/^[0-9]$/.test(c)) {
                         level = Level.Number;
                         levelChangeStart = i;
 
@@ -587,10 +631,10 @@ export class GscFileParser {
 
         function walkGroup(currentGroup: GscGroup, action: (currentGroup: GscGroup) => void, callForEmptyGroups: boolean = false) {
             const stack: { group: GscGroup; processed: boolean }[] = [{ group: currentGroup, processed: false }];
-    
+
             while (stack.length > 0) {
                 const { group, processed } = stack.pop()!;
-    
+
                 if (processed) {
                     // Process the current group after its children
                     if (callForEmptyGroups || group.items.length > 0) {
@@ -599,7 +643,7 @@ export class GscFileParser {
                 } else {
                     // Push the current group back onto the stack to be processed after its children
                     stack.push({ group, processed: true });
-    
+
                     // Add child items to the stack
                     for (let i = group.items.length - 1; i >= 0; i--) {
                         stack.push({ group: group.items[i], processed: false });
@@ -617,7 +661,7 @@ export class GscFileParser {
 
             // Don't wrap Value into another Value
             if (startIndex === 0 && parentGroup.items.length === groups.length &&
-                wrapType === GroupType.Value && 
+                wrapType === GroupType.Value &&
                 parentGroup.type === GroupType.Value) {
                 return parentGroup;
             }
@@ -645,9 +689,8 @@ export class GscFileParser {
 
             // Value inside Value consider as solved
             if (startIndex === 0 && parentGroup.items.length === groups.length && parentGroup.solved &&
-                typeEqualsToOneOf(wrapType, ...GscFileParser.valueTypes) && 
-                parentGroup.typeEqualsToOneOf(...GscFileParser.valueTypes)) 
-            {
+                typeEqualsToOneOf(wrapType, ...GscFileParser.valueTypes) &&
+                parentGroup.typeEqualsToOneOf(...GscFileParser.valueTypes)) {
                 newGroup.solved = true;
             }
 
@@ -674,15 +717,15 @@ export class GscFileParser {
         }
 
 
-        function groupByBracketPairs(group: GscGroup, tokenTypeStart: TokenType, tokenTypeEnd:TokenType, groupType: GroupType) {
+        function groupByBracketPairs(group: GscGroup, tokenTypeStart: TokenType, tokenTypeEnd: TokenType, groupType: GroupType) {
             const startIndexes: number[] = [];
 
             if (group.items.length <= 1) { return; }
 
             for (var i = 0; i <= group.items.length; i++) {
                 const tokenType = (i >= group.items.length)
-                                    ? undefined 
-                                    : (group.items[i].getSingleTokenType() ?? TokenType.Unknown); // groups will be unknown
+                    ? undefined
+                    : (group.items[i].getSingleTokenType() ?? TokenType.Unknown); // groups will be unknown
 
                 if (tokenType === tokenTypeStart) {
                     startIndexes.push(i);
@@ -691,16 +734,16 @@ export class GscFileParser {
 
                     // Revert to parent group
                     var indexStart = startIndexes.pop();
-                    
+
                     // Update at which token the scope ends (group is the scope) and then go to parent scope
-                    if (indexStart !== undefined) { 
+                    if (indexStart !== undefined) {
                         groupItems(group, indexStart, groupType, 1, 1, group.items.slice(indexStart, i + 1));
                         i = indexStart - 1;
                         continue; // go again to the same index
                     }
                 }
                 else if (tokenType === undefined) {
-                    
+
                     // If there are unclosed open bracket, add them
                     while (true) {
                         var indexStart = startIndexes.pop();
@@ -734,7 +777,7 @@ export class GscFileParser {
                         break;
 
                     case TokenType.Keyword:
-                        const knownKeywords = ["return", "if", "else", "for", "foreach", "while", "do", "switch", "continue", "break", "case", "default", "thread", "wait", "waittillframeend", "waittill", "waittillmatch", "endon", "notify", "breakpoint"];
+                        const knownKeywords = ["return", "if", "else", "for", "foreach", "while", "do", "switch", "continue", "break", "case", "default", "thread", "childthread", "call", "wait", "waittillframeend", "waittill", "waittillmatch", "endon", "notify", "breakpoint"];
                         const knownConstants = ["true", "false", "undefined"];
 
                         if (knownConstants.includes(unknownToken.name)) {
@@ -748,9 +791,9 @@ export class GscFileParser {
 
                     case TokenType.Semicolon:
                         childGroup.type = GroupType.Terminator;
-                        
+
                         break;
-        
+
                 }
             }
         }
@@ -791,10 +834,10 @@ export class GscFileParser {
                     if (childGroup1.getFirstToken().range.start.line !== childGroup2.getFirstToken().range.end.line) { continue; }
 
                     iPathStart = i; // This is a path start
-                    
+
                 } else {
                     const isOnSameLine = parentGroup.items[iPathStart].getFirstToken().range.start.line === childGroup1.getFirstToken().range.end.line;
-                    
+
                     // This token is still a part of the path
                     if (isOnSameLine && childGroup1.typeEqualsToOneOf(GroupType.Identifier, GroupType.ReservedKeyword) || childGroup1.isUnsolvedSingleTokenOfOneOfType(TokenType.PathSeparator)) {
                         // If this is the last item
@@ -817,18 +860,18 @@ export class GscFileParser {
         // (-1 - -1)    (+1 + 1)    (-.1 + +.1)    (-1, +1, -1)
         function group_numberSign(parentGroup: GscGroup) {
             if (parentGroup.items.length === 0 || parentGroup.type === GroupType.Value) { return; }
-            for (var i = -1; i <= parentGroup.items.length - 3; i++) {             
+            for (var i = -1; i <= parentGroup.items.length - 3; i++) {
                 // operator
                 const childGroup1 = i === -1 ? undefined : parentGroup.items[i];
                 if (childGroup1 !== undefined && !childGroup1.isUnsolvedGroupOfOneOfType(GroupType.ReservedKeyword) &&
                     !childGroup1.isUnsolvedSingleTokenOfOneOfType(
-                    TokenType.Operator, TokenType.ParameterSeparator, TokenType.Assignment, TokenType.Assignment2, TokenType.OperatorLeft, TokenType.Colon, TokenType.QuestionMark)) { continue; }
-                
+                        TokenType.Operator, TokenType.ParameterSeparator, TokenType.Assignment, TokenType.Assignment2, TokenType.OperatorLeft, TokenType.Colon, TokenType.QuestionMark)) { continue; }
+
                 // + - ,
                 const childGroup2 = parentGroup.items[i + 1];
                 if (!childGroup2.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.Operator)) { continue; }
                 if (!["+", "-"].includes(childGroup2.getSingleToken()?.name ?? "")) { continue; }
-                
+
                 // 0.1
                 const childGroup3 = parentGroup.items[i + 2];
                 if (!childGroup3.isUnsolvedSingleTokenOfOneOfType(TokenType.Number)) { continue; }
@@ -838,15 +881,15 @@ export class GscFileParser {
                 childGroup2.solved = true;
                 childGroup3.solved = true;
                 // no need to exist because next index will be this new group
-            } 
+            }
         }
 
 
         // [[func]]()
         function group_functionPointerDereference() {
-            walkGroup(rootGroup, (parentGroup) => { 
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.items.length === 0) { return; }
-                for (var i = 0; i < parentGroup.items.length - 1; i++) {             
+                for (var i = 0; i < parentGroup.items.length - 1; i++) {
                     // array
                     const childGroup1 = parentGroup.items[i];
                     if (!childGroup1.isUnsolvedGroupOfOneOfType(GroupType.Array) || childGroup1.items.length !== 1) { continue; }
@@ -888,12 +931,12 @@ export class GscFileParser {
                 }
             });
         }
-        
+
 
         // Find expression with 3 numbers separated by comma   (0, 0, 0)
         function change_expressionToVector(parentGroup: GscGroup) {
             if (parentGroup.items.length !== 5 || parentGroup.type === GroupType.Vector || parentGroup.type !== GroupType.Expression) { return; }
-            for (var i = 0; i <= parentGroup.items.length - 5; i++) {             
+            for (var i = 0; i <= parentGroup.items.length - 5; i++) {
                 const childGroup1 = parentGroup.items[i];
                 if (!childGroup1.isUnsolvedGroupOfOneOfType(...GscFileParser.valueTypesWithIdentifier)) { continue; }
                 const childGroup2 = parentGroup.items[i + 1];
@@ -910,12 +953,12 @@ export class GscFileParser {
                 changeGroupToSolvedAndChangeType(parentGroup, childGroup2, GroupType.Token);
                 changeGroupToSolvedAndChangeType(parentGroup, childGroup3, GroupType.Value);
                 changeGroupToSolvedAndChangeType(parentGroup, childGroup4, GroupType.Token);
-                changeGroupToSolvedAndChangeType(parentGroup, childGroup5, GroupType.Value);        
-            } 
+                changeGroupToSolvedAndChangeType(parentGroup, childGroup5, GroupType.Value);
+            }
         }
 
 
-        function changeGroupToSolvedAndChangeType(parentGroup: GscGroup, group: GscGroup, newType: GroupType | undefined) {           
+        function changeGroupToSolvedAndChangeType(parentGroup: GscGroup, group: GscGroup, newType: GroupType | undefined) {
             if (newType !== undefined) {
                 const i = parentGroup.items.indexOf(group);
                 if (i === -1) {
@@ -926,29 +969,28 @@ export class GscFileParser {
                 if (group.type === GroupType.Identifier && (newType === GroupType.Value || newType === GroupType.Reference)) {
                     const newGroup = groupItems(parentGroup, i, GroupType.Reference, 0, 0, [group]);
                     newGroup.solved = true;
-                    group.type = GroupType.VariableName;    
+                    group.type = GroupType.VariableName;
                 }
 
                 // This type is already considered as value, don't wrap into another value group
-                else if (typeEqualsToOneOf(group.type, ...GscFileParser.valueTypes) && group.type !== GroupType.Expression && newType === GroupType.Value)
-                {}   
+                else if (typeEqualsToOneOf(group.type, ...GscFileParser.valueTypes) && group.type !== GroupType.Expression && newType === GroupType.Value) { }
 
                 // Check type directly without making new group
                 else if (group.type === GroupType.Unknown || group.type === newType || (
                     group.type === GroupType.Identifier && typeEqualsToOneOf(newType, GroupType.VariableName, GroupType.FunctionName, GroupType.StructureField, GroupType.XAnim, GroupType.Path)
                 ) || (
-                    group.type === GroupType.Expression && (typeEqualsToOneOf(newType, GroupType.FunctionParametersExpression, GroupType.KeywordParametersExpression, GroupType.ForExpression, GroupType.ForEachExpression, GroupType.CastExpression)) 
-                ) || (
-                    group.type === GroupType.FunctionCall && (newType === GroupType.FunctionDeclaration)
-                ) || (
-                    group.type === GroupType.Scope && (typeEqualsToOneOf(newType, GroupType.FunctionScope, GroupType.IfScope, GroupType.ForScope, GroupType.ForEachScope, GroupType.WhileScope, GroupType.DoScope, GroupType.SwitchScope))
-                ) || (
-                    newType === GroupType.ForStatement && (typeEqualsToOneOf(group.type, GroupType.TerminatedStatement, GroupType.Terminator))
-                ) || (
-                    newType === GroupType.ForEachStatement && (typeEqualsToOneOf(group.type, GroupType.TerminatedStatement, GroupType.Terminator))
-                ) || (
-                    newType === GroupType.ArrayAccess && (typeEqualsToOneOf(group.type, GroupType.Array))
-                )) {
+                        group.type === GroupType.Expression && (typeEqualsToOneOf(newType, GroupType.FunctionParametersExpression, GroupType.KeywordParametersExpression, GroupType.ForExpression, GroupType.ForEachExpression, GroupType.CastExpression))
+                    ) || (
+                        group.type === GroupType.FunctionCall && (newType === GroupType.FunctionDeclaration)
+                    ) || (
+                        group.type === GroupType.Scope && (typeEqualsToOneOf(newType, GroupType.FunctionScope, GroupType.IfScope, GroupType.ForScope, GroupType.ForEachScope, GroupType.WhileScope, GroupType.DoScope, GroupType.SwitchScope))
+                    ) || (
+                        newType === GroupType.ForStatement && (typeEqualsToOneOf(group.type, GroupType.TerminatedStatement, GroupType.Terminator))
+                    ) || (
+                        newType === GroupType.ForEachStatement && (typeEqualsToOneOf(group.type, GroupType.TerminatedStatement, GroupType.Terminator))
+                    ) || (
+                        newType === GroupType.ArrayAccess && (typeEqualsToOneOf(group.type, GroupType.Array))
+                    )) {
                     group.type = newType;
                 } else {
 
@@ -962,8 +1004,8 @@ export class GscFileParser {
             group.solved = true;
         }
 
-        function group_byTokenAndGroup(tokenType: TokenType, groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType, finalGroup2Type: GroupType | undefined) {        
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byTokenAndGroup(tokenType: TokenType, groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType, finalGroup2Type: GroupType | undefined) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length - 1; i++) {
                     var childGroup1 = parentGroup.items[i];
@@ -971,21 +1013,20 @@ export class GscFileParser {
                     var childGroup2 = parentGroup.items[i + 1];
                     if (childGroup2.solved) { continue; }
                     var typeOfUnknownToken1 = childGroup1.getTypeOfUnknownToken();
-    
+
                     if (typeOfUnknownToken1 === tokenType &&
-                        typeEqualsToOneOf(childGroup2.type, ...groupTypesRight)) 
-                    {
+                        typeEqualsToOneOf(childGroup2.type, ...groupTypesRight)) {
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
                         i--; continue; // go again to the same index
                     }
-                } 
+                }
             });
         }
 
-        function group_byGroupAndToken(groupTypesLeft: GroupType[], tokenType: TokenType, finalType: GroupType, finalGroup1Type: GroupType, finalGroup2Type: GroupType) {        
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byGroupAndToken(groupTypesLeft: GroupType[], tokenType: TokenType, finalType: GroupType, finalGroup1Type: GroupType, finalGroup2Type: GroupType) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length - 1; i++) {
                     var childGroup1 = parentGroup.items[i];
@@ -994,20 +1035,19 @@ export class GscFileParser {
                     if (childGroup2.solved) { continue; }
                     var typeOfUnknownToken2 = childGroup2.getTypeOfUnknownToken();
 
-                    if (typeEqualsToOneOf(childGroup1.type, ...groupTypesLeft) && 
-                        typeOfUnknownToken2 === tokenType) 
-                    {
+                    if (typeEqualsToOneOf(childGroup1.type, ...groupTypesLeft) &&
+                        typeOfUnknownToken2 === tokenType) {
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
                         i--; continue; // go again to the same index
                     }
-                } 
+                }
             });
         }
 
-        function group_byGroupAndTokenAndGroup(groupTypesLeft: GroupType[], tokenType: TokenType, groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined, finalGroup3Type: GroupType | undefined) {        
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byGroupAndTokenAndGroup(groupTypesLeft: GroupType[], tokenType: TokenType, groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined, finalGroup3Type: GroupType | undefined) {
+            walkGroup(rootGroup, (parentGroup) => {
                 for (var i = 0; i < parentGroup.items.length - 2; i++) {
                     var childGroup1 = parentGroup.items[i];
                     if (childGroup1.solved) { continue; }
@@ -1019,20 +1059,19 @@ export class GscFileParser {
 
                     if (typeEqualsToOneOf(childGroup1.type, ...groupTypesLeft) &&
                         typeOfUnknownToken2 === tokenType &&
-                        typeEqualsToOneOf(childGroup3.type, ...groupTypesRight)) 
-                    {
+                        typeEqualsToOneOf(childGroup3.type, ...groupTypesRight)) {
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2, childGroup3]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup3, finalGroup3Type);
                         i--; continue; // go again to the same index
                     }
-                } 
+                }
             });
         }
 
-        function group_ternary() {        
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_ternary() {
+            walkGroup(rootGroup, (parentGroup) => {
                 for (var i = 0; i < parentGroup.items.length - 4; i++) {
                     var childGroup1 = parentGroup.items[i];
                     if (childGroup1.solved) { continue; }
@@ -1049,8 +1088,7 @@ export class GscFileParser {
                         childGroup2.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.QuestionMark) &&
                         typeEqualsToOneOf(childGroup3.type, ...GscFileParser.valueTypesWithIdentifier) &&
                         childGroup4.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.Colon) &&
-                        typeEqualsToOneOf(childGroup5.type, ...GscFileParser.valueTypesWithIdentifier)) 
-                    {
+                        typeEqualsToOneOf(childGroup5.type, ...GscFileParser.valueTypesWithIdentifier)) {
                         const newGroup = groupItems(parentGroup, i, GroupType.Ternary, 0, 0, [childGroup1, childGroup2, childGroup3, childGroup4, childGroup5]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Value);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, GroupType.Token);
@@ -1059,24 +1097,24 @@ export class GscFileParser {
                         changeGroupToSolvedAndChangeType(newGroup, childGroup5, GroupType.Value);
                         i--; continue; // go again to the same index
                     }
-                } 
+                }
             });
         }
 
 
-        function group_array_initializer() {     
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_array_initializer() {
+            walkGroup(rootGroup, (parentGroup) => {
 
                 for (var i = 0; i < parentGroup.items.length; i++) {
                     var childGroup1 = parentGroup.items[i];
                     if (childGroup1.solved) { continue; }
 
                     if (childGroup1.type === GroupType.Array) {
-                        
+
                         // Empty array
                         if (childGroup1.items.length === 0) {
                             childGroup1.type = GroupType.ArrayInitializer;
-                        } 
+                        }
                         // Potential array initializer
                         else {
                             childGroup1.type = GroupType.ArrayInitializer;
@@ -1105,8 +1143,8 @@ export class GscFileParser {
         }
 
 
-        function group_byGroupAndGroup(groupTypesLeft: GroupType[], groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined, backward: boolean = false) {                  
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byGroupAndGroup(groupTypesLeft: GroupType[], groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined, backward: boolean = false) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; true; i++) {
                     var index = i;
@@ -1120,24 +1158,23 @@ export class GscFileParser {
                     if (childGroup1.solved) { continue; }
                     var childGroup2 = parentGroup.items[index + 1];
                     if (childGroup2.solved) { continue; }
-    
+
                     if (typeEqualsToOneOf(childGroup1.type, ...groupTypesLeft) &&
-                        typeEqualsToOneOf(childGroup2.type, ...groupTypesRight)) 
-                    {
+                        typeEqualsToOneOf(childGroup2.type, ...groupTypesRight)) {
                         const newGroup = groupItems(parentGroup, index, finalType, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
                         i--; continue; // go again to the same index
                     }
-                } 
+                }
             });
         }
 
 
         function group_variables_and_function_call(rootGroup: GscGroup) {
-            walkGroup(rootGroup, (parentGroup) => { 
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.items.length === 0) { return; }
-                for (var i = 0; i < parentGroup.items.length; i++) {   
+                for (var i = 0; i < parentGroup.items.length; i++) {
                     // func();
                     //  var func();
                     //  var thread func();
@@ -1147,38 +1184,37 @@ export class GscFileParser {
                     // var func() thread func();
                     // [[f]]() thread ttt();
                     // ::getVar thread ttt();
-                    
+
                     // variable or keyword or object reference (func call)
                     const childGroup1 = parentGroup.items[i];
                     if (childGroup1.solved) { continue; }
                     const childGroup2 = parentGroup.items.at(i + 1);
-                    if (childGroup2?.solved) { continue; } 
+                    if (childGroup2?.solved) { continue; }
                     const childGroup3 = parentGroup.items.at(i + 2);
                     const childGroup4 = parentGroup.items.at(i + 3);
 
                     const typeOfUnknownToken2 = childGroup2?.getTypeOfUnknownToken();
-    
+
                     // Allowed types that may appear before function call
                     const allowedTypes = [
-                        GroupType.Identifier, GroupType.Reference, 
+                        GroupType.Identifier, GroupType.Reference,
                         ...GscFileParser.functionCallTypes,
                         GroupType.FunctionDereference, GroupType.FunctionPointer, GroupType.FunctionPointerExternal
                     ];
 
                     var group1_isVarReference = childGroup1.isUnsolvedGroupOfOneOfType(...allowedTypes);
                     // Expressions may hide the inner groups, unwrap
-                    if (childGroup1.isUnsolvedGroupOfOneOfType(GroupType.Expression)) 
-                    {
+                    if (childGroup1.isUnsolvedGroupOfOneOfType(GroupType.Expression)) {
                         const innerGroup = childGroup1.unwrapType(GroupType.Expression);
                         group1_isVarReference = innerGroup.typeEqualsToOneOf(...allowedTypes);
                     }
-                    const group2_isThread = childGroup2?.isReservedKeywordOfName("thread") ?? false;
+                    const group2_isThread = childGroup2?.isReservedKeywordOfName("thread", "childthread", "call") ?? false;
                     const group3_isFuncCall = childGroup3?.isUnsolvedGroupOfOneOfType(GroupType.FunctionCall) ?? false;
-                    
+
                     // var thread func()
                     if (group1_isVarReference && group2_isThread && group3_isFuncCall) {
                         const newGroup = groupItems(parentGroup, i, GroupType.FunctionCallWithObjectAndThread, 0, 0, [childGroup1, childGroup2!, childGroup3!]);
-                        changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Reference); 
+                        changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Reference);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2!, GroupType.ReservedKeyword);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup3!, GroupType.FunctionCall);
                         i--; continue; // go to same index again
@@ -1190,7 +1226,7 @@ export class GscFileParser {
 
                     // var func();   or    var waittill();
                     if (group1_isVarReference && group2_isCall && !isInForeach) {
-                        const finalType = childGroup2!.type === GroupType.FunctionCall 
+                        const finalType = childGroup2!.type === GroupType.FunctionCall
                             ? GroupType.FunctionCallWithObject
                             : GroupType.KeywordCallWithObject;
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2!]);
@@ -1199,7 +1235,7 @@ export class GscFileParser {
                         i--; continue; // go to same index again
                     }
 
-                    const group1_isThread = childGroup1.isReservedKeywordOfName("thread");
+                    const group1_isThread = childGroup1.isReservedKeywordOfName("thread", "childthread", "call");
 
                     // thread func();
                     if (group1_isThread && group2_isCall) {
@@ -1210,43 +1246,41 @@ export class GscFileParser {
                     }
 
 
-                    const group1_isObject = (typeEqualsToOneOf(childGroup1.type, 
+                    const group1_isObject = (typeEqualsToOneOf(childGroup1.type,
                         GroupType.Identifier, GroupType.Reference, GroupType.Expression, ...GscFileParser.functionCallTypes) ||
                         childGroup1.type === GroupType.Constant && childGroup1.getSingleTokenType() === TokenType.String);
 
 
 
                     // level.aaa    level.aaa.bbb    (level).aaa     getarray().size   "weapon_".size   
-                    if (childGroup2 !== undefined && childGroup3 !== undefined && 
+                    if (childGroup2 !== undefined && childGroup3 !== undefined &&
                         group1_isObject &&
                         typeOfUnknownToken2 === TokenType.Structure &&
-                        childGroup3.type === GroupType.Identifier) 
-                    {
+                        childGroup3.type === GroupType.Identifier) {
                         const newGroup = groupItems(parentGroup, i, GroupType.Reference, 0, 0, [childGroup1, childGroup2, childGroup3]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Reference);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, GroupType.Token);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup3, GroupType.StructureField);
                         i--; continue; // go again to the same index
                     }
-    
+
                     // game[]     level.aaa[]   (level.aaa)[]     getarray()[x]   "weapon_"[0]
-                    if (childGroup2 !== undefined && 
+                    if (childGroup2 !== undefined &&
                         group1_isObject &&
-                        childGroup2.type === GroupType.Array)
-                    {
+                        childGroup2.type === GroupType.Array) {
                         const newGroup = groupItems(parentGroup, i, GroupType.Reference, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Reference);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, GroupType.ArrayAccess);
-                        
+
                         // If there is nothing inside array -> array[]
                         if (childGroup2.items.length === 0) {
                             childGroup2.solved = false; // don't consider empty array indexer as solved
-                        
-                        // If there is only 1 item in array, consider it as value indexer -> array[0]
+
+                            // If there is only 1 item in array, consider it as value indexer -> array[0]
                         } else if (childGroup2.items.length === 1) {
                             changeGroupToSolvedAndChangeType(childGroup2, childGroup2.items[0], GroupType.Value);
-                        
-                        // If there are more than 1 items in array, consider them as value indexer -> array[index + 10]
+
+                            // If there are more than 1 items in array, consider them as value indexer -> array[index + 10]
                         } else {
                             const newGroup2 = groupItems(childGroup2, 0, GroupType.Value, 0, 0, childGroup2.items);
                             newGroup2.solved = true;
@@ -1261,10 +1295,10 @@ export class GscFileParser {
 
 
         function group_casting(rootGroup: GscGroup) {
-            walkGroup(rootGroup, (parentGroup) => { 
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.items.length === 0) { return; }
                 for (var i = parentGroup.items.length - 2; i >= 0; i--) {
-                    
+
                     // variable or keyword or object reference (func call)
                     const childGroup1 = parentGroup.items[i];
                     if (childGroup1.solved) { continue; }
@@ -1275,10 +1309,9 @@ export class GscFileParser {
 
                     const types = ["int", "bool", "float", "string"];
 
-                    if (childGroup1.type === GroupType.Expression && childGroup1.items.length === 1 && 
+                    if (childGroup1.type === GroupType.Expression && childGroup1.items.length === 1 &&
                         child1Inner1?.type === GroupType.Identifier && types.includes(child1Inner1.getTokensAsString()) &&
-                        childGroup2?.typeEqualsToOneOf(...GscFileParser.valueTypesWithIdentifier))
-                    {
+                        childGroup2?.typeEqualsToOneOf(...GscFileParser.valueTypesWithIdentifier)) {
                         const newGroup = groupItems(parentGroup, i, GroupType.Value, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.CastExpression);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, GroupType.Value);
@@ -1289,10 +1322,10 @@ export class GscFileParser {
                 }
             });
         }
- 
 
-        function group_operators_left(rootGroup: GscGroup) {   
-            walkGroup(rootGroup, (parentGroup) => { 
+
+        function group_operators_left(rootGroup: GscGroup) {
+            walkGroup(rootGroup, (parentGroup) => {
 
                 for (var i = parentGroup.items.length - 2; i >= 0; i--) {
                     const childGroup1 = parentGroup.items[i];
@@ -1312,15 +1345,15 @@ export class GscFileParser {
         }
 
         function group_operators(rootGroup: GscGroup) {
-            walkGroup(rootGroup, (parentGroup) => { 
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.items.length === 0) { return; }
-                for (var i = 0; i < parentGroup.items.length; i++) {   
-                    
+                for (var i = 0; i < parentGroup.items.length; i++) {
+
                     // variable or keyword or object reference (func call)
                     const childGroup1 = parentGroup.items[i];
                     if (childGroup1.solved) { continue; }
                     const childGroup2 = parentGroup.items.at(i + 1);
-                    if (childGroup2?.solved) { continue; } 
+                    if (childGroup2?.solved) { continue; }
                     const childGroup3 = parentGroup.items.at(i + 2);
                     const childGroup4 = parentGroup.items.at(i + 3);
 
@@ -1329,13 +1362,11 @@ export class GscFileParser {
 
                     // aaa && bbb     + - * / % < > == 
                     if (childGroup1.typeEqualsToOneOf(...GscFileParser.valueTypesWithIdentifier) &&
-                        typeOfUnknownToken2 === TokenType.Operator) 
-                    {
+                        typeOfUnknownToken2 === TokenType.Operator) {
                         // If next tokens after operator needs to be joined first
                         // aaa && !var1   aaa && !level.aaa   aaa && !(...)
                         if (typeOfUnknownToken3 === TokenType.OperatorLeft &&
-                            childGroup4?.isUnsolvedGroupOfOneOfType(...GscFileParser.valueTypesWithIdentifier))
-                        {
+                            childGroup4?.isUnsolvedGroupOfOneOfType(...GscFileParser.valueTypesWithIdentifier)) {
                             const newGroup = groupItems(parentGroup, i + 2, GroupType.Value, 0, 0, [childGroup3!, childGroup4]);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup3!, GroupType.Token);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup4, GroupType.Value);
@@ -1344,10 +1375,9 @@ export class GscFileParser {
 
                         // If next tokens after operator needs to be joined first
                         // %anim_file_name
-                        if (childGroup3?.getSingleToken()?.name === "%" && 
-                            childGroup4?.typeEqualsToOneOf(GroupType.Identifier)) 
-                        {
-                            const newGroup = groupItems(parentGroup, i+2, GroupType.Constant, 0, 0, [childGroup3, childGroup4]);
+                        if (childGroup3?.getSingleToken()?.name === "%" &&
+                            childGroup4?.typeEqualsToOneOf(GroupType.Identifier)) {
+                            const newGroup = groupItems(parentGroup, i + 2, GroupType.Constant, 0, 0, [childGroup3, childGroup4]);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup3, GroupType.Token);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup4, GroupType.XAnim);
                             i--; continue; // go again to the same index
@@ -1363,9 +1393,8 @@ export class GscFileParser {
                     }
 
                     // %anim_file_name
-                    else if (childGroup1.getSingleToken()?.name === "%" && 
-                        childGroup2?.typeEqualsToOneOf(GroupType.Identifier)) 
-                    {
+                    else if (childGroup1.getSingleToken()?.name === "%" &&
+                        childGroup2?.typeEqualsToOneOf(GroupType.Identifier)) {
                         const newGroup = groupItems(parentGroup, i, GroupType.Constant, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Token);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, GroupType.XAnim);
@@ -1376,8 +1405,8 @@ export class GscFileParser {
         }
 
 
-        function group_byKeyword(keywordNames: string[], finalType: GroupType, finalGroup1Type: GroupType | undefined) {        
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byKeyword(keywordNames: string[], finalType: GroupType, finalGroup1Type: GroupType | undefined) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length; i++) {
                     var childGroup1 = parentGroup.items[i];
@@ -1385,8 +1414,7 @@ export class GscFileParser {
                     var childTokenName = childGroup1.getSingleToken()?.name;//.toLocaleLowerCase();
 
                     // return
-                    if (childGroup1.type === GroupType.ReservedKeyword && keywordNames.includes(childTokenName ?? ""))
-                    {
+                    if (childGroup1.type === GroupType.ReservedKeyword && keywordNames.includes(childTokenName ?? "")) {
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         i--; continue; // go again to the same index
@@ -1396,8 +1424,8 @@ export class GscFileParser {
         }
 
 
-        function group_byKeywordNameAndGroup(keywordNames: string[], groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined) {            
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byKeywordNameAndGroup(keywordNames: string[], groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length - 1; i++) {
                     var childGroup1 = parentGroup.items[i];
@@ -1405,11 +1433,10 @@ export class GscFileParser {
                     var childGroup2 = parentGroup.items[i + 1];
                     if (childGroup2.solved) { continue; }
                     var childTokenName = childGroup1.getSingleToken()?.name;//.toLocaleLowerCase();
-    
+
                     // if ()
                     if (childGroup1.type === GroupType.ReservedKeyword && keywordNames.includes(childTokenName ?? "") &&
-                        childGroup2.typeEqualsToOneOf(...groupTypesRight))
-                    {
+                        childGroup2.typeEqualsToOneOf(...groupTypesRight)) {
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
@@ -1420,8 +1447,8 @@ export class GscFileParser {
         }
 
 
-        function group_byKeywordAndGroupAndToken(keywordNamesLeft: string[], groupTypes: GroupType[], tokenType: TokenType, finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined, finalGroup3Type: GroupType | undefined) {            
-            walkGroup(rootGroup, (parentGroup) => { 
+        function group_byKeywordAndGroupAndToken(keywordNamesLeft: string[], groupTypes: GroupType[], tokenType: TokenType, finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined, finalGroup3Type: GroupType | undefined) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length - 2; i++) {
                     var childGroup1 = parentGroup.items[i];
@@ -1430,7 +1457,7 @@ export class GscFileParser {
                     if (!childGroup2.isUnsolvedGroupOfOneOfType(...groupTypes)) { continue; }
                     var childGroup3 = parentGroup.items[i + 2];
                     if (!childGroup3.isUnknownUnsolvedSingleTokenOfOneOfType(tokenType)) { continue; }
-    
+
                     const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2, childGroup3]);
                     changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                     changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
@@ -1440,16 +1467,16 @@ export class GscFileParser {
             });
         }
 
-        
-        function group_byKeywordAndToken(keywordNamesLeft: string[], tokenType: TokenType, finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined) {            
-            walkGroup(rootGroup, (parentGroup) => { 
+
+        function group_byKeywordAndToken(keywordNamesLeft: string[], tokenType: TokenType, finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined) {
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length - 1; i++) {
                     var childGroup1 = parentGroup.items[i];
                     if (!childGroup1.isReservedKeywordOfName(...keywordNamesLeft)) { continue; }
                     var childGroup2 = parentGroup.items[i + 1];
                     if (!childGroup2.isUnknownUnsolvedSingleTokenOfOneOfType(tokenType)) { continue; }
-    
+
                     const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
                     changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                     changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
@@ -1467,8 +1494,8 @@ export class GscFileParser {
                 [GroupType.DoDeclaration, GroupType.DoScope],
                 [GroupType.WhileDeclaration, GroupType.WhileScope],
                 [GroupType.SwitchDeclaration, GroupType.SwitchScope]
-            ]);      
-            walkGroup(rootGroup, (parentGroup) => { 
+            ]);
+            walkGroup(rootGroup, (parentGroup) => {
                 if (parentGroup.type === GroupType.TerminatedStatement) { return; }
                 for (var i = parentGroup.items.length - 2; i >= 0; i--) {
                     const childGroup1 = parentGroup.items[i];
@@ -1476,7 +1503,7 @@ export class GscFileParser {
                     const childGroup2 = parentGroup.items[i + 1];
 
                     // Check if the second group is scope, terminated statement or developer block (according to CoD2 engine, developer block /##/ act the same as {} scope) 
-                    const secondIsStatement = childGroup2.isUnsolvedGroupOfOneOfType(GroupType.Scope, GroupType.TerminatedStatement, GroupType.DeveloperBlock);
+                    const secondIsStatement = childGroup2.isUnsolvedGroupOfOneOfType(GroupType.Scope, GroupType.TerminatedStatement, GroupType.DeveloperBlock, GroupType.DeveloperBlock2);
 
                     // If its not terminated statement or scope (and its after if, for, do, while or switch), try to create "virtual" statement
                     // There might be error in the one-line statement and instead of error on declaration show error on statement
@@ -1501,12 +1528,12 @@ export class GscFileParser {
                             newGroup.solved = false;
                             i++; continue; // go again to the same index
                         }
-                        continue; 
+                        continue;
                     }
 
                     // Developer block /##/ is not valid for switch
-                    if (childGroup1.type === GroupType.SwitchDeclaration && childGroup2.type === GroupType.DeveloperBlock) { continue; }
-                    
+                    if (childGroup1.type === GroupType.SwitchDeclaration && (childGroup2.type === GroupType.DeveloperBlock || childGroup2.type === GroupType.DeveloperBlock2)) { continue; }
+
                     const childGroup3 = parentGroup.items.at(i + 2);
                     const childGroup4 = parentGroup.items.at(i + 3);
 
@@ -1537,20 +1564,20 @@ export class GscFileParser {
 
                         // Do must always have WhileDeclaration after scope, if not leave unsolved
                         if (childGroup1.type === GroupType.DoDeclaration && childGroup3?.type !== GroupType.WhileDeclaration) {
-                            continue; 
+                            continue;
                         }
 
                         // This while(...) is part of do { } while(...);, don't wrap it 
                         if (childGroup1.type === GroupType.WhileDeclaration) {
                             const childGroup0 = parentGroup.items.at(i - 2);
                             if (childGroup0?.type === GroupType.DoDeclaration) {
-                                continue; 
+                                continue;
                             }
                         }
 
                         const newGroup = groupItems(parentGroup, i, GroupType.TerminatedStatement, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, undefined);
-                        changeGroupToSolvedAndChangeType(newGroup, childGroup2, map.get(childGroup1.type));    
+                        changeGroupToSolvedAndChangeType(newGroup, childGroup2, map.get(childGroup1.type));
                     }
 
                     i++; continue; // go again to the same index
@@ -1558,7 +1585,7 @@ export class GscFileParser {
             });
         }
 
-        function group_the_rest(group: GscGroup, parentGroup: GscGroup | undefined = undefined, lastFunctionScope: GscGroup | undefined = undefined) {   
+        function group_the_rest(group: GscGroup, parentGroup: GscGroup | undefined = undefined, lastFunctionScope: GscGroup | undefined = undefined) {
 
             if (group.type === GroupType.FunctionScope) {
                 lastFunctionScope = group;
@@ -1576,6 +1603,13 @@ export class GscFileParser {
                     // Developer block inside function change to DeveloperBlockInner
                     if (lastFunctionScope !== undefined) {
                         group.type = GroupType.DeveloperBlockInner;
+                    }
+                    break;
+
+                case GroupType.DeveloperBlock2:
+                    // Developer block inside function change to DeveloperBlock2Inner
+                    if (lastFunctionScope !== undefined) {
+                        group.type = GroupType.DeveloperBlock2Inner;
                     }
                     break;
 
@@ -1610,38 +1644,37 @@ export class GscFileParser {
                             childGroup1.solved = true;
                             paramPos++;
 
-                        // First: its terminator -> for (; ...)
+                            // First: its terminator -> for (; ...)
                         } else if (paramPos === 0 && childGroup1.type === GroupType.Terminator) {
                             const newGroup = groupItems(group, i, GroupType.ForStatement, 0, 0, [childGroup1]);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Terminator);
                             newGroup.solved = true;
                             paramPos++;
 
-                        // Second: condition -> for (;;)    for (...; i < 5; ...)   or   for (...; variable;)   or   for (...; level functionCall();)
+                            // Second: condition -> for (;;)    for (...; i < 5; ...)   or   for (...; variable;)   or   for (...; level functionCall();)
                         } else if (paramPos === 1) {
-                            
+
                             // Its just terminator -> for (...; ...)
                             if (childGroup1.type === GroupType.Terminator) {
                                 const newGroup = groupItems(group, i, GroupType.ForStatement, 0, 0, [childGroup1]);
                                 changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Terminator);
                                 newGroup.solved = true;
-                                paramPos++;   
+                                paramPos++;
 
-                            // Its terminated statement
-                            // for (...; isOk(); ...)
-                            // for (...; level isOk(); ...)
+                                // Its terminated statement
+                                // for (...; isOk(); ...)
+                                // for (...; level isOk(); ...)
                             } else if (childGroup1.type === GroupType.TerminatedStatement) {
                                 changeGroupToSolvedAndChangeType(group, childGroup1, GroupType.ForStatement);
                                 paramPos++;
 
-                            // Its value or identifier (its not terminated by default)
-                            // for (...; variable; ...)
-                            // for (...; level.variable; ...)
-                            // for (...; i < 5; ...)
+                                // Its value or identifier (its not terminated by default)
+                                // for (...; variable; ...)
+                                // for (...; level.variable; ...)
+                                // for (...; i < 5; ...)
                             } else if (typeEqualsToOneOf(childGroup1.type, ...GscFileParser.valueTypesWithIdentifier)) {
                                 const childGroup2 = group.items.at(i + 1);
-                                if (childGroup2?.type === GroupType.Terminator) 
-                                {
+                                if (childGroup2?.type === GroupType.Terminator) {
                                     const newGroup = groupItems(group, i, GroupType.ForStatement, 0, 0, [childGroup1, childGroup2]);
                                     changeGroupToSolvedAndChangeType(newGroup, childGroup1, GroupType.Value);
                                     changeGroupToSolvedAndChangeType(newGroup, childGroup2, GroupType.Terminator);
@@ -1650,7 +1683,7 @@ export class GscFileParser {
                                 paramPos++;
                             }
 
-                        // Third: increment -> for (...; ...; i++)
+                            // Third: increment -> for (...; ...; i++)
                         } else if (paramPos === 2 && typeEqualsToOneOf(childGroup1.type, GroupType.Statement)) {
                             changeGroupToSolvedAndChangeType(group, childGroup1, GroupType.ForStatement);
 
@@ -1685,7 +1718,7 @@ export class GscFileParser {
 
                         // foreach (value in level getMeAnArray())
                         // foreach (value in getMeAnArray())
-                        
+
                         const isValue = i === 2 && isKeyAndValue;
                         const isInTheIn = (i === 1 && !isKeyAndValue) || (i === 3 && isKeyAndValue);
                         const isArray = (i === 2 && !isKeyAndValue) || (i === 4 && isKeyAndValue);
@@ -1695,27 +1728,27 @@ export class GscFileParser {
                             changeGroupToSolvedAndChangeType(group, childGroup, GroupType.VariableName);
                             childGroup.solved = true;
 
-                        // Second: if its comma, it means there is key and value
+                            // Second: if its comma, it means there is key and value
                         } else if (i === 1 && childGroup.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.ParameterSeparator)) {
                             changeGroupToSolvedAndChangeType(group, childGroup, GroupType.Token);
                             childGroup.solved = true;
                             isKeyAndValue = true;
 
-                        // Its value -> foreach (key, value in items)
+                            // Its value -> foreach (key, value in items)
                         } else if (isValue) {
                             changeGroupToSolvedAndChangeType(group, childGroup, GroupType.VariableName);
                             childGroup.solved = true;
 
-                        // Its in keyword
+                            // Its in keyword
                         } else if (isInTheIn && childGroup.type === GroupType.Identifier && childGroup.getSingleToken()?.name === "in") {
                             changeGroupToSolvedAndChangeType(group, childGroup, GroupType.ReservedKeyword);
                             childGroup.solved = true;
 
-                        // Its array value
+                            // Its array value
                         } else if (isArray && typeEqualsToOneOf(childGroup.type, GroupType.Identifier, GroupType.Reference, ...GscFileParser.functionCallTypes)) {
                             changeGroupToSolvedAndChangeType(group, childGroup, GroupType.Reference);
-                            group.solved = true;  
-                            isCompleted = true;            
+                            group.solved = true;
+                            isCompleted = true;
                         }
 
                         // It is last item and it is not completed
@@ -1723,21 +1756,21 @@ export class GscFileParser {
                             childGroup.solved = false;
                         }
                     }
-                    
+
                     break;
 
-            
-                case GroupType.SwitchScope:  
+
+                case GroupType.SwitchScope:
                     // First join non-CaseLabel groups, so we end up only with CaseLabel and CaseScope groups
                     var lastLabel = -1;
                     for (var i = 0; i <= group.items.length; i++) {
-                        const childGroup1 = i === group.items.length ? undefined : group.items[i];                   
+                        const childGroup1 = i === group.items.length ? undefined : group.items[i];
                         if (lastLabel !== -1 && i > lastLabel + 1 && (childGroup1 === undefined || childGroup1.type === GroupType.CaseLabel)) {
                             const groups = group.items.slice(lastLabel + 1, i);
                             const newGroup = groupItems(group, lastLabel + 1, GroupType.CaseScope, 0, 0, groups);
                             i -= groups.length;
                             lastLabel = -1;
-                        }                      
+                        }
                         if (childGroup1 !== undefined && childGroup1.type === GroupType.CaseLabel) {
                             lastLabel = i;
                         }
@@ -1746,45 +1779,45 @@ export class GscFileParser {
                     // Validate scope always start with CaseLabel which is followed by another CaseLabel or CaseScope
                     for (var i = 0; i < group.items.length; i++) {
                         const childGroup1 = group.items[i];
-                        const childGroup2 = group.items.at(i + 1);    
-        
+                        const childGroup2 = group.items.at(i + 1);
+
                         // Label followed by label or scope is valid
-                        if (childGroup1.type === GroupType.CaseLabel && childGroup2?.type === GroupType.CaseLabel){
+                        if (childGroup1.type === GroupType.CaseLabel && childGroup2?.type === GroupType.CaseLabel) {
                             childGroup1.solved = true;
                             continue;
 
-                        // Label followed by another label is ok
+                            // Label followed by another label is ok
                         } else if (childGroup1.type === GroupType.CaseLabel && childGroup2?.type === GroupType.CaseScope) {
                             childGroup1.solved = true;
                             childGroup2.solved = true;
                             i++;
                             continue;
 
-                        // Label that is last, don't have any scope and is missing break; is also valid
+                            // Label that is last, don't have any scope and is missing break; is also valid
                         } else if (childGroup1.type === GroupType.CaseLabel && childGroup2 === undefined) {
                             childGroup1.solved = true;
                             continue;
-                        
+
                         } else {
                             childGroup1.solved = false;
                         }
                     }
                     break;
 
-            
+
                 case GroupType.FunctionParametersExpression:
                     for (var i = 0; i < group.items.length; i++) {
                         const childGroup1 = group.items[i];
 
                         // Parameter
                         if ((i % 2) === 0) {
-                            
+
                             // Function definition
-                            if (lastFunctionScope === undefined && childGroup1.type === GroupType.Identifier) {                          
+                            if (lastFunctionScope === undefined && childGroup1.type === GroupType.Identifier) {
                                 childGroup1.type = GroupType.FunctionParameterName;
                                 childGroup1.solved = true;
-                                
-                            // Function call
+
+                                // Function call
                             } else if (typeEqualsToOneOf(childGroup1.type, ...GscFileParser.valueTypesWithIdentifier)) {
                                 if (childGroup1.type === GroupType.Identifier) {
                                     changeGroupToSolvedAndChangeType(group, childGroup1, GroupType.Reference);
@@ -1793,14 +1826,14 @@ export class GscFileParser {
                                 }
                             }
 
-                        // Separator
+                            // Separator
                         } else if (i + 1 < group.items.length) {
                             if (childGroup1.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.ParameterSeparator) && (i % 2) !== 0) {
                                 changeGroupToSolvedAndChangeType(group, childGroup1, GroupType.Token);
                             }
                         }
-        
-                    } 
+
+                    }
                     break;
 
 
@@ -1809,7 +1842,7 @@ export class GscFileParser {
                         const childGroup1 = group.items[i];
 
                         // Parameter
-                        if ((i % 2) === 0) {                           
+                        if ((i % 2) === 0) {
                             if (typeEqualsToOneOf(childGroup1.type, ...GscFileParser.valueTypesWithIdentifier)) {
                                 if (childGroup1.type === GroupType.Identifier) {
                                     changeGroupToSolvedAndChangeType(group, childGroup1, GroupType.Reference);
@@ -1817,16 +1850,16 @@ export class GscFileParser {
                                     childGroup1.solved = true;
                                 }
                             }
-                        // Separator
+                            // Separator
                         } else if (i + 1 < group.items.length) {
                             if (childGroup1.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.ParameterSeparator) && (i % 2) !== 0) {
                                 changeGroupToSolvedAndChangeType(group, childGroup1, GroupType.Token);
                             }
                         }
-        
-                    } 
+
+                    }
                     break;
-            
+
 
                 case GroupType.Expression:
 
@@ -1845,23 +1878,22 @@ export class GscFileParser {
             group: GscGroup,
             parentGroup: GscGroup | undefined = undefined,
             previousItem: GscGroup | undefined = undefined,
-            lastFunctionScope: GscGroup | undefined = undefined, 
+            lastFunctionScope: GscGroup | undefined = undefined,
             lastDeveloperScope: GscGroup | undefined = undefined
-        )
-        {
+        ) {
             for (var i = 0; i < group.items.length; i++) {
                 const innerGroup = group.items[i];
                 const previousGroup = i === 0 ? undefined : group.items[i - 1];
                 solve_unsolved(
-                    innerGroup, 
-                    group, 
+                    innerGroup,
+                    group,
                     previousGroup,
-                    group.type === GroupType.FunctionScope ? group : lastFunctionScope, 
-                    group.typeEqualsToOneOf(GroupType.DeveloperBlock, GroupType.DeveloperBlockInner) ? group : lastDeveloperScope
-                );        
+                    group.type === GroupType.FunctionScope ? group : lastFunctionScope,
+                    group.typeEqualsToOneOf(GroupType.DeveloperBlock, GroupType.DeveloperBlockInner, GroupType.DeveloperBlock2, GroupType.DeveloperBlock2Inner) ? group : lastDeveloperScope
+                );
             }
 
-            
+
             switch (group.type as GroupType) {
 
                 case GroupType.Root:
@@ -1869,30 +1901,33 @@ export class GscFileParser {
                     break;
 
                 case GroupType.TerminatedPreprocessorStatement:
+                case GroupType.TerminatedPreprocessorStatementDefine:
+                case GroupType.TerminatedPreprocessorStatementInline:
                 case GroupType.FunctionDefinition:
                     if (parentGroup !== undefined && lastFunctionScope === undefined &&
-                        parentGroup.typeEqualsToOneOf(GroupType.Root, GroupType.DeveloperBlock)) {
-                        group.solved = true; 
+                        parentGroup.typeEqualsToOneOf(GroupType.Root, GroupType.DeveloperBlock, GroupType.DeveloperBlock2)) {
+                        group.solved = true;
                     }
                     break;
 
                 case GroupType.DeveloperBlock:
+                case GroupType.DeveloperBlock2:
                     // In root
                     group.solved = lastFunctionScope === undefined; // && lastDeveloperScope === undefined;
                     break;
 
                 case GroupType.DeveloperBlockInner:
+                case GroupType.DeveloperBlock2Inner:
                     // In function
                     group.solved = lastFunctionScope !== undefined;// && lastDeveloperScope === undefined;
                     break;
 
                 case GroupType.Statement:
                     // If its statement with TokenType.Assignment and it is in Root, its global variable
-                    if ((group.parent?.type === GroupType.Root || (group.parent?.type === GroupType.TerminatedStatement && group.parent?.parent?.type === GroupType.Root)) && 
+                    if ((group.parent?.type === GroupType.Root || (group.parent?.type === GroupType.TerminatedStatement && group.parent?.parent?.type === GroupType.Root)) &&
                         group.items.length === 3 && group.items[1].getSingleTokenType() === TokenType.Assignment &&
                         group.items[0].type === GroupType.Reference &&
-                        group.items[0].items.length === 1 && group.items[0].items[0].type === GroupType.VariableName && group.items[0].items[0].items.length === 0)
-                    {
+                        group.items[0].items.length === 1 && group.items[0].items[0].type === GroupType.VariableName && group.items[0].items[0].items.length === 0) {
                         // If this statement is wrapped in terminated statement, change it to solved group
                         if (group.parent.type === GroupType.TerminatedStatement) {
                             group.parent.solved = true;
@@ -1909,7 +1944,7 @@ export class GscFileParser {
                         // If previous item is solved or this terminator is only item in the group, change it to ExtraTerminator
                         if (group.solved === false && (previousItem?.solved || parentGroup.items.length === 1)) {
                             group.type = GroupType.ExtraTerminator;
-                            group.solved = true; 
+                            group.solved = true;
                         }
                     }
                     break;
@@ -1918,8 +1953,8 @@ export class GscFileParser {
                 // Scopes and terminated statements that are inside scope (except for switch scope) consider as solved
                 case GroupType.Scope:
                 case GroupType.TerminatedStatement:
-                    if (parentGroup?.typeEqualsToOneOf(...GscFileParser.scopeTypes) && parentGroup.type !== GroupType.SwitchScope)  {
-                        group.solved = true; 
+                    if (parentGroup?.typeEqualsToOneOf(...GscFileParser.scopeTypes) && parentGroup.type !== GroupType.SwitchScope) {
+                        group.solved = true;
                     }
                     break;
 
@@ -1938,7 +1973,7 @@ export class GscFileParser {
                             group.solved = true;
                         }
                     }
-                    
+
 
                     break;
             }
@@ -1974,25 +2009,28 @@ export class GscFileParser {
 
 
         // https://en.cppreference.com/w/c/language/operator_precedence
-        
 
-        walkGroup(rootGroup, (group) => { 
+
+        walkGroup(rootGroup, (group) => {
             groupByBracketPairs(group, TokenType.DeveloperStart, TokenType.DeveloperEnd, GroupType.DeveloperBlock);
         });
-        walkGroup(rootGroup, (group) => { 
+        walkGroup(rootGroup, (group) => {
+            groupByBracketPairs(group, TokenType.DeveloperStart2, TokenType.DeveloperEnd2, GroupType.DeveloperBlock2);
+        });
+        walkGroup(rootGroup, (group) => {
             groupByBracketPairs(group, TokenType.ScopeStart, TokenType.ScopeEnd, GroupType.Scope);
         });
-        walkGroup(rootGroup, (group) => { 
+        walkGroup(rootGroup, (group) => {
             groupByBracketPairs(group, TokenType.ExpressionStart, TokenType.ExpressionEnd, GroupType.Expression);
         });
-        walkGroup(rootGroup, (group) => { 
+        walkGroup(rootGroup, (group) => {
             groupByBracketPairs(group, TokenType.ArrayStart, TokenType.ArrayEnd, GroupType.Array);
         });
 
 
         //console.log(this.debug(tokens, rootGroup, true));
 
-        
+
         // Change numbers, strings, true, false etc.. into known types like Identifiers, Constant, ReservedKeywords
         walkGroup(rootGroup, (group) => { change_singleUnknownTokens(group); });
 
@@ -2006,16 +2044,71 @@ export class GscFileParser {
 
 
         // Preprocessors
-        group_byKeywordNameAndGroup(["#include"], 
+        group_byKeywordNameAndGroup(["#include"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.Path);
 
-        group_byKeywordNameAndGroup(["#using_animtree"], 
+        group_byKeywordNameAndGroup(["#inline"],
+            [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
+
+        walkGroup(rootGroup, (parentGroup) => {
+            for (let i = 0; i < parentGroup.items.length; i++) {
+                const childGroup1 = parentGroup.items[i];
+                if (childGroup1.solved) continue;
+
+                const tokenName = childGroup1.getSingleToken()?.name;
+                if (childGroup1.type === GroupType.ReservedKeyword && tokenName === "#define") {
+                    // Find the macro name (must be the next unsolved identifier on the same line)
+                    const macroLine = childGroup1.getFirstToken().range.start.line;
+                    let macroNameIdx = i + 1;
+
+                    // Skip solved tokens and ensure the macro name is an identifier
+                    while (
+                        macroNameIdx < parentGroup.items.length &&
+                        parentGroup.items[macroNameIdx].getFirstToken().range.start.line === macroLine &&
+                        parentGroup.items[macroNameIdx].solved
+                    ) {
+                        macroNameIdx++;
+                    }
+
+                    if (
+                        macroNameIdx < parentGroup.items.length &&
+                        parentGroup.items[macroNameIdx].getFirstToken().range.start.line === macroLine &&
+                        parentGroup.items[macroNameIdx].type === GroupType.Identifier
+                    ) {
+                        // Now find the end of the line for the value
+                        let j = macroNameIdx + 1;
+                        while (
+                            j < parentGroup.items.length &&
+                            parentGroup.items[j].getFirstToken().range.start.line === macroLine
+                        ) {
+                            j++;
+                        }
+
+                        // Group: #define + macro name + value tokens (if any)
+                        const newGroup = groupItems(
+                            parentGroup,
+                            i,
+                            GroupType.PreprocessorStatementDefine,
+                            0,
+                            0,
+                            parentGroup.items.slice(i, j)
+                        );
+
+                        // Mark the group as solved
+                        newGroup.solved = true;
+                        i--; // Reprocess this index
+                    }
+                }
+            }
+        });
+
+        group_byKeywordNameAndGroup(["#using_animtree"],
             [GroupType.Expression], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.PreprocessorAnimtreeParametersExpression);
 
-        group_byKeyword(["#animtree"], 
+        group_byKeyword(["#animtree"],
             GroupType.Constant, GroupType.ReservedKeyword);
 
-        
+
 
         // Join function pointer dereference, which consists of 2 inner array and expression
         // [[funcPointer]]()
@@ -2025,12 +2118,12 @@ export class GscFileParser {
 
         // Join function call = function name + expression
         // CountPlayers()
-        group_byGroupAndGroup([GroupType.Identifier], [GroupType.Expression], 
+        group_byGroupAndGroup([GroupType.Identifier], [GroupType.Expression],
             GroupType.FunctionCall, GroupType.FunctionName, GroupType.FunctionParametersExpression);
 
         // Join function call = path + function call
         // maps\mp\gametypes\_teams::CountPlayers()
-        group_byGroupAndTokenAndGroup([GroupType.Path, GroupType.Identifier], TokenType.FunctionPointer, [GroupType.FunctionCall], 
+        group_byGroupAndTokenAndGroup([GroupType.Path, GroupType.Identifier], TokenType.FunctionPointer, [GroupType.FunctionCall],
             GroupType.FunctionCall, GroupType.Path, GroupType.Token, GroupType.FunctionCall);
 
 
@@ -2038,32 +2131,32 @@ export class GscFileParser {
         // Join keyword call = keyword + expression
         // waittill ("abc", ...)
         const keywordsWithExpressionAndVar = ["waittill", "waittillmatch", "notify", "endon"];
-        group_byKeywordNameAndGroup(keywordsWithExpressionAndVar, [GroupType.Expression], 
+        group_byKeywordNameAndGroup(keywordsWithExpressionAndVar, [GroupType.Expression],
             GroupType.KeywordCall, GroupType.ReservedKeyword, GroupType.KeywordParametersExpression);
 
 
 
         // if ()
-        group_byKeywordNameAndGroup(["if"], [GroupType.Expression], 
+        group_byKeywordNameAndGroup(["if"], [GroupType.Expression],
             GroupType.IfDeclaration, GroupType.ReservedKeyword, GroupType.Expression);
         // for ()
-        group_byKeywordNameAndGroup(["for"], [GroupType.Expression], 
+        group_byKeywordNameAndGroup(["for"], [GroupType.Expression],
             GroupType.ForDeclaration, GroupType.ReservedKeyword, GroupType.ForExpression);
         // foreach ()
-        group_byKeywordNameAndGroup(["foreach"], [GroupType.Expression], 
+        group_byKeywordNameAndGroup(["foreach"], [GroupType.Expression],
             GroupType.ForEachDeclaration, GroupType.ReservedKeyword, GroupType.ForEachExpression);
         // while ()    (might be changed to do-while)
-        group_byKeywordNameAndGroup(["while"], [GroupType.Expression], 
+        group_byKeywordNameAndGroup(["while"], [GroupType.Expression],
             GroupType.WhileDeclaration, GroupType.ReservedKeyword, GroupType.Expression);
         // switch ()
-        group_byKeywordNameAndGroup(["switch"], [GroupType.Expression], 
+        group_byKeywordNameAndGroup(["switch"], [GroupType.Expression],
             GroupType.SwitchDeclaration, GroupType.ReservedKeyword, GroupType.Expression);
         // do
         group_byKeyword(["do"], GroupType.DoDeclaration, GroupType.ReservedKeyword);
 
 
         // case "aaa":
-        group_byKeywordAndGroupAndToken(["case"], [GroupType.Constant], TokenType.Colon, 
+        group_byKeywordAndGroupAndToken(["case"], [GroupType.Constant], TokenType.Colon,
             GroupType.CaseLabel, GroupType.ReservedKeyword, GroupType.Constant, GroupType.Token);
         // default:
         group_byKeywordAndToken(["default"], TokenType.Colon,
@@ -2071,14 +2164,14 @@ export class GscFileParser {
 
 
 
-        // ::CountPlayers
-        group_byTokenAndGroup(TokenType.FunctionPointer, [GroupType.Identifier], 
-            GroupType.FunctionPointer, GroupType.Token, GroupType.FunctionName );
+        // function ptrs ::CountPlayers
+        group_byTokenAndGroup(TokenType.FunctionPointer, [GroupType.Identifier],
+            GroupType.FunctionPointer, GroupType.Token, GroupType.FunctionName);
 
-        // maps\mp\gametypes\_teams::CountPlayers
+        // external function ptrs maps\mp\gametypes\_teams::CountPlayers
         group_byGroupAndGroup([GroupType.Path, GroupType.Identifier], [GroupType.FunctionPointer],
             GroupType.FunctionPointerExternal, GroupType.Path, GroupType.FunctionPointer);
-        
+
 
 
         // Join variables - level.aaa  game["aaa"] 
@@ -2093,11 +2186,11 @@ export class GscFileParser {
         group_casting(rootGroup);
 
 
-        
+
         // Join left operators 
         // !var1   !level.aaa   !(...)   ~var1
         group_operators_left(rootGroup);
- 
+
         // Join operations
         // aaa && !var1   aaa && !level.aaa   aaa && !(...)  aaa && bbb  %anim_file_name
         group_operators(rootGroup);
@@ -2105,7 +2198,7 @@ export class GscFileParser {
 
 
         // Change expression with 3 parameters to vector -> (0, 0, 0)
-        walkGroup(rootGroup, (group) => { change_expressionToVector(group); }); 
+        walkGroup(rootGroup, (group) => { change_expressionToVector(group); });
 
 
         // Terminate expressions like a ? b : c
@@ -2120,26 +2213,26 @@ export class GscFileParser {
         // Assignment
 
         // aaa = (...)
-        group_byGroupAndTokenAndGroup([GroupType.Identifier, GroupType.Reference], TokenType.Assignment, GscFileParser.valueTypesWithIdentifier, 
+        group_byGroupAndTokenAndGroup([GroupType.Identifier, GroupType.Reference], TokenType.Assignment, GscFileParser.valueTypesWithIdentifier,
             GroupType.Statement, GroupType.Reference, GroupType.Token, GroupType.Value);
-        
+
         // aaa += (...)
-        group_byGroupAndTokenAndGroup([GroupType.Identifier, GroupType.Reference], TokenType.Assignment2, GscFileParser.valueTypesWithIdentifier, 
+        group_byGroupAndTokenAndGroup([GroupType.Identifier, GroupType.Reference], TokenType.Assignment2, GscFileParser.valueTypesWithIdentifier,
             GroupType.Statement, GroupType.Reference, GroupType.Token, GroupType.Value);
 
         // level.aaa++
-        group_byGroupAndToken([GroupType.Identifier, GroupType.Reference], TokenType.Assignment3, 
+        group_byGroupAndToken([GroupType.Identifier, GroupType.Reference], TokenType.Assignment3,
             GroupType.Statement, GroupType.Reference, GroupType.Token);
 
 
 
 
         // return {Value}
-        group_byKeywordNameAndGroup(["return"], GscFileParser.valueTypesWithIdentifier, 
+        group_byKeywordNameAndGroup(["return"], GscFileParser.valueTypesWithIdentifier,
             GroupType.Statement, GroupType.ReservedKeyword, GroupType.Value);
-                         
+
         // wait 0.1
-        group_byKeywordNameAndGroup(["wait"], GscFileParser.valueTypesWithIdentifier, 
+        group_byKeywordNameAndGroup(["wait"], GscFileParser.valueTypesWithIdentifier,
             GroupType.Statement, GroupType.ReservedKeyword, GroupType.Value);
 
         // Single keywords
@@ -2148,7 +2241,7 @@ export class GscFileParser {
         // break
         // waittillframeend
         group_byKeyword(["return", "break", "continue", "waittillframeend", "breakpoint"], GroupType.Statement, GroupType.ReservedKeyword);
-                
+
 
 
         // Termination;
@@ -2157,16 +2250,21 @@ export class GscFileParser {
         // waittill(...);
         // level waittill(...);
         const terminationNeededFor = [GroupType.Statement, ...GscFileParser.functionCallTypes,
-            GroupType.KeywordCall, GroupType.KeywordCallWithObject
+        GroupType.KeywordCall, GroupType.KeywordCallWithObject
         ];
 
-        group_byGroupAndGroup(terminationNeededFor, [GroupType.Terminator], 
+        group_byGroupAndGroup(terminationNeededFor, [GroupType.Terminator],
             GroupType.TerminatedStatement, GroupType.Statement, GroupType.Terminator);
 
-
         // preprocessor;
-        group_byGroupAndGroup([GroupType.PreprocessorStatement], [GroupType.Terminator], 
+        group_byGroupAndGroup([GroupType.PreprocessorStatement], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatement, GroupType.PreprocessorStatement, GroupType.Terminator);
+
+        group_byGroupAndGroup([GroupType.PreprocessorStatementDefine], [GroupType.Terminator],
+            GroupType.TerminatedPreprocessorStatementDefine, GroupType.PreprocessorStatementDefine, GroupType.Terminator);
+
+        group_byGroupAndGroup([GroupType.PreprocessorStatementInline], [GroupType.Terminator],
+            GroupType.TerminatedPreprocessorStatementInline, GroupType.PreprocessorStatementInline, GroupType.Terminator);
 
 
         // Declaration join
@@ -2180,11 +2278,11 @@ export class GscFileParser {
         // do {} while();
         group_declarations();
 
-        
+
 
         // Function definition
         // {FunctionCall} {Scope}    ->  funcName() { ... }
-        group_byGroupAndGroup([GroupType.FunctionCall], [GroupType.Scope], 
+        group_byGroupAndGroup([GroupType.FunctionCall], [GroupType.Scope],
             GroupType.FunctionDefinition, GroupType.FunctionDeclaration, GroupType.FunctionScope);
 
 
@@ -2219,10 +2317,9 @@ export class GscFileParser {
         walkGroupItems(rootGroup, rootGroup.items);
 
         function walkGroupItems(
-            parentGroup: GscGroup, 
+            parentGroup: GscGroup,
             items: GscGroup[],
-            lastFunction: GscFunction | undefined = undefined) 
-        {
+            lastFunction: GscFunction | undefined = undefined) {
             for (var i = 0; i < items.length; i++) {
                 var innerGroup = items[i];
 
@@ -2230,11 +2327,10 @@ export class GscFileParser {
 
                 switch (innerGroup.type as GroupType) {
 
-                    // Save #include path
+                    // Save #include and #inline path
                     case GroupType.Path:
-                        if (parentGroup.type === GroupType.PreprocessorStatement &&
-                            parentGroup.getFirstToken().name === "#include") 
-                        {
+                        if ((parentGroup.type === GroupType.PreprocessorStatement || parentGroup.type === GroupType.PreprocessorStatementInline)
+                            && parentGroup.getFirstToken().name === "#include" || parentGroup.getFirstToken().name === "#inline") {
                             // Add path to includes - duplicate paths are ignored via Set<>
                             data.includes.add(innerGroup.getTokensAsString());
                         }
@@ -2270,7 +2366,7 @@ export class GscFileParser {
                             );
 
                             data.functions.push(func);
-                        }                                 
+                        }
                         break;
 
                     // Save variable definitions
@@ -2299,17 +2395,16 @@ export class GscFileParser {
                                     otherReferences.unshift(currentGroup.items[0]);
                                     currentGroup = currentGroup.items[0];
                                 }
-                                otherReferences.forEach(r => 
+                                otherReferences.forEach(r =>
                                     addDefinition(lastFunction.localVariableDefinitions, r, GscVariableDefinitionType.Array)
-                                );                       
+                                );
                                 addDefinition(lastFunction.localVariableDefinitions, variableReference);
                             }
 
                             function addDefinition(
                                 array: GscVariableDefinition[],
                                 variableReference: GscGroup,
-                                type: GscVariableDefinitionType = GscVariableDefinitionType.Unknown) 
-                            {
+                                type: GscVariableDefinitionType = GscVariableDefinitionType.Unknown) {
                                 var variableDefinition: GscVariableDefinition = {
                                     variableReference: variableReference,
                                     type: type
@@ -2320,7 +2415,7 @@ export class GscFileParser {
                                 // If type is not resolved yet, determine it from assigned value
                                 if (type === GscVariableDefinitionType.Unknown) {
                                     const valueGroup = innerGroup.items.at(2);
-        
+
                                     switch (valueGroup?.type) {
                                         case GroupType.Constant:
                                             const token = valueGroup.getFirstToken();
@@ -2330,7 +2425,7 @@ export class GscFileParser {
                                                 case TokenType.LocalizedString:
                                                     variableDefinition.type = GscVariableDefinitionType.LocalizedString; break;
                                                 case TokenType.CvarString:
-                                                    variableDefinition.type = GscVariableDefinitionType.CvarString; break;  
+                                                    variableDefinition.type = GscVariableDefinitionType.CvarString; break;
                                                 case TokenType.Number:
                                                     const isFloat = token.name.includes(".");
                                                     variableDefinition.type = isFloat ? GscVariableDefinitionType.Float : GscVariableDefinitionType.Integer; break;
@@ -2345,17 +2440,22 @@ export class GscFileParser {
                                                             variableDefinition.type = GscVariableDefinitionType.Bool;
                                                             break;
                                                     }
-                                                    break;                                         
+                                                    break;
                                                 // #animtree 
                                                 case TokenType.Preprocessor:
                                                     if (token.name === "#animtree") {
-                                                        variableDefinition.type = GscVariableDefinitionType.XAnim; 
+                                                        variableDefinition.type = GscVariableDefinitionType.XAnim;
                                                     }
+
+                                                    if (token.name === "#define") {
+                                                        console.log("bruhhhhhhhhh " + token.name);
+                                                    }
+
                                                     break;
                                                 // %anim_file_name
                                                 case TokenType.Operator:
                                                     if (valueGroup.items.length === 2 && valueGroup.items[1].type === GroupType.XAnim) {
-                                                        variableDefinition.type = GscVariableDefinitionType.XAnim; 
+                                                        variableDefinition.type = GscVariableDefinitionType.XAnim;
                                                     }
                                                     break;
                                             }
@@ -2364,24 +2464,24 @@ export class GscFileParser {
                                         case GroupType.ArrayInitializer:
                                             variableDefinition.type = GscVariableDefinitionType.Array;
                                             break;
-        
+
                                         case GroupType.FunctionPointer:
                                         case GroupType.FunctionPointerExternal:
                                             variableDefinition.type = GscVariableDefinitionType.Function;
                                             break;
-    
+
                                         case GroupType.Vector:
                                             variableDefinition.type = GscVariableDefinitionType.Vector;
                                             break;
-        
+
                                         case GroupType.Value:
                                             variableDefinition.type = GscVariableDefinitionType.UnknownValue;
                                             break;
-        
+
                                         case GroupType.Reference:
                                             variableDefinition.type = GscVariableDefinitionType.UnknownValueFromVariable;
                                             break;
-            
+
                                         case GroupType.FunctionCall:
                                             const funcName = valueGroup.items.at(0)?.getFirstToken();
                                             if (funcName !== undefined) {
@@ -2399,7 +2499,7 @@ export class GscFileParser {
                                                         variableDefinition.type = GscVariableDefinitionType.UnknownValueFromFunction;
                                                         break;
                                                 }
-                                                
+
                                             }
                                             break;
                                     }
@@ -2407,7 +2507,7 @@ export class GscFileParser {
                             }
 
                         }
-                        
+
                         break;
                 }
 
@@ -2421,14 +2521,14 @@ export class GscFileParser {
 
 
     public static debugGroupAsObject(tokens: GscToken[], currentGroup: GscGroup): debugObject {
-        
-        var type = "" + GroupType[currentGroup.type];     
+
+        var type = "" + GroupType[currentGroup.type];
         if (currentGroup.tokenIndexEnd - currentGroup.tokenIndexStart <= 2) {
-            type += "   (" + tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd+1).map(f => TokenType[f.type]).join(" ") + ")";
+            type += "   (" + tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd + 1).map(f => TokenType[f.type]).join(" ") + ")";
         }
 
-        var tkns = "(" + currentGroup.tokenIndexStart + " - " + currentGroup.tokenIndexEnd + ")  ->  " + 
-        tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd+1).map(f => f.name).join(" ") + "";
+        var tkns = "(" + currentGroup.tokenIndexStart + " - " + currentGroup.tokenIndexEnd + ")  ->  " +
+            tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd + 1).map(f => f.name).join(" ") + "";
 
 
         var data: debugObject = {
@@ -2437,19 +2537,19 @@ export class GscFileParser {
             a01_type: type,
             a02_tokens: tkns,
             a06_itemsArray: []
-        };                        
-        
+        };
+
         for (let item of currentGroup.items) {
             const itemDebug = this.debugGroupAsObject(tokens, item);
             data.a06_itemsArray.push(itemDebug);
         }
-        
+
         return data;
     }
 
 
-    
-   
+
+
     public static debugAsString(tokens: GscToken[], rootGroup: GscGroup, printChilds: boolean, startGroup: GscGroup | undefined = undefined): string {
         var s: string[] = [];
         function write(text: string) {
@@ -2458,7 +2558,7 @@ export class GscFileParser {
         function writeLine(text: string) {
             write(text + "\n");
         }
-        
+
         //writeLine("--------------------------------------------------------------");
         //writeLine("tokens: " + tokens.length + " [" +  tokens.map(f => f.name).join(" ") + "]");
         //writeLine("--------------------------------------------------------------");
@@ -2480,17 +2580,17 @@ export class GscFileParser {
         function writeLine(text: string) {
             write(text + "\n");
         }
-        
+
         //var spaces1 = ".    ".repeat((level+1)/2);
         //var spaces2 = ".    ".repeat((level+1)/2) + ".  ";
 
 
-        var spaces1 = ".  ".repeat((level+1)/2);
-        var spaces2 = ".  ".repeat((level+1)/2) + ". ";
+        var spaces1 = ".  ".repeat((level + 1) / 2);
+        var spaces2 = ".  ".repeat((level + 1) / 2) + ". ";
 
         if (startGroup !== undefined) {
             if (startGroupFound === false) {
-                writeLine(spaces1 + GroupType[currentGroup.type] + " ("+currentGroup.tokenIndexStart + " - " + currentGroup.tokenIndexEnd + "):");
+                writeLine(spaces1 + GroupType[currentGroup.type] + " (" + currentGroup.tokenIndexStart + " - " + currentGroup.tokenIndexEnd + "):");
             }
 
             if (currentGroup !== startGroup) {
@@ -2511,7 +2611,7 @@ export class GscFileParser {
 
         //var spaces2 = new Array((level+1) * 2 + 1).join(' ');
         writeLine(spaces1 + "{");
-       
+
         // writeLine(spaces2 + "solved: " + currentGroup.solved);
         if (!currentGroup.solved) {
             writeLine(spaces2 + "!!! UNSOLVED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -2528,30 +2628,30 @@ export class GscFileParser {
 
         write(spaces2 + "type: " + GroupType[currentGroup.type]);
         if (currentGroup.tokenIndexEnd - currentGroup.tokenIndexStart <= 3) {
-            write("   (" + 
-                tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd+1).map(f => TokenType[f.type]).join(" ") + ")");
+            write("   (" +
+                tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd + 1).map(f => TokenType[f.type]).join(" ") + ")");
         }
         writeLine("");
 
-        writeLine(spaces2 + "tokens: " + 
-                            "("+currentGroup.tokenIndexStart + " - " + currentGroup.tokenIndexEnd + ")  ->  " + 
-                            tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd+1).map(f => f.name).join(" ") + "");
-        
+        writeLine(spaces2 + "tokens: " +
+            "(" + currentGroup.tokenIndexStart + " - " + currentGroup.tokenIndexEnd + ")  ->  " +
+            tokens.slice(currentGroup.tokenIndexStart, currentGroup.tokenIndexEnd + 1).map(f => f.name).join(" ") + "");
 
-        if (currentGroup.tokenIndexStart >= 0 && currentGroup.tokenIndexEnd >= 0 ) {
-            writeLine(spaces2 + "range: (" + 
-            "L:" + tokens[currentGroup.tokenIndexStart].range.start.line + " " +
-            "C:" + tokens[currentGroup.tokenIndexStart].range.start.character + "" +
-            " - " +
-            "L:" + tokens[currentGroup.tokenIndexEnd].range.end.line + " " +
-            "C:" + tokens[currentGroup.tokenIndexEnd].range.end.character + ")");
+
+        if (currentGroup.tokenIndexStart >= 0 && currentGroup.tokenIndexEnd >= 0) {
+            writeLine(spaces2 + "range: (" +
+                "L:" + tokens[currentGroup.tokenIndexStart].range.start.line + " " +
+                "C:" + tokens[currentGroup.tokenIndexStart].range.start.character + "" +
+                " - " +
+                "L:" + tokens[currentGroup.tokenIndexEnd].range.end.line + " " +
+                "C:" + tokens[currentGroup.tokenIndexEnd].range.end.character + ")");
         }
 
- 
-        
 
-                            
-        
+
+
+
+
         if (currentGroup.items.length > 0) {
             writeLine(spaces2 + "items: (" + currentGroup.items.length + ")");
             if (printChilds) {
@@ -2591,7 +2691,7 @@ export class GscFileParser {
             s.push(", ");
             s.push(currentGroup.deadCode ? "true" : "false");*/
             s.push(");\n");
-            
+
             for (var i = 0; i < currentGroup.items.length; i++) {
                 walkGroup(currentGroup.items[i], prefix + ".items[" + i + "]");
             }
@@ -2619,8 +2719,13 @@ export interface GscToken {
 
 export enum TokenType {
     Unknown,
+
     DeveloperStart,
     DeveloperEnd,
+
+    DeveloperStart2,  // for /@
+    DeveloperEnd2,    // for @/
+
     Preprocessor,
     /** Char '{' */
     ScopeStart,
@@ -2673,7 +2778,10 @@ export enum TokenType {
     Keyword,
 
     /* Char # */
-    Hashtag
+    Hashtag,
+
+    // @
+    AtSymbol,
 }
 
 enum Level {
@@ -2704,8 +2812,8 @@ export class GscGroup {
 
     public readonly tokensAll: GscToken[];
 
-    constructor({parent, type, tokenIndexStart, tokenIndexEnd}: {parent: GscGroup | undefined, type: GroupType, tokenIndexStart: number, tokenIndexEnd: number},
-                tokens: GscToken[]) {
+    constructor({ parent, type, tokenIndexStart, tokenIndexEnd }: { parent: GscGroup | undefined, type: GroupType, tokenIndexStart: number, tokenIndexEnd: number },
+        tokens: GscToken[]) {
         this.parent = parent;
         this.type = type;
         this.tokenIndexStart = tokenIndexStart;
@@ -2839,13 +2947,13 @@ export class GscGroup {
     public findGroupOnLeftAtPosition(position: vscode.Position, lastGroup: GscGroup | undefined = undefined, level: number = 0): GscGroup | undefined {
 
         // Create an array of ranges and related group
-        const items = this.items.map(t => { 
+        const items = this.items.map(t => {
             return {
                 range: t.getRange(),
                 group: t,
                 isTrueGroup: true
             };
-        } );
+        });
 
         // If last child node does not end with with the same token as the parent, add it into array
         // Scopes like {} [] () does not have their tokens defined
@@ -2853,7 +2961,7 @@ export class GscGroup {
         if (lastChildGroup !== undefined) {
             for (var i = lastChildGroup.tokenIndexEnd + 1; i <= this.tokenIndexEnd; i++) {
                 items.push({
-                    range: this.tokensAll[i].range, 
+                    range: this.tokensAll[i].range,
                     group: this,
                     isTrueGroup: false
                 });
@@ -2863,16 +2971,15 @@ export class GscGroup {
         for (var data of items) {
             const range = data.range;
 
-            if (range.end.isBeforeOrEqual(position) && 
-               (lastGroup === undefined || (range.start.isAfterOrEqual(lastGroup.getRange().start)))) {
+            if (range.end.isBeforeOrEqual(position) &&
+                (lastGroup === undefined || (range.start.isAfterOrEqual(lastGroup.getRange().start)))) {
                 lastGroup = data.group;
             }
 
             //if (range.contains(position)) {
-            if (((position.line === range.start.line && position.character > range.start.character) || position.line > range.start.line) && 
+            if (((position.line === range.start.line && position.character > range.start.character) || position.line > range.start.line) &&
                 ((position.line === range.end.line && position.character <= range.end.character) || position.line < range.end.line)
-                && data.isTrueGroup) 
-            {
+                && data.isTrueGroup) {
                 lastGroup = data.group;
                 lastGroup = data.group.findGroupOnLeftAtPosition(position, lastGroup, level + 1);
                 break;
@@ -2883,7 +2990,7 @@ export class GscGroup {
             lastGroup = lastGroup.findGroupOnLeftAtPosition(position, lastGroup, level + 1);
         }
 
-        return lastGroup; 
+        return lastGroup;
     }
 
 
@@ -2975,8 +3082,8 @@ export class GscGroup {
             scopeOfCursorGroup = groupAtCursor.findParentOfType(...GscFileParser.scopeTypes, GroupType.ArrayAccess) ?? groupAtCursor;
         }
 
-        const variableTokens = [TokenType.Keyword, TokenType.Structure, TokenType.ArrayStart, TokenType.ArrayEnd, TokenType.Number, 
-            TokenType.String, TokenType.LocalizedString, TokenType.CvarString];
+        const variableTokens = [TokenType.Keyword, TokenType.Structure, TokenType.ArrayStart, TokenType.ArrayEnd, TokenType.Number,
+        TokenType.String, TokenType.LocalizedString, TokenType.CvarString];
 
 
         // Loop tokens
@@ -2995,7 +3102,7 @@ export class GscGroup {
                 (tokenLast?.type === token.type && token.type === TokenType.Keyword))   // we found 2 keywords next to each other (like 'wait level')
             {
                 const startIndex = i + 1;
-                
+
                 // Now go to right until cursor pos is reached
                 for (i = startIndex; i <= groupAtCursor.tokenIndexEnd; i++) {
                     const token = tokens[i];
@@ -3031,20 +3138,20 @@ export class GscGroup {
      * 
      * @returns Array of parts
      */
-    public getVariableParts(): {text: string, implicitType: GscVariableDefinitionType, kind: vscode.CompletionItemKind}[] {
+    public getVariableParts(): { text: string, implicitType: GscVariableDefinitionType, kind: vscode.CompletionItemKind }[] {
 
-        const variableParts: {text: string, implicitType: GscVariableDefinitionType, kind: vscode.CompletionItemKind}[] = [];
+        const variableParts: { text: string, implicitType: GscVariableDefinitionType, kind: vscode.CompletionItemKind }[] = [];
 
         loopVariableReference(this);
 
 
         function loopVariableReference(group: GscGroup): boolean {
             for (var i = 0; i < group.items.length; i++) {
-                const innerGroup = group.items[i];        
+                const innerGroup = group.items[i];
                 const prevPart = variableParts.at(-1);
-    
+
                 switch (innerGroup.type) {
-                
+
                     case GroupType.VariableName:
                         variableParts.push({
                             text: innerGroup.getFirstToken().name,
@@ -3052,14 +3159,14 @@ export class GscGroup {
                             kind: vscode.CompletionItemKind.Variable
                         });
                         break;
-    
+
                     case GroupType.ArrayAccess:
-    
+
                         // Previous part is of array type
                         if (prevPart !== undefined) {
                             prevPart.implicitType = GscVariableDefinitionType.Array;
                         }
-    
+
                         // Make sure arrays with non-constant values (eg game[1+1]) are ignored
                         if (innerGroup.items.at(0)?.type !== GroupType.Constant) {
                             variableParts.push({
@@ -3075,15 +3182,15 @@ export class GscGroup {
                                 kind: vscode.CompletionItemKind.Variable
                             });
                         }
-                    break;
-    
+                        break;
+
                     case GroupType.Token: // .
-    
+
                         // Previous part is of structure type
                         if (prevPart !== undefined) {
                             prevPart.implicitType = GscVariableDefinitionType.Structure;
                         }
-    
+
                         const field = group.items.at(i + 1);
                         if (field?.type === GroupType.StructureField) {
                             variableParts.push({
@@ -3101,7 +3208,7 @@ export class GscGroup {
                             });
                         }
                         break;
-    
+
                     case GroupType.Reference:
                         const mayContinue = loopVariableReference(innerGroup);
                         if (mayContinue === false) {
@@ -3110,7 +3217,7 @@ export class GscGroup {
                         break;
                 }
             }
-    
+
             // Continue
             return true;
         }
@@ -3155,7 +3262,7 @@ export class GscGroup {
     /**
      * Gets function info like name, path, parameters, etc. The group must be of type {@linkcode GroupType.FunctionName}.
      */
-    public getFunctionReferenceInfo(): {name: string, path: string, callOn: GscGroup | undefined, params: GscGroup[], paramsGroup: GscGroup | undefined, pathGroup: GscGroup | undefined} | undefined {
+    public getFunctionReferenceInfo(): { name: string, path: string, callOn: GscGroup | undefined, params: GscGroup[], paramsGroup: GscGroup | undefined, pathGroup: GscGroup | undefined } | undefined {
         const locations: vscode.Location[] = [];
         const group = this as GscGroup;
 
@@ -3164,15 +3271,14 @@ export class GscGroup {
             return undefined;
         }
         const funcName = group.getFirstToken().name;
-        
+
 
         // Its external function call
         var path = "";
         var pathGroup: GscGroup | undefined = undefined;
         if (((group.parent?.type === GroupType.FunctionCall && group.parent?.parent?.type === GroupType.FunctionCall) ||
-              group.parent?.type === GroupType.FunctionPointer && group.parent?.parent?.type === GroupType.FunctionPointerExternal) &&
-            group.parent.parent.items[0].type === GroupType.Path) 
-        {
+            group.parent?.type === GroupType.FunctionPointer && group.parent?.parent?.type === GroupType.FunctionPointerExternal) &&
+            group.parent.parent.items[0].type === GroupType.Path) {
             pathGroup = group.parent.parent.items[0];
             path = group.parent.parent.items[0].getTokensAsString();
         }
@@ -3194,8 +3300,8 @@ export class GscGroup {
         if (group.parent?.parent?.typeEqualsToOneOf(GroupType.FunctionCallWithObject, GroupType.FunctionCallWithObjectAndThread)) {
             callon = group.parent?.parent.items[0];
         }
-        
-        return {name: funcName, path: path, callOn: callon, params: params, paramsGroup: paramContainer, pathGroup: pathGroup};
+
+        return { name: funcName, path: path, callOn: callon, params: params, paramsGroup: paramContainer, pathGroup: pathGroup };
     }
 
 
@@ -3215,23 +3321,23 @@ export class GscGroup {
 
 
     public getTokensBeforePosition(position: vscode.Position) {
-        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd+1).filter(f => position.isAfterOrEqual(f.range.end));
+        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd + 1).filter(f => position.isAfterOrEqual(f.range.end));
     }
 
     public getTokens() {
-        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd+1);
+        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd + 1);
     }
 
     public getTokensAsString() {
-        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd+1).map(f => f.name).join("");
+        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd + 1).map(f => f.name).join("");
     }
 
     public printTokens() {
-        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd+1).map(f => f.name).join(" ");
+        return this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd + 1).map(f => f.name).join(" ");
     }
 
-    public toString = () : string => {
-        return `{type: ${GroupType[this.type]}, tokens: ${this.tokenIndexStart} - ${this.tokenIndexEnd}, ${this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd+1).map((t) => t.name).join(" ")}}`;
+    public toString = (): string => {
+        return `{type: ${GroupType[this.type]}, tokens: ${this.tokenIndexStart} - ${this.tokenIndexEnd}, ${this.tokensAll.slice(this.tokenIndexStart, this.tokenIndexEnd + 1).map((t) => t.name).join(" ")}}`;
     };
 }
 

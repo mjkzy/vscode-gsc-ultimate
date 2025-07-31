@@ -53,8 +53,8 @@ This extension adds language support for the GSC scripts used in Call of Duty ga
         <td rowspan="2">MW2</td>
         <td rowspan="2">IW4</td>
         <td>original</td>
-        <td>❗ Tested, errors</td>
-        <td>childthread, call</td>
+        <td>✅ Supported</td>
+        <td></td>
     </tr>
     <tr>
         <td>Alterware IW4x</td>
@@ -77,8 +77,8 @@ This extension adds language support for the GSC scripts used in Call of Duty ga
         <td rowspan="3">MW3</td>
         <td rowspan="3">IW5</td>
         <td>original</td>
-        <td>❗ Tested, errors</td>
-        <td>childthread, call</td>
+        <td>✅ Supported</td>
+        <td></td>
     </tr>
     <tr>
         <td>Plutonium IW5</td>
@@ -94,8 +94,8 @@ This extension adds language support for the GSC scripts used in Call of Duty ga
         <td rowspan="2">BO2</td>
         <td rowspan="2">T6</td>
         <td>original</td>
-        <td>❗ Tested, errors</td>
-        <td>#insert, #define, param default value, autoexec, const, %xxx::yyy, /@ comments @/</td>
+        <td>✅ Supported</td>
+        <td>#insert, #define, param default value, autoexec, const, %xxx::yyy, /# /@ comments @/ #/</td>
     </tr>
     <tr>
         <td>Plutonium T6</td>
@@ -119,7 +119,7 @@ This extension adds language support for the GSC scripts used in Call of Duty ga
         <td rowspan="2">S1</td>
         <td>original</td>
         <td>❗ Tested, errors</td>
-        <td>childthread, call</td>
+        <td></td>
     </tr>
     <tr>
         <td>Alterware S1-Mod</td>
@@ -155,7 +155,7 @@ This extension adds language support for the GSC scripts used in Call of Duty ga
     <tr>
         <td>Aurora H1-mod</td>
         <td>❗ Tested, errors</td>
-        <td>param default value, call, childthread</td>
+        <td>param default value</td>
     </tr>
     <tr>
         <td>WWII</td>
@@ -390,7 +390,7 @@ In future version it will allow to change settings more interactively.
   - Syntax parser
     - Comments (`/*...*/`, `//...`)
     - Developer blocks (`/# ... #/`)
-    - Preprocessor (`#include`, `#using_animtree`, `#animtree`)
+    - Preprocessor (`#include`, `#using_animtree`, `#animtree`, `#define`, `#if`)
     - Keywords (`return`, `if`, `else`, `for`, `foreach`, `while`, `do-while`, `switch`, `continue`, `break`, `case`, `default`, `thread`, `wait`, `waittillframeend`, `waittill`, `waittillmatch`, `endon`, `notify`, `breakpoint`)
     - Operators (`=`, `+=`, `-=`, `*=`, `/=`, `%=`, `|=`, `&=`, `^=`, `++`, `--`, `+`, `-`, `*`, `/`, `%`, `|`, `&`, `^`, `<<`, `>>`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, `||`, `!`, `~`)
     - Strings (`"default"`, `&"STRING_LOCALIZED"`, `#"sv_cvar_string"`)

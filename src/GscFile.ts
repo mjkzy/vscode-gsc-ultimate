@@ -24,9 +24,6 @@ export class GscFile {
     /** Diagnostics generated for this file. @see GscFileDiagnostics.ts */
     diagnostics: vscode.Diagnostic[] = [];
 
-
-
-
     constructor(
         /** Parsed data */
         public data: GscData,

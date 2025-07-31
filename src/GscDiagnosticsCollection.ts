@@ -19,20 +19,20 @@ export class GscDiagnosticsCollection {
 
     static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscDiagnosticsCollection] Activating");
-        
+
         // Create a status bar item to show background task indicator
         this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         this.statusBarItem.text = "$(sync~spin) Diagnosing GSC files...";
         this.statusBarItem.tooltip = "Background task in progress";
         this.statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground'); // Example of using a theme color for error state     
         context.subscriptions.push(this.statusBarItem);
-        
+
         // Diagnostics collection
         this.diagnosticCollection = vscode.languages.createDiagnosticCollection('gsc');
         context.subscriptions.push(this.diagnosticCollection);
 
         // Refresh command
-        context.subscriptions.push(vscode.commands.registerCommand('gsc.refreshDiagnosticsCollection', () => this.refreshDiagnosticsCollection()));   
+        context.subscriptions.push(vscode.commands.registerCommand('gsc.refreshDiagnosticsCollection', () => this.refreshDiagnosticsCollection()));
     }
 
 
@@ -116,7 +116,7 @@ export class GscDiagnosticsCollection {
     }
 
 
-    
+
 
     /**
      * Generate diagnostics for the given GSC file. This function is called when the file is parsed.
@@ -126,7 +126,7 @@ export class GscDiagnosticsCollection {
     public static updateDiagnosticsForFile(gscFile: GscFile): number {
         try {
             LoggerOutput.log("[GscDiagnosticsCollection] Creating diagnostics for file", vscode.workspace.asRelativePath(gscFile.uri));
-            
+
             const uri = gscFile.uri;
 
             // Clear array
@@ -143,9 +143,9 @@ export class GscDiagnosticsCollection {
 
             // Load ignored function names
             const isUniversalGame = GscConfig.isUniversalGame(gscFile.config.currentGame);
-        
-            const groupFunctionNames: {group: GscGroup, uri: vscode.Uri}[] = [];
-            const groupIncludedPaths: {group: GscGroup, uri: vscode.Uri}[] = [];
+
+            const groupFunctionNames: { group: GscGroup, uri: vscode.Uri }[] = [];
+            const groupIncludedPaths: { group: GscGroup, uri: vscode.Uri }[] = [];
 
             // Process the file
             walkGroupItems(gscFile.data.root, gscFile.data.root.items);
@@ -188,8 +188,7 @@ export class GscDiagnosticsCollection {
                         gscFile.diagnostics.push(diagnostic);
                     }
 
-                    function action(parentGroup: GscGroup, group: GscGroup): vscode.Diagnostic | undefined
-                    {
+                    function action(parentGroup: GscGroup, group: GscGroup): vscode.Diagnostic | undefined {
                         if (group.type === GroupType.Unknown) {
                             if (group.getFirstToken().type === TokenType.ScopeStart) {
                                 return new vscode.Diagnostic(group.getRange(), "Unclosed scope", vscode.DiagnosticSeverity.Error);
@@ -199,20 +198,23 @@ export class GscDiagnosticsCollection {
                         }
                         else if (group.solved === false) {
                             return GscDiagnosticsCollection.createDiagnosticsForUnsolved(group, parentGroup, nextGroup);
-    
+
                         } else {
                             switch (group.type as GroupType) {
 
                                 // Function path or #include path
                                 case GroupType.Path:
-                                    // Save only #include paths
-                                    if (group.parent?.type === GroupType.PreprocessorStatement && group.parent.items.at(0)?.isReservedKeywordOfName("#include") === true) {
-                                        groupIncludedPaths.push({group, uri});
+                                    // Save only #include paths  
+                                    if (
+                                        group.parent?.type === GroupType.PreprocessorStatement || group.parent?.type === GroupType.PreprocessorStatementInline
+                                        && group.parent.items.at(0)?.isReservedKeywordOfName("#include", "#inline") === true
+                                    ) {
+                                        groupIncludedPaths.push({ group, uri });
                                     }
                                     break;
 
                                 case GroupType.FunctionName:
-                                    groupFunctionNames.push({group, uri});
+                                    groupFunctionNames.push({ group, uri });
                                     break;
 
                                 case GroupType.DataTypeKeyword:
@@ -267,6 +269,19 @@ export class GscDiagnosticsCollection {
                                     }
                                     break;
 
+                                case GroupType.DeveloperBlock2:
+                                case GroupType.DeveloperBlock2Inner:
+                                    if (gscFile.config.gameConfig.developerBlocks === false) {
+                                        return new vscode.Diagnostic(group.getRange(), "Developer blocks are not supported for " + gscFile.config.currentGame, vscode.DiagnosticSeverity.Error);
+                                    }
+                                    if (gscFile.config.gameConfig.developerBlocksRecursive === false) {
+                                        const isRecursive = group.findParentOfType(GroupType.DeveloperBlock2, GroupType.DeveloperBlock2Inner) !== undefined;
+                                        if (isRecursive) {
+                                            return new vscode.Diagnostic(group.getRange(), "Recursive developer blocks are not supported for " + gscFile.config.currentGame, vscode.DiagnosticSeverity.Error);
+                                        }
+                                    }
+                                    break;
+
                                 case GroupType.VariableNameGlobal:
                                     if (gscFile.config.gameConfig.globalVariables === false) {
                                         return new vscode.Diagnostic(group.getRange(), "Global variable definitions are not supported for " + gscFile.config.currentGame, vscode.DiagnosticSeverity.Error);
@@ -311,7 +326,7 @@ export class GscDiagnosticsCollection {
 
 
             // Notify subscribers
-			Events.GscDiagnosticsHasChanged(gscFile);
+            Events.GscDiagnosticsHasChanged(gscFile);
 
 
             LoggerOutput.log("[GscDiagnosticsCollection] Done for file, diagnostics created: " + gscFile.diagnostics.length, vscode.workspace.asRelativePath(gscFile.uri));
@@ -324,7 +339,7 @@ export class GscDiagnosticsCollection {
             return 0;
         }
     }
-    
+
     private static deleteDiagnosticsAll() {
         this.diagnosticCollection?.clear();
     }
@@ -335,11 +350,12 @@ export class GscDiagnosticsCollection {
 
 
     private static createDiagnosticsForUnsolved(group: GscGroup, parentGroup: GscGroup, nextGroup: GscGroup | undefined) {
-        
+
         // Not terminated statement
         if (
-            (group.type === GroupType.Statement && parentGroup.type !== GroupType.TerminatedStatement) || 
-            (group.type === GroupType.PreprocessorStatement && parentGroup.type !== GroupType.TerminatedPreprocessorStatement)) 
+            (group.type === GroupType.Statement && parentGroup.type !== GroupType.TerminatedStatement) ||
+            ( (group.type === GroupType.PreprocessorStatement || group.type === GroupType.PreprocessorStatementInline || group.type === GroupType.PreprocessorStatementDefine) 
+                && parentGroup.type !== GroupType.TerminatedPreprocessorStatement ) ) 
         {
             if (nextGroup === undefined || nextGroup.solved) {
                 // Get the last character from the range where the ; should be
@@ -354,8 +370,7 @@ export class GscDiagnosticsCollection {
         else if (group.typeEqualsToOneOf(GroupType.Expression, GroupType.ForExpression, GroupType.ForEachExpression) && group.items.length === 0) {
             return new vscode.Diagnostic(group.getRange(), "Empty expression", vscode.DiagnosticSeverity.Error);
         }
-        else
-        {
+        else {
             const firstToken = group.getFirstToken();
 
             var token = group.getSingleToken();
@@ -385,7 +400,7 @@ export class GscDiagnosticsCollection {
                 count++;
             }
             if (count >= 2) {
-                return new vscode.Diagnostic(group.getRange(), "Duplicate #include file path", vscode.DiagnosticSeverity.Error);
+                return new vscode.Diagnostic(group.getRange(), "Duplicate #include/#inline file path", vscode.DiagnosticSeverity.Error);
             }
         }
 
@@ -393,11 +408,11 @@ export class GscDiagnosticsCollection {
         if (gscFile.config.gameConfig.duplicateFunctionDefinitions === false && referenceData) {
             // Get all function definitions from included file
             const funcDefsInIncludedFile = GscFunctions.getLocalFunctionDefinitions(referenceData.gscFile);
-            
+
             const alreadyDefinedFunctions: GscFunctionDefinition[] = [];
-            
+
             const funcDefsFromLocalFile = GscFunctions.getLocalFunctionDefinitions(gscFile);
-            alreadyDefinedFunctions.push(...funcDefsFromLocalFile.map(f => ({func: f, uri: gscFile.uri, reason: "Local file"})));
+            alreadyDefinedFunctions.push(...funcDefsFromLocalFile.map(f => ({ func: f, uri: gscFile.uri, reason: "Local file" })));
 
             for (let j = 0; j < index; j++) {
                 const otherPath = allIncludedPaths[j];
@@ -407,7 +422,7 @@ export class GscDiagnosticsCollection {
                 }
                 const otherFuncDefs = GscFunctions.getLocalFunctionDefinitions(otherReferenceData.gscFile);
 
-                alreadyDefinedFunctions.push(...otherFuncDefs.map(f => ({func: f, uri: otherReferenceData.gscFile!.uri, reason: "Included file"})));
+                alreadyDefinedFunctions.push(...otherFuncDefs.map(f => ({ func: f, uri: otherReferenceData.gscFile!.uri, reason: "Included file" })));
             }
 
             for (const funcDef of funcDefsInIncludedFile) {
@@ -427,9 +442,9 @@ export class GscDiagnosticsCollection {
                 return;
             }
             const d = new vscode.Diagnostic(
-                group.getRange(), 
-                `File '${path}.gsc' was not found in workspace folder ${gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ")}`, 
-                vscode.DiagnosticSeverity.Error);        
+                group.getRange(),
+                `File '${path}.gsc' was not found in workspace folder ${gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ")}`,
+                vscode.DiagnosticSeverity.Error);
             d.code = "unknown_file_path_" + path;
             return d;
         }
@@ -442,38 +457,38 @@ export class GscDiagnosticsCollection {
 
         // Function declaration
         if (group.parent?.type === GroupType.FunctionDeclaration) {
-            
+
             const funcName = group.getFirstToken().name;
-            
+
             // Check for duplicate function name definition
             const defs = GscFunctions.getLocalFunctionDefinitions(gscFile, funcName);
             if (defs.length > 1) {
                 return new vscode.Diagnostic(group.getRange(), `Duplicate function definition of '${funcName}'!`, vscode.DiagnosticSeverity.Error);
             }
-            
+
 
             // This function is overwriting the build-in function
             if (CodFunctions.isPredefinedFunction(funcName, gscFile.config.currentGame)) {
                 return new vscode.Diagnostic(group.getRange(), `Function '${funcName}' is overwriting build-in function`, vscode.DiagnosticSeverity.Information);
             }
-            
-            
-        // Function call or reference
+
+
+            // Function call or reference
         } else {
 
             const funcInfo = group.getFunctionReferenceInfo();
             if (funcInfo !== undefined) {
-                
-                const res = GscFunctions.getFunctionReferenceState({name: funcInfo.name, path: funcInfo.path}, gscFile);
-    
-                switch (res.state as GscFunctionState) {      
+
+                const res = GscFunctions.getFunctionReferenceState({ name: funcInfo.name, path: funcInfo.path }, gscFile);
+
+                switch (res.state as GscFunctionState) {
                     case GscFunctionState.NameIgnored:
                         return;
 
                     // Function was found
                     case GscFunctionState.Found:
                         const funcDef = res.definitions[0].func;
-                        if (funcInfo.params.length > funcDef.parameters.length) {  
+                        if (funcInfo.params.length > funcDef.parameters.length) {
                             if (funcDef.parameters.length === 0) {
                                 var r = new vscode.Range(funcInfo.params[funcDef.parameters.length].getRange().start, funcInfo.params[funcInfo.params.length - 1].getRange().end);
                                 return new vscode.Diagnostic(r, `Function '${funcDef.name}' does not expect any parameters, got ${funcInfo.params.length}`, vscode.DiagnosticSeverity.Error);
@@ -503,10 +518,10 @@ export class GscDiagnosticsCollection {
 
                         if (funcInfo.params.length > paramsMinMax.max) {
                             if (paramsMinMax.max === 0) {
-                                var r = new vscode.Range(funcInfo.params[paramsMinMax.max].getRange().start, funcInfo.params[funcInfo.params.length - 1].getRange().end);                       
+                                var r = new vscode.Range(funcInfo.params[paramsMinMax.max].getRange().start, funcInfo.params[funcInfo.params.length - 1].getRange().end);
                                 return new vscode.Diagnostic(r, `Function '${funcInfo.name}' does not expect any parameters, got ${funcInfo.params.length}`, vscode.DiagnosticSeverity.Error);
                             } else {
-                                var r = new vscode.Range(funcInfo.params[paramsMinMax.max].getRange().start, funcInfo.params[funcInfo.params.length - 1].getRange().end); 
+                                var r = new vscode.Range(funcInfo.params[paramsMinMax.max].getRange().start, funcInfo.params[funcInfo.params.length - 1].getRange().end);
                                 return new vscode.Diagnostic(r, `Function '${funcInfo.name}' expect max ${paramsMinMax.max} parameter${(paramsMinMax.max === 1 ? "" : "s")}, got ${funcInfo.params.length}`, vscode.DiagnosticSeverity.Error);
                             }
                         } else if (funcInfo.params.length < paramsMinMax.min) {
@@ -524,7 +539,7 @@ export class GscDiagnosticsCollection {
                         }
                         var r = (funcInfo.pathGroup) ? funcInfo.pathGroup.getRange() : group.getRange();
                         const folders = gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ");
-                        const d = new vscode.Diagnostic(r, `File '${funcInfo.path}.gsc' was not found in workspace folder ${folders}`, vscode.DiagnosticSeverity.Error);               
+                        const d = new vscode.Diagnostic(r, `File '${funcInfo.path}.gsc' was not found in workspace folder ${folders}`, vscode.DiagnosticSeverity.Error);
                         d.code = "unknown_file_path_" + funcInfo.path;
 
                         return d;
@@ -534,10 +549,10 @@ export class GscDiagnosticsCollection {
 
 
                     case GscFunctionState.NotFoundFunctionExternal:
-                        const d1 = new vscode.Diagnostic(group.getRange(), `Function '${funcInfo.name}' is not defined in '${funcInfo.path}.gsc'!`, vscode.DiagnosticSeverity.Error);               
+                        const d1 = new vscode.Diagnostic(group.getRange(), `Function '${funcInfo.name}' is not defined in '${funcInfo.path}.gsc'!`, vscode.DiagnosticSeverity.Error);
                         // TODO now it ignores local and external, but it should be probably separated
                         //if (funcInfo.path === "") {
-                            d1.code = "unknown_function_" + funcInfo.name; // Special constant to create a CodeAction to add function name into ignored list
+                        d1.code = "unknown_function_" + funcInfo.name; // Special constant to create a CodeAction to add function name into ignored list
                         //}
                         return d1;
 
@@ -547,7 +562,7 @@ export class GscDiagnosticsCollection {
                             const d = new vscode.Diagnostic(group.getRange(), `Function '${funcInfo.name}' is not defined!`, vscode.DiagnosticSeverity.Error);
                             if (funcInfo.path === "") {
                                 d.code = "unknown_function_" + funcInfo.name; // Special constant to create a CodeAction to add function name into ignored list
-                            }                        
+                            }
                             return d;
                         }
                         break;
@@ -571,7 +586,7 @@ export class GscDiagnosticsCollection {
                 return false;
             }
         }
-    
+
         return true;
     }
 
@@ -652,6 +667,7 @@ export class GscDiagnosticsCollection {
                     break;
 
                 case GroupType.DeveloperBlock:
+                case GroupType.DeveloperBlock2:
                     parentGroup.solved = true; 
                     break;
 
@@ -731,6 +747,8 @@ export class GscDiagnosticsCollection {
                     break;
 
                 case GroupType.TerminatedPreprocessorStatement:
+                case GroupType.TerminatedPreprocessorStatementDefine:
+                case GroupType.TerminatedPreprocessorStatementInline:
                     break;
 
                 case GroupType.VariableReference:
