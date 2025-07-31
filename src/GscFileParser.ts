@@ -369,9 +369,6 @@ export class GscFileParser {
                             continue; // go to next char
 
                         case '#':
-                            level = Level.MultiLineComment;
-                            levelChangeStart = i;
-
                             addToken(TokenType.DeveloperStart, i, i + 2);
                             skip += 1;
                             continue; // go to next char
@@ -382,9 +379,6 @@ export class GscFileParser {
                             continue;
 
                         case "@":
-                            level = Level.MultiLineComment;
-                            levelChangeStart = i;
-
                             addToken(TokenType.DeveloperStart2, i, i + 2);
                             skip += 1;
                             continue; // go to next char
