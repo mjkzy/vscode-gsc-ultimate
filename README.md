@@ -94,7 +94,7 @@ This extension adds language support for the GSC scripts used in Call of Duty ga
         <td rowspan="2">BO2</td>
         <td rowspan="2">T6</td>
         <td>original</td>
-        <td>✅ Supported</td>
+        <td>❗ Tested, errors</td>
         <td>#insert, #define, param default value, autoexec, const, %xxx::yyy, /# /@ comments @/ #/</td>
     </tr>
     <tr>
