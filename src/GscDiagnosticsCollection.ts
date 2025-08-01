@@ -354,7 +354,7 @@ export class GscDiagnosticsCollection {
         // Not terminated statement
         if (
             (group.type === GroupType.Statement && parentGroup.type !== GroupType.TerminatedStatement) ||
-            ( (group.type === GroupType.PreprocessorStatement || group.type === GroupType.PreprocessorStatementInline || group.type === GroupType.PreprocessorStatementDefine) 
+            ( (group.type === GroupType.PreprocessorStatement || group.type === GroupType.PreprocessorStatementInline) 
                 && parentGroup.type !== GroupType.TerminatedPreprocessorStatement ) ) 
         {
             if (nextGroup === undefined || nextGroup.solved) {

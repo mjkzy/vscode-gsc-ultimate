@@ -1895,13 +1895,23 @@ export class GscFileParser {
                     break;
 
                 case GroupType.TerminatedPreprocessorStatement:
-                case GroupType.TerminatedPreprocessorStatementDefine:
                 case GroupType.TerminatedPreprocessorStatementInline:
                 case GroupType.FunctionDefinition:
                     if (parentGroup !== undefined && lastFunctionScope === undefined &&
                         parentGroup.typeEqualsToOneOf(GroupType.Root, GroupType.DeveloperBlock, GroupType.DeveloperBlock2)) {
                         group.solved = true;
                     }
+                    break;
+
+                case GroupType.PreprocessorStatementDefine:
+                case GroupType.TerminatedPreprocessorStatementDefine:
+                    const keyword = group.items[0]?.getSingleToken()?.name;
+                    const macroName = group.items[1]?.getSingleToken();
+                    const macroValue = group.items[2]?.getSingleToken();
+
+
+                    group.solved = keyword === "#define" && !!macroName;
+
                     break;
 
                 case GroupType.DeveloperBlock:
@@ -2044,53 +2054,53 @@ export class GscFileParser {
         group_byKeywordNameAndGroup(["#inline"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
 
+        //group_byKeywordNameAndGroup(["#define"],
+        //    [GroupType.Constant, GroupType.ReservedKeyword, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
+
+        group_byKeywordNameAndGroup(
+            ["#define"],
+            [GroupType.Identifier, GroupType.Constant], // Only group macro name first
+            GroupType.PreprocessorStatementDefine,
+            GroupType.ReservedKeyword,
+            GroupType.Identifier
+        );
+
         walkGroup(rootGroup, (parentGroup) => {
-            for (let i = 0; i < parentGroup.items.length; i++) {
-                const childGroup1 = parentGroup.items[i];
-                if (childGroup1.solved) continue;
+            for (let i = 0; i < parentGroup.items.length - 1; i++) {
+                const g = parentGroup.items[i];
 
-                const tokenName = childGroup1.getSingleToken()?.name;
-                if (childGroup1.type === GroupType.ReservedKeyword && tokenName === "#define") {
-                    // Find the macro name (must be the next unsolved identifier on the same line)
-                    const macroLine = childGroup1.getFirstToken().range.start.line;
-                    let macroNameIdx = i + 1;
+                if (g.type === GroupType.PreprocessorStatementDefine && g.items.length === 2) {
+                    const macroKeyword = g.items[0];
+                    const macroName = g.items[1];
+                    const valueCandidate = parentGroup.items[i + 1];
 
-                    // Skip solved tokens and ensure the macro name is an identifier
-                    while (
-                        macroNameIdx < parentGroup.items.length &&
-                        parentGroup.items[macroNameIdx].getFirstToken().range.start.line === macroLine &&
-                        parentGroup.items[macroNameIdx].solved
-                    ) {
-                        macroNameIdx++;
-                    }
+                    console.log("[PreprocessorStatementDefine] macro name " + macroName.getSingleToken()?.name + " has value " + valueCandidate.getSingleToken()?.name);
 
-                    if (
-                        macroNameIdx < parentGroup.items.length &&
-                        parentGroup.items[macroNameIdx].getFirstToken().range.start.line === macroLine &&
-                        parentGroup.items[macroNameIdx].type === GroupType.Identifier
-                    ) {
-                        // Now find the end of the line for the value
-                        let j = macroNameIdx + 1;
-                        while (
-                            j < parentGroup.items.length &&
-                            parentGroup.items[j].getFirstToken().range.start.line === macroLine
-                        ) {
-                            j++;
-                        }
+                    console.log("[PreprocessorStatementDefine] TEST 1: " + macroKeyword.getFirstToken());
+                    console.log("[PreprocessorStatementDefine] TEST 2: " + macroName.getFirstToken());
+                    console.log("[PreprocessorStatementDefine] TEST 3: " + valueCandidate.getFirstToken());
 
-                        // Group: #define + macro name + value tokens (if any)
-                        const newGroup = groupItems(
-                            parentGroup,
-                            i,
-                            GroupType.PreprocessorStatementDefine,
-                            0,
-                            0,
-                            parentGroup.items.slice(i, j)
-                        );
+                    // Only support value if it's a literal or identifier (number, bool, string, constant)
+                    const token = valueCandidate.getSingleToken?.();
+                    const isLiteral =
+                        token?.type === TokenType.Number ||
+                        token?.type === TokenType.String ||
+                        token?.type === TokenType.Keyword;
 
-                        // Mark the group as solved
-                        newGroup.solved = true;
-                        i--; // Reprocess this index
+                    if (isLiteral) {
+                        const newGroup = new GscGroup({
+                            parent: parentGroup,
+                            type: GroupType.PreprocessorStatementDefine,
+                            tokenIndexStart: macroKeyword.tokenIndexStart,
+                            tokenIndexEnd: valueCandidate.tokenIndexEnd,
+                        }, [
+                            macroKeyword.getFirstToken(),
+                            macroName.getFirstToken(),
+                            valueCandidate.getFirstToken()
+                        ]);
+
+                        macroKeyword.parent = macroName.parent = valueCandidate.parent = newGroup;
+                        parentGroup.items.splice(i, 2, newGroup);
                     }
                 }
             }
@@ -2253,9 +2263,6 @@ export class GscFileParser {
         // preprocessor;
         group_byGroupAndGroup([GroupType.PreprocessorStatement], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatement, GroupType.PreprocessorStatement, GroupType.Terminator);
-
-        group_byGroupAndGroup([GroupType.PreprocessorStatementDefine], [GroupType.Terminator],
-            GroupType.TerminatedPreprocessorStatementDefine, GroupType.PreprocessorStatementDefine, GroupType.Terminator);
 
         group_byGroupAndGroup([GroupType.PreprocessorStatementInline], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatementInline, GroupType.PreprocessorStatementInline, GroupType.Terminator);
@@ -2439,10 +2446,6 @@ export class GscFileParser {
                                                 case TokenType.Preprocessor:
                                                     if (token.name === "#animtree") {
                                                         variableDefinition.type = GscVariableDefinitionType.XAnim;
-                                                    }
-
-                                                    if (token.name === "#define") {
-                                                        console.log("bruhhhhhhhhh " + token.name);
                                                     }
 
                                                     break;
