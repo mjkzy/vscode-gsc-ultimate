@@ -747,7 +747,6 @@ export class GscDiagnosticsCollection {
                     break;
 
                 case GroupType.TerminatedPreprocessorStatement:
-                case GroupType.TerminatedPreprocessorStatementDefine:
                 case GroupType.TerminatedPreprocessorStatementInline:
                     break;
 

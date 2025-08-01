@@ -72,8 +72,6 @@ export enum GroupType {
     TerminatedPreprocessorStatement,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementInline,
-    /** Statement like #define <name> <condition> terminated with ; */
-    TerminatedPreprocessorStatementDefine,
     /** Parameters expression of preprocessor #using_animtree */
     PreprocessorAnimtreeParametersExpression,
 
@@ -1904,7 +1902,6 @@ export class GscFileParser {
                     break;
 
                 case GroupType.PreprocessorStatementDefine:
-                case GroupType.TerminatedPreprocessorStatementDefine:
                     const keyword = group.items[0]?.getSingleToken()?.name;
                     const macroName = group.items[1]?.getSingleToken();
                     const macroValue = group.items[2]?.getSingleToken();
