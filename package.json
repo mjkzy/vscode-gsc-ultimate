@@ -33,7 +33,8 @@
           "gsc"
         ],
         "extensions": [
-          ".gsc"
+          ".gsc",
+          ".gsh"
         ],
         "configuration": "./language-configuration.json"
       }
