@@ -9,6 +9,12 @@
 			"include": "#define"
 		},
 		{
+			"include": "#ifdef"
+		},
+		{
+			"include": "#endif"
+		},
+		{
 			"include2": "#include"
 		},
 		{
@@ -62,6 +68,34 @@
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.control.directive.define.gsc"
+				},
+				"2": {
+					"name": "constant.language.c"
+				}
+			},
+			"end": "$"
+		},
+		"ifdef": {
+			"comment": "Example: #ifdef MACRO_NAME",
+			"name": "meta.preprocessor.ifdef.gsc",
+			"begin": "(#ifdef)\\s+([A-Za-z_][A-Za-z_0-9]*)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.ifdef.gsc"
+				},
+				"2": {
+					"name": "constant.language.c"
+				}
+			},
+			"end": "$"
+		},
+		"endif": {
+			"comment": "Example: #endif MACRO_NAME",
+			"name": "meta.preprocessor.endif.gsc",
+			"begin": "(#endif)\\s+([A-Za-z_][A-Za-z_0-9]*)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.endif.gsc"
 				},
 				"2": {
 					"name": "constant.language.c"
