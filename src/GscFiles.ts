@@ -177,25 +177,13 @@ export class GscFiles {
         const filesGsh = await vscode.workspace.findFiles(searchPatternGsh);
         const files = [...filesGsc, ...filesGsh];
 
-        const poolSize = 4; // Number of files to parse concurrently
-        let i = 0;
-
         const parseFile = async (file: vscode.Uri, index: number) => {
             const gsc = await this.getFileData(file, true, "parsing all files");
             GscFiles.statusBarItem.text = `$(sync~spin) Parsing GSC file ${index + 1}/${files.length}...`;
             GscFiles.statusBarItem.tooltip = file.fsPath;
         };
 
-        // Split the files into chunks of files
-        const chunks = [];
-        for (let i = 0; i < files.length; i += poolSize) {
-            chunks.push(files.slice(i, i + poolSize));
-        }
-
-        for (const chunk of chunks) {
-            await Promise.all(chunk.map((file, index) => parseFile(file, i + index)));
-            i += chunk.length;
-        }
+        await Promise.allSettled(files.map((file, index) => parseFile(file, index)));
 
         let elapsed = performance.now() - start;
 
