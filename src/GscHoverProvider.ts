@@ -10,10 +10,10 @@ import { LoggerOutput } from './LoggerOutput';
 import { GscMarkdownGenerator } from './GscMarkdownGenerator';
 
 export class GscHoverProvider implements vscode.HoverProvider {
-    
-    static async activate(context: vscode.ExtensionContext) {    
+
+    static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscHoverProvider] Activating");
-           
+
         context.subscriptions.push(vscode.languages.registerHoverProvider('gsc', new GscHoverProvider()));
     }
 
@@ -21,10 +21,10 @@ export class GscHoverProvider implements vscode.HoverProvider {
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken
-    ): Promise<vscode.Hover | undefined>  {
+    ): Promise<vscode.Hover | undefined> {
         try {
             LoggerOutput.log("[GscHoverProvider] Provide hover at " + position.line + ":" + position.character, vscode.workspace.asRelativePath(document.uri));
-            
+
             // Get parsed file
             const gscData = await GscFiles.getFileData(document.uri, false, "provide hover");
 
@@ -56,8 +56,8 @@ export class GscHoverProvider implements vscode.HoverProvider {
             const funcInfo = groupAtCursor.getFunctionReferenceInfo();
             if (funcInfo !== undefined) {
 
-                const res = GscFunctions.getFunctionReferenceState({name: funcInfo.name, path: funcInfo.path}, gscFile);
-    
+                const res = GscFunctions.getFunctionReferenceState({ name: funcInfo.name, path: funcInfo.path }, gscFile);
+
                 switch (res.state as GscFunctionState) {
                     case GscFunctionState.NameIgnored:
                         markdown.appendText(`🛈 Function name '${funcInfo.name}' is ignored by workspace settings!`);
@@ -78,7 +78,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
                                 if (res.definitions.length > 1) {
                                     const files = res.definitions
                                         .filter((f, i) => (i > 0) && (f.uri.toString() !== uri.toString())); // ignore first definition and current file (if duplicate func)
-                                        
+
                                     if (files.length > 0) {
                                         markdown.appendMarkdown('\n\r');
                                         markdown.appendMarkdown('--------------------------------------------------------------------------  \n\r');
@@ -131,7 +131,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
                     case GscFunctionState.NotFoundFunctionLocal:
                         if (isUniversalGame) {
-                            
+
                             // Try to find all possible predefined functions
                             var preDefFunc = CodFunctions.getByName(funcInfo.name, funcInfo.callOn !== undefined, undefined);
 
@@ -166,6 +166,13 @@ export class GscHoverProvider implements vscode.HoverProvider {
             }
 
             markdown = GscMarkdownGenerator.generateFilePathDescription(fileReferences, gscFile, path);
+        } else {
+            if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
+                const variableName = groupAtCursor?.getTokensAsString();
+                if (variableName) {
+                    markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableName, groupAtCursor?.type === GroupType.VariableName);
+                }
+            }
         }
 
         if (markdown.value === "") {

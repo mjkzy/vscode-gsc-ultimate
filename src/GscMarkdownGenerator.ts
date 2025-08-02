@@ -15,33 +15,32 @@ export class GscMarkdownGenerator {
      * @returns Markdown string
      */
     public static generateFunctionDescription(
-        func: GscFunction | {name: string, parameters: {name: string, commentBefore?: string}[]}, 
-        isLocalFunction: boolean, 
+        func: GscFunction | { name: string, parameters: { name: string, commentBefore?: string }[] },
+        isLocalFunction: boolean,
         uri: string | undefined,
         extraDescription: string = "")
-    : vscode.MarkdownString 
-    {
-		const md = new vscode.MarkdownString();
-		var text = "";
+        : vscode.MarkdownString {
+        const md = new vscode.MarkdownString();
+        var text = "";
 
         // Declaration
-		text += func.name + "(";
-		text += func.parameters.map(p => p.name).join(", ");
-		text += ")";
-		md.appendCodeblock(text);
+        text += func.name + "(";
+        text += func.parameters.map(p => p.name).join(", ");
+        text += ")";
+        md.appendCodeblock(text);
 
         // Description
-		//md.appendMarkdown("" + func.desc + "\n\n");
+        //md.appendMarkdown("" + func.desc + "\n\n");
 
         // Parameters
-		func.parameters.forEach(p => {
-			text = "@param ```" + p.name + "```";
+        func.parameters.forEach(p => {
+            text = "@param ```" + p.name + "```";
             if (p.commentBefore !== undefined && p.commentBefore !== "") {
                 text += " — " + p.commentBefore;
             }
             text += "  \n";
-			md.appendMarkdown(text);
-		});
+            md.appendMarkdown(text);
+        });
 
         if (!isLocalFunction && uri !== undefined) {
             const uri2 = vscode.Uri.parse(uri);
@@ -55,9 +54,15 @@ export class GscMarkdownGenerator {
             md.appendMarkdown("\n\n" + extraDescription);
         }
 
-		return md;
+        return md;
     }
 
+    public static generateLocalVariableDescription(varName: string, is_local_var: boolean): vscode.MarkdownString {
+        const md = new vscode.MarkdownString();
+        md.appendCodeblock(varName);
+        md.appendMarkdown(`\`${is_local_var ? "Local" : "Global"} variable\``);
+        return md;
+    }
 
     public static generateFilePathDescription(fileReferences: GscFileAndReferenceState[], gscFile: GscFile, path: string): vscode.MarkdownString {
         const markdown = new vscode.MarkdownString();
@@ -83,10 +88,10 @@ export class GscMarkdownGenerator {
                 // ✔️✓✔️❌✅🔄🚫⛔ ✖✖❌❌✖✗✘☓×⨯❎☒✅✔✓☑
                 let icon = "";
                 if (fileReferences.length > 1) {
-                    if (i === 0) { 
+                    if (i === 0) {
                         icon = '✅&nbsp;';
                     } else {
-                        icon = "&nbsp;✖&nbsp;&nbsp;"; 
+                        icon = "&nbsp;✖&nbsp;&nbsp;";
                     }
                     status = i === 0 ? "**used**" : "replaced";
                 }
@@ -102,9 +107,9 @@ export class GscMarkdownGenerator {
                     status += "&nbsp; (local file)";
                 }
 
-                markdown.appendMarkdown("" + icon + " File: "+cross+"`" + vscode.workspace.asRelativePath(ref.gscFile.uri, true) + "`"+cross+" &nbsp;" + status + "  \n");
+                markdown.appendMarkdown("" + icon + " File: " + cross + "`" + vscode.workspace.asRelativePath(ref.gscFile.uri, true) + "`" + cross + " &nbsp;" + status + "  \n");
             }
-            
+
         }
         return markdown;
     }
