@@ -2173,7 +2173,7 @@ export class GscFileParser {
 
 
         // case "aaa":
-        group_byKeywordAndGroupAndToken(["case"], [GroupType.Constant], TokenType.Colon,
+        group_byKeywordAndGroupAndToken(["case"], [GroupType.Identifier, GroupType.Constant], TokenType.Colon,
             GroupType.CaseLabel, GroupType.ReservedKeyword, GroupType.Constant, GroupType.Token);
         // default:
         group_byKeywordAndToken(["default"], TokenType.Colon,
