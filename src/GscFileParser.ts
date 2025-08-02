@@ -68,6 +68,10 @@ export enum GroupType {
     PreprocessorStatementInline,
     /** Statement like #define <name> <condition> */
     PreprocessorStatementDefine,
+    /** Statement like #ifdef <name> */
+    PreprocessorStatementIfdef,
+    /** Statement like #endif */
+    PreprocessorStatementEndif,
     /** Statement like #include path\name terminated with ; */
     TerminatedPreprocessorStatement,
     /** Statement like #inline path\name terminated with ; */
@@ -1413,7 +1417,7 @@ export class GscFileParser {
                     }
                 }
             });
-        }
+        } 
 
 
         function group_byKeywordNameAndGroup(keywordNames: string[], groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined) {
@@ -1421,14 +1425,28 @@ export class GscFileParser {
                 if (parentGroup.type === finalType) { return; }
                 for (var i = 0; i < parentGroup.items.length - 1; i++) {
                     var childGroup1 = parentGroup.items[i];
-                    if (childGroup1.solved) { continue; }
                     var childGroup2 = parentGroup.items[i + 1];
-                    if (childGroup2.solved) { continue; }
+                    var childGroup3 = parentGroup.items[i + 2];
+
                     var childTokenName = childGroup1.getSingleToken()?.name;//.toLocaleLowerCase();
+
+                    if (childGroup1.solved || childGroup2.solved) { continue; }
 
                     // if ()
                     if (childGroup1.type === GroupType.ReservedKeyword && keywordNames.includes(childTokenName ?? "") &&
                         childGroup2.typeEqualsToOneOf(...groupTypesRight)) {
+
+                        // hacky but... this works?
+                        const has_valid_define = childGroup3?.getSingleToken()?.type !== TokenType.Unknown;
+                        if (childTokenName === "#define" && has_valid_define) {
+                            console.log("childGroup1: " + childTokenName + ", childGroup2: " + childGroup2?.getTokensAsString() + ", childGroup3: ", childGroup3?.getTokensAsString());
+                            const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2, childGroup3]);
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
+                            childGroup3.solved = true;
+                            i--; continue;
+                        }
+
                         const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                         changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
@@ -1909,6 +1927,13 @@ export class GscFileParser {
 
                     group.solved = keyword === "#define" && !!macroName;
 
+                case GroupType.PreprocessorStatementIfdef:
+                    console.log("PreprocessorStatementIfdef");
+                    group.solved = true;
+                    break;
+                case GroupType.PreprocessorStatementEndif:
+                    console.log("PreprocessorStatementEndif");
+                    group.solved = true;
                     break;
 
                 case GroupType.DeveloperBlock:
@@ -2051,9 +2076,6 @@ export class GscFileParser {
         group_byKeywordNameAndGroup(["#inline"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
 
-        //group_byKeywordNameAndGroup(["#define"],
-        //    [GroupType.Constant, GroupType.ReservedKeyword, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
-
         group_byKeywordNameAndGroup(
             ["#define"],
             [GroupType.Identifier, GroupType.Constant], // Only group macro name first
@@ -2062,46 +2084,23 @@ export class GscFileParser {
             GroupType.Identifier
         );
 
-        walkGroup(rootGroup, (parentGroup) => {
-            for (let i = 0; i < parentGroup.items.length - 1; i++) {
-                const g = parentGroup.items[i];
+        /*
+        group_byKeywordNameAndGroup(
+            ["#ifdef"],
+            [GroupType.Identifier], // Only group macro name first
+            GroupType.PreprocessorStatementIfdef,
+            GroupType.ReservedKeyword,
+            GroupType.Identifier
+        );
 
-                if (g.type === GroupType.PreprocessorStatementDefine && g.items.length === 2) {
-                    const macroKeyword = g.items[0];
-                    const macroName = g.items[1];
-                    const valueCandidate = parentGroup.items[i + 1];
-
-                    console.log("[PreprocessorStatementDefine] macro name " + macroName.getSingleToken()?.name + " has value " + valueCandidate.getSingleToken()?.name);
-
-                    console.log("[PreprocessorStatementDefine] TEST 1: " + macroKeyword.getFirstToken());
-                    console.log("[PreprocessorStatementDefine] TEST 2: " + macroName.getFirstToken());
-                    console.log("[PreprocessorStatementDefine] TEST 3: " + valueCandidate.getFirstToken());
-
-                    // Only support value if it's a literal or identifier (number, bool, string, constant)
-                    const token = valueCandidate.getSingleToken?.();
-                    const isLiteral =
-                        token?.type === TokenType.Number ||
-                        token?.type === TokenType.String ||
-                        token?.type === TokenType.Keyword;
-
-                    if (isLiteral) {
-                        const newGroup = new GscGroup({
-                            parent: parentGroup,
-                            type: GroupType.PreprocessorStatementDefine,
-                            tokenIndexStart: macroKeyword.tokenIndexStart,
-                            tokenIndexEnd: valueCandidate.tokenIndexEnd,
-                        }, [
-                            macroKeyword.getFirstToken(),
-                            macroName.getFirstToken(),
-                            valueCandidate.getFirstToken()
-                        ]);
-
-                        macroKeyword.parent = macroName.parent = valueCandidate.parent = newGroup;
-                        parentGroup.items.splice(i, 2, newGroup);
-                    }
-                }
-            }
-        });
+        group_byKeywordNameAndGroup(
+            ["#endif"],
+            [GroupType.Identifier], // Only group macro name first
+            GroupType.PreprocessorStatementEndif,
+            GroupType.ReservedKeyword,
+            GroupType.Identifier
+        );
+        */
 
         group_byKeywordNameAndGroup(["#using_animtree"],
             [GroupType.Expression], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.PreprocessorAnimtreeParametersExpression);
