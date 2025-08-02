@@ -1922,12 +1922,24 @@ export class GscFileParser {
                     break;
 
                 case GroupType.PreprocessorStatementDefine:
-                    const keyword = group.items[0]?.getSingleToken()?.name;
-                    const macroName = group.items[1]?.getSingleToken();
-                    const macroValue = group.items[2]?.getSingleToken();
+                    const keyword = group.items[0]?.getTokensAsString();
+                    let macroName = group.items[1]?.getTokensAsString();
 
+                    // PreprocessorStatementDefine will fire off with the define keyword, but no macro name
+                    // however, it's actually in the next time this is fired, so this handles the entire line
+                    if (!macroName && group.parent) {
+                        const indexInParent = group.parent.items.indexOf(group);
+                        const maybeMacro = group.parent.items[indexInParent + 1];
+
+                        if (maybeMacro) {
+                            macroName = maybeMacro.getTokensAsString();
+                            group.items.push(maybeMacro);
+                            maybeMacro.parent = group;
+                        }
+                    }
 
                     group.solved = keyword === "#define" && !!macroName;
+                    break;
 
                 case GroupType.PreprocessorStatementIf:
                     console.log("PreprocessorStatementIf");
