@@ -2242,6 +2242,14 @@ export class GscFileParser {
             GroupType.Statement, GroupType.Reference, GroupType.Token);
 
 
+        // negative signs in variables (-variable, 5 would go to -5)
+        group_byTokenAndGroup(
+            TokenType.Operator,                             // the '-' token
+            [GroupType.Identifier, GroupType.Reference],                         // variable like `my_var`
+            GroupType.Value,                                // result group type
+            GroupType.Token,                                // first is operator
+            undefined
+        );
 
 
         // return {Value}
