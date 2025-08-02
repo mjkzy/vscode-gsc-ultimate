@@ -6,7 +6,6 @@ import { GscFunction } from '../../GscFunctions';
 import { GscDefinitionProvider } from '../../GscDefinitionProvider';
 import { GscMarkdownGenerator } from '../../GscMarkdownGenerator';
 
-
 /*
 These tests depends on pre-created files in ./src/test/workspace
 These files are copied into temp folder (configured in .vscode-test.mjs)

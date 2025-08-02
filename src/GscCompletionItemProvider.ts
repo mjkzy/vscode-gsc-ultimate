@@ -319,8 +319,11 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
             
             completionItems.push(new vscode.CompletionItem({label: "break", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
             completionItems.push(new vscode.CompletionItem({label: "continue", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
+
+            completionItems.push(new vscode.CompletionItem({label: "call", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
             
             completionItems.push(new vscode.CompletionItem({label: "thread", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({label: "childthread", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
             completionItems.push(new vscode.CompletionItem({label: "wait", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
             completionItems.push(new vscode.CompletionItem({label: "waittill", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
             completionItems.push(new vscode.CompletionItem({label: "waittillmatch", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));      

@@ -376,6 +376,16 @@ suite('GscFileParser.parse #2.5 developer', () => {
         checkGroup(rootGroup, rootGroup.items[0].items[0], GroupType.Scope, 1, 2, 0);
     });
 
+    test(`#2.5.0.1 developer2 outer`, async () => {
+        const gsc = `/@ {} @/`;
+        const tokens = GscFileParser.tokenize(gsc);
+        const rootGroup = GscFileParser.group(tokens);
+
+        checkGroup(rootGroup, rootGroup, GroupType.Root, 0, 3, 1);
+        checkGroup(rootGroup, rootGroup.items[0], GroupType.DeveloperBlock2, 0, 3, 1);
+        checkGroup(rootGroup, rootGroup.items[0].items[0], GroupType.Scope, 1, 2, 0);
+    });
+
     test(`#2.5.1 developer outer`, async () => {
         const gsc = `/# {} #/ {} /# {} #/`;
         const tokens = GscFileParser.tokenize(gsc);
@@ -411,6 +421,14 @@ suite('GscFileParser.parse #2.5 developer', () => {
             {
                 /##/
             }
+
+            /@/ 
+            /@  
+                /@/   
+            @/
+            {
+                /@/
+            }
         } 
         #/
         `;
@@ -424,11 +442,20 @@ suite('GscFileParser.parse #2.5 developer', () => {
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[0].items[0], GroupType.FunctionName, 1, 1, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[0].items[1], GroupType.FunctionParametersExpression, 2, 3, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1], GroupType.FunctionScope, 4, 15, true, 3);
+
+        // First /# … #/ dev blocks
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[0], GroupType.DeveloperBlockInner, 5, 6, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[1], GroupType.DeveloperBlockInner, 7, 10, true, 1);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[1].items[0], GroupType.DeveloperBlockInner, 8, 9, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[2], GroupType.Scope, 11, 14, true, 1);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[2].items[0], GroupType.DeveloperBlockInner, 12, 13, true, 0);
+
+        // Second /@ … @/ dev blocks (now DeveloperBlockInner2)
+        checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[3], GroupType.DeveloperBlockInner, 15, 16, true, 0);
+        checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[4], GroupType.DeveloperBlockInner, 17, 20, true, 1);
+        checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[4].items[0], GroupType.DeveloperBlockInner, 18, 19, true, 0);
+        checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[5], GroupType.Scope, 21, 24, true, 1);
+        checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1].items[5].items[0], GroupType.DeveloperBlockInner, 22, 23, true, 0);
     });
 
     test(`#2.5.7 developer errors 2`, async () => {
@@ -455,6 +482,7 @@ suite('GscFileParser.parse #2.5 developer', () => {
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[0], GroupType.FunctionName, 0, 0, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[0].items[1], GroupType.FunctionParametersExpression, 1, 2, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[1], GroupType.FunctionScope, 3, 18, true, 3);
+
         checkGroup2(rootGroup, rootGroup.items[0].items[1].items[0], GroupType.DeveloperBlockInner, 4, 5, true, 0);
         checkGroup2(rootGroup, rootGroup.items[0].items[1].items[1], GroupType.DeveloperBlockInner, 6, 9, true, 1);
         checkGroup2(rootGroup, rootGroup.items[0].items[1].items[1].items[0], GroupType.DeveloperBlockInner, 7, 8, true, 0);

@@ -81,6 +81,8 @@ developerFunction()
         assert.ok(tokenEquals(tokens[i++], "{", undefined, TokenType.ScopeStart));
         assert.ok(tokenEquals(tokens[i++], "/#", "multiline comment", TokenType.DeveloperStart));
         assert.ok(tokenEquals(tokens[i++], "#/", " in developer block", TokenType.DeveloperEnd));
+        assert.ok(tokenEquals(tokens[i++], "/@", "multiline comment", TokenType.DeveloperStart2));
+        assert.ok(tokenEquals(tokens[i++], "@/", " in developer block 2", TokenType.DeveloperEnd2));
         assert.ok(tokenEquals(tokens[i++], "}", undefined, TokenType.ScopeEnd));
         assert.ok(tokenEquals(tokens[i++], "/#", undefined, TokenType.DeveloperStart));
         assert.ok(tokenEquals(tokens[i++], "developerFunction", undefined, TokenType.Keyword));

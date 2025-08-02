@@ -2475,7 +2475,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "animation",
@@ -2631,7 +2631,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "anim",
@@ -2668,7 +2668,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "animation",
@@ -2747,7 +2747,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "anim",
@@ -2784,7 +2784,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "xmodelName",
@@ -2805,7 +2805,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "xmodelName",
@@ -2908,7 +2908,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -2937,7 +2937,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Animation",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -3920,7 +3920,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -3941,7 +3941,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -3962,7 +3962,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -3983,7 +3983,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4004,7 +4004,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4025,7 +4025,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -4037,7 +4037,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Clans",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -4074,7 +4074,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -4095,7 +4095,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4132,7 +4132,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -4153,7 +4153,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "clientnum",
@@ -4174,7 +4174,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "clientnum",
@@ -4203,7 +4203,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "client",
@@ -4232,7 +4232,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4261,7 +4261,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4282,7 +4282,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4311,7 +4311,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4332,7 +4332,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4353,7 +4353,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -4390,7 +4390,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -4427,7 +4427,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entityNumber",
@@ -4448,7 +4448,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4469,7 +4469,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "clientnum",
@@ -4490,7 +4490,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "cvarName",
@@ -4519,7 +4519,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4548,7 +4548,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4577,7 +4577,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4606,7 +4606,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4635,7 +4635,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4656,7 +4656,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -4693,7 +4693,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4714,7 +4714,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Client",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4777,7 +4777,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Damage",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -4878,7 +4878,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Damage",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "origin",
@@ -4952,7 +4952,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Damage",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "playerIgnoreRadiusDamage",
@@ -4973,7 +4973,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -4985,7 +4985,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "value",
@@ -5006,7 +5006,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "value",
@@ -5035,7 +5035,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "message",
@@ -5077,7 +5077,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "text",
@@ -5106,7 +5106,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "text",
@@ -5135,7 +5135,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "start",
@@ -5188,7 +5188,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "text",
@@ -5209,7 +5209,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "origin",
@@ -5262,7 +5262,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Debug",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "text",
@@ -5325,7 +5325,7 @@ defs.push(new CodFunction({
     returnType: "string",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "cvar",
@@ -5346,7 +5346,7 @@ defs.push(new CodFunction({
     returnType: "float",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "cvar",
@@ -5367,7 +5367,7 @@ defs.push(new CodFunction({
     returnType: "integer",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "cvar",
@@ -5451,7 +5451,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "cvar",
@@ -5546,7 +5546,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Effects",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "filename",
@@ -5567,7 +5567,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Effects",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "effectId",
@@ -5612,7 +5612,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Effects",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "effectId",
@@ -5649,7 +5649,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Effects",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "effectId",
@@ -5739,7 +5739,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Effects",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "nearDistance",
@@ -5800,7 +5800,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Effects",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "density",
@@ -5853,7 +5853,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -5898,7 +5898,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -5919,7 +5919,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -5956,7 +5956,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -5977,7 +5977,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -6056,7 +6056,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -6077,7 +6077,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6098,7 +6098,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6127,7 +6127,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6156,7 +6156,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6177,7 +6177,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6206,7 +6206,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "name",
@@ -6235,7 +6235,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "name",
@@ -6264,7 +6264,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entityNumber",
@@ -6285,7 +6285,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6327,7 +6327,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6348,7 +6348,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6369,7 +6369,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6390,7 +6390,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6448,7 +6448,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6501,7 +6501,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6551,7 +6551,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6580,7 +6580,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6609,7 +6609,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6683,7 +6683,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6712,7 +6712,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6770,7 +6770,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6799,7 +6799,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6820,7 +6820,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6849,7 +6849,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6891,7 +6891,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Entity",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -6920,7 +6920,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "File",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "filenum",
@@ -6941,7 +6941,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "File",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "filenum",
@@ -6970,7 +6970,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "File",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "filenum",
@@ -6999,7 +6999,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "File",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "fileNum",
@@ -7020,7 +7020,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "File",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "filename",
@@ -7049,7 +7049,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7070,7 +7070,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7091,7 +7091,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7120,7 +7120,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7149,7 +7149,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "client",
@@ -7170,7 +7170,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -7182,7 +7182,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "team",
@@ -7203,7 +7203,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "victim",
@@ -7248,7 +7248,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7269,7 +7269,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7314,7 +7314,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDClock",
@@ -7375,7 +7375,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDClock",
@@ -7436,7 +7436,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -7465,7 +7465,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -7494,7 +7494,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -7523,7 +7523,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7568,7 +7568,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7597,7 +7597,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDTimer",
@@ -7626,7 +7626,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDTimer",
@@ -7655,7 +7655,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUD",
@@ -7684,7 +7684,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDTimer",
@@ -7713,7 +7713,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDTimer",
@@ -7742,7 +7742,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "HUDValue",
@@ -7771,7 +7771,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "HUD",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -7895,7 +7895,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "scale",
@@ -7940,7 +7940,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "savePersistent",
@@ -7985,7 +7985,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "array",
@@ -8006,7 +8006,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -8085,7 +8085,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -8109,7 +8109,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -8121,7 +8121,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -8191,7 +8191,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -8203,7 +8203,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "gameType",
@@ -8224,7 +8224,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "mapName",
@@ -8253,7 +8253,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "mapName",
@@ -8274,7 +8274,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "savePersistent",
@@ -8336,7 +8336,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "nameMode",
@@ -8378,7 +8378,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "noCount",
@@ -8399,7 +8399,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -8420,7 +8420,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "time",
@@ -8441,7 +8441,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "noCount",
@@ -8462,7 +8462,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -8483,7 +8483,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "team",
@@ -8504,7 +8504,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -8516,7 +8516,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Level",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -8528,7 +8528,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "cosValue",
@@ -8549,7 +8549,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "sinValue",
@@ -8570,7 +8570,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "tanValue",
@@ -8591,7 +8591,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "angle",
@@ -8612,7 +8612,7 @@ defs.push(new CodFunction({
     returnType: "int",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "value",
@@ -8633,7 +8633,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "max",
@@ -8654,7 +8654,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "min",
@@ -8683,7 +8683,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "max",
@@ -8704,7 +8704,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "min",
@@ -8733,7 +8733,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "angle",
@@ -8754,7 +8754,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Math",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "angle",
@@ -8775,7 +8775,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Menus",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -8796,7 +8796,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -8817,7 +8817,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -8846,7 +8846,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -8875,7 +8875,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -8912,7 +8912,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -8965,7 +8965,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9018,7 +9018,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9071,7 +9071,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9124,7 +9124,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9145,7 +9145,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9198,7 +9198,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9251,7 +9251,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9304,7 +9304,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9357,7 +9357,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9410,7 +9410,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Motion",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -9484,7 +9484,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9595,7 +9595,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_index",
@@ -9616,7 +9616,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9637,7 +9637,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9666,7 +9666,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9695,7 +9695,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9745,7 +9745,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9848,7 +9848,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "objective_number",
@@ -9877,7 +9877,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Objective",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -10043,7 +10043,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10093,7 +10093,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10130,7 +10130,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10196,7 +10196,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10225,7 +10225,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10246,7 +10246,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10267,7 +10267,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10296,7 +10296,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10325,7 +10325,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10367,7 +10367,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10388,7 +10388,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10409,7 +10409,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10430,7 +10430,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10459,7 +10459,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10488,7 +10488,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10517,7 +10517,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10546,7 +10546,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10575,7 +10575,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10604,7 +10604,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10654,7 +10654,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10704,7 +10704,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10746,7 +10746,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10767,7 +10767,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10870,7 +10870,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10928,7 +10928,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -10973,7 +10973,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11055,7 +11055,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11084,7 +11084,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11113,7 +11113,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11142,7 +11142,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11253,7 +11253,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11282,7 +11282,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11319,7 +11319,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11356,7 +11356,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11393,7 +11393,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11430,7 +11430,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11467,7 +11467,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11496,7 +11496,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11517,7 +11517,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11546,7 +11546,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11575,7 +11575,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11596,7 +11596,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11625,7 +11625,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11646,7 +11646,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Player",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -11683,7 +11683,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "headIconName",
@@ -11704,7 +11704,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "itemName",
@@ -11725,7 +11725,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "menu",
@@ -11746,7 +11746,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "model",
@@ -11767,7 +11767,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "rumble",
@@ -11788,7 +11788,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "shaderName",
@@ -11809,7 +11809,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "shellshockEffectName",
@@ -11830,7 +11830,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "statusIconName",
@@ -11851,7 +11851,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -11872,7 +11872,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Precache",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "turretInfo",
@@ -11914,7 +11914,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Rumble",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -11943,7 +11943,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Rumble",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "rumbleName",
@@ -11972,7 +11972,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Rumble",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -12001,7 +12001,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Rumble",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "rumbleName",
@@ -12030,7 +12030,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Rumble",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -12042,7 +12042,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Rumble",
     supportedAt: "Xbox 360 Only",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -12253,7 +12253,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sentient",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "sentient",
@@ -12295,7 +12295,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sentient",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -12316,7 +12316,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sentient",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -12358,7 +12358,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "ambient",
@@ -12387,7 +12387,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "fadetime",
@@ -12429,7 +12429,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "music",
@@ -12450,7 +12450,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "time",
@@ -12471,7 +12471,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -12500,7 +12500,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -12545,7 +12545,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -12635,7 +12635,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "aliasname",
@@ -12656,7 +12656,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "time",
@@ -12677,7 +12677,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Sound",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -12768,7 +12768,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Spawn",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -12789,7 +12789,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Spawn",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "position",
@@ -12839,7 +12839,7 @@ defs.push(new CodFunction({
     returnType: "entity",
     module: "Spawn",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "classname",
@@ -12892,7 +12892,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Spawn",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -12904,7 +12904,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Spawn",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "classname",
@@ -13023,7 +13023,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "String",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -13060,7 +13060,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "String",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -13089,7 +13089,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "String",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -13118,7 +13118,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "String",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -13139,7 +13139,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "System",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "string",
@@ -13160,7 +13160,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "System",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: []
 }));
 
@@ -13172,7 +13172,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "System",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "integer",
@@ -13193,7 +13193,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Teams",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "team",
@@ -13214,7 +13214,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Teams",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "team",
@@ -13235,7 +13235,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Teams",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "team",
@@ -13264,7 +13264,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Trace",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "start",
@@ -13309,7 +13309,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Trace",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "start",
@@ -13354,7 +13354,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Trace",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "start",
@@ -13383,7 +13383,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Trace",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "start",
@@ -13428,7 +13428,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Triggers",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -13457,7 +13457,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Triggers",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -13486,7 +13486,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Triggers",
     supportedAt: "",
-    games: ['CoD2 MP'],
+    games: ['CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "",
@@ -13683,7 +13683,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Turret",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "turret",
@@ -13778,7 +13778,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Turret",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "turret",
@@ -13865,7 +13865,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Turret",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "turret",
@@ -13952,7 +13952,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Turret",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "turret",
@@ -14102,7 +14102,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Variables",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "object",
@@ -14123,7 +14123,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Variables",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "variable",
@@ -14144,7 +14144,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "angles",
@@ -14165,7 +14165,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "angles",
@@ -14186,7 +14186,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "angles",
@@ -14207,7 +14207,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "reference",
@@ -14244,7 +14244,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "point1",
@@ -14273,7 +14273,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "point1",
@@ -14302,7 +14302,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vector",
@@ -14323,7 +14323,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vector",
@@ -14344,7 +14344,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vectorA",
@@ -14373,7 +14373,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vector",
@@ -14394,7 +14394,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vector",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vector",
@@ -14465,7 +14465,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -14528,7 +14528,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -14549,7 +14549,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -14757,7 +14757,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -14868,7 +14868,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -14905,7 +14905,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -14971,7 +14971,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Vehicles",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "vehicle",
@@ -15195,7 +15195,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Weapons",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -15216,7 +15216,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Weapons",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -15237,7 +15237,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Weapons",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -15258,7 +15258,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Weapons",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -15279,7 +15279,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Weapons",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "player",
@@ -15308,7 +15308,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Weapons",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP'],
+    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
     parameters: [
         {
             name: "weaponName",
@@ -15447,4 +15447,3 @@ defs.push(new CodFunction({
         }
     ]
 }));
-
