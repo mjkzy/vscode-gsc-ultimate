@@ -70,6 +70,8 @@ export enum GroupType {
     PreprocessorStatementDefine,
     /** Statement like #ifdef <name> */
     PreprocessorStatementIfdef,
+    /** Statement like #if <name> == <condition> */
+    PreprocessorStatementIf,
     /** Statement like #endif */
     PreprocessorStatementEndif,
     /** Statement like #include path\name terminated with ; */
@@ -1417,7 +1419,7 @@ export class GscFileParser {
                     }
                 }
             });
-        } 
+        }
 
 
         function group_byKeywordNameAndGroup(keywordNames: string[], groupTypesRight: GroupType[], finalType: GroupType, finalGroup1Type: GroupType | undefined, finalGroup2Type: GroupType | undefined) {
@@ -1927,6 +1929,8 @@ export class GscFileParser {
 
                     group.solved = keyword === "#define" && !!macroName;
 
+                case GroupType.PreprocessorStatementIf:
+                    console.log("PreprocessorStatementIf");
                 case GroupType.PreprocessorStatementIfdef:
                     console.log("PreprocessorStatementIfdef");
                     group.solved = true;
@@ -2082,6 +2086,25 @@ export class GscFileParser {
             GroupType.PreprocessorStatementDefine,
             GroupType.ReservedKeyword,
             GroupType.Identifier
+        );
+
+        // #if
+        group_byKeywordNameAndGroup(
+            ["#if"],
+            [GroupType.Identifier],
+            GroupType.PreprocessorStatementIf,
+            GroupType.PreprocessorStatementIf,
+            GroupType.Identifier,
+        );
+
+        group_byGroupAndTokenAndGroup(
+            [GroupType.PreprocessorStatementIf],
+            TokenType.Operator,
+            [GroupType.Constant, GroupType.Identifier],
+            GroupType.PreprocessorStatementIf,
+            undefined,
+            GroupType.Token,
+            GroupType.Constant
         );
 
         /*

@@ -9,6 +9,9 @@
 			"include": "#define"
 		},
 		{
+			"include": "#if"
+		},
+		{
 			"include": "#ifdef"
 		},
 		{
@@ -74,6 +77,40 @@
 				}
 			},
 			"end": "$"
+		},
+		"if": {
+			"comment": "Example: #if MACRO_NAME == <CONSTANT>",
+			"name": "meta.preprocessor.if.gsc",
+			"begin": "(#if)\\s+([A-Za-z_][A-Za-z_0-9]*)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.if.gsc"
+				}
+			},
+			"end": "$",
+			"patterns": [
+				{
+					"match": "\\bdefined\\s*\\(([^)]+)\\)",
+					"name": "support.function.preprocessor.defined.gsc",
+					"captures": {
+						"1": {
+							"name": "constant.language.c"
+						}
+					}
+				},
+				{
+					"match": "\\b(?:[A-Za-z_][A-Za-z_0-9]*)\\b",
+					"name": "constant.language.c"
+				},
+				{
+					"match": "==|!=|<=|>=|<|>|&&|\\|\\||\\!|\\(|\\)|\\+|\\-|\\*|\\/|%",
+					"name": "keyword.operator.gsc"
+				},
+				{
+					"match": "\\b[0-9]+\\b",
+					"name": "constant.numeric.gsc"
+				}
+			]
 		},
 		"ifdef": {
 			"comment": "Example: #ifdef MACRO_NAME",
