@@ -116,13 +116,13 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   <img src="images/vscode-sidebar.png" width="30%">
 </div>
 
-## List of features
+## List of Features
 - GSC file parser
   - Syntax parser
     - Comments (`/*...*/`, `//...`)
-    - Developer blocks (`/# ... #/`)
-    - Preprocessor (`#include`, `#using_animtree`, `#animtree`, `#define`, `#if`)
-    - Keywords (`return`, `if`, `else`, `for`, `foreach`, `while`, `do-while`, `switch`, `continue`, `break`, `case`, `default`, `thread`, `wait`, `waittillframeend`, `waittill`, `waittillmatch`, `endon`, `notify`, `breakpoint`)
+    - Developer blocks (`/# ... #/`, `/@ ... @/`)
+    - Preprocessor (`#include`, `#using_animtree`, `#animtree`, `#define`, `#if`, `#ifdef`, `#else`, `#endif`)
+    - Keywords (`return`, `if`, `else`, `for`, `foreach`, `while`, `do-while`, `switch`, `continue`, `break`, `case`, `default`, `childthread`, `call`, `thread`, `wait`, `waittillframeend`, `waittill`, `waittillmatch`, `endon`, `notify`, `breakpoint`)
     - Operators (`=`, `+=`, `-=`, `*=`, `/=`, `%=`, `|=`, `&=`, `^=`, `++`, `--`, `+`, `-`, `*`, `/`, `%`, `|`, `&`, `^`, `<<`, `>>`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, `||`, `!`, `~`)
     - Strings (`"default"`, `&"STRING_LOCALIZED"`, `#"sv_cvar_string"`)
     - Ternary conditional operators (`true ? "yes" : "no"`)
@@ -150,7 +150,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - External functions (`maps\mp\gametypes\file::funcName()`)
   - Included functions (via `#include`)
 - Hover provider
-  - Function info
+  - Function info <b><i>(TODO: add ScriptDoc comments, or normal comments for hover)</i></b>
   - Path info
 - Code action provider
   - Adding missing files into ignored list
@@ -164,7 +164,6 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 ### Priority
 - Add custom global include list of GSC function
 - Support for default function parameter value - supported in newer COD games
-- Support for 'chilthread' and 'call' keywords - supported in newer COD games
 - Improve auto-suggestion for files
 - When renaming GSC file, ask for reference update in other GSC files
 ### Non priority
@@ -185,7 +184,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 
 
 ## Install
-This extension will soon be available through Visual Studio Marketplace under "Vvscode-gsc"
+This extension will soon be available through Visual Studio Marketplace under "vscode-gsc"
 
 ## Support
 [Click here to support the original developer!](https://www.paypal.com/donate/?hosted_button_id=R59Y6UN9LJVXQ)
