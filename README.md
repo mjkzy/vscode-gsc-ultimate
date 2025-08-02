@@ -1,259 +1,68 @@
 # vscode-gsc
 
-A extension that adds language support for .GSC (and .GSH) scripts used in Call of Duty games. Modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode-cod-gsc).
+A Visual Studio Code extension that adds language support for `.GSC` and `.GSH` scripts used in Call of Duty games. The extension supports all games, but is primarily focusing on CoD Ghosts and on. This is **NOT** a GSC compiler!
 
-:::warning
-This extension is not yet finished and is being worked on. Check the list of the available features in [List of features](#list-of-features).
-:::
+_This is a heavily modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode-cod-gsc)._
 
-## Supported games
+> [!WARNING] 
+> This extension is still in development. For current functionality, check the [List of Features](#list-of-features).
 
-<table>
-    <tr>
-        <td width="100px">Game</td>
-        <td width="50px">Code</td>
-        <td width="150px">Modification</td>
-        <td width="150px">Status</td>
-        <td>Not working yet</td>
-    </tr>
-    <tr>
-        <td>CoD1</td>
-        <td>IW1</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>CoD2</td>
-        <td>IW2</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>CoD4</td>
-        <td>IW3</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">CoD5</td>
-        <td rowspan="2">T4</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Plutonium T4</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">MW2</td>
-        <td rowspan="2">IW4</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Alterware IW4x</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">BO1</td>
-        <td rowspan="2">T5</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Plutonium T5</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="3">MW3</td>
-        <td rowspan="3">IW5</td>
-        <td>original</td>
-        <td>✅ Supported</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Plutonium IW5</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Alterware IW5-Mod</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">BO2</td>
-        <td rowspan="2">T6</td>
-        <td>original</td>
-        <td>❗ Tested, errors</td>
-        <td>#insert, #define, param default value, autoexec, const, %xxx::yyy, /# /@ comments @/ #/</td>
-    </tr>
-    <tr>
-        <td>Plutonium T6</td>
-        <td>❗ Tested, errors</td>
-        <td>order of file references</td>
-    </tr>
-    <tr>
-        <td rowspan="2">Ghosts</td>
-        <td rowspan="2">IW6</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Alterware IW6-Mod</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">AW</td>
-        <td rowspan="2">S1</td>
-        <td>original</td>
-        <td>❗ Tested, errors</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Alterware S1-Mod</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>BO3</td>
-        <td>T7</td>
-        <td>original</td>
-        <td>🚫 Not supported</td>
-        <td>#using, #namespace, function, .gscc, .csc, .cscc</td>
-    </tr>
-    <tr>
-        <td rowspan="2">IW</td>
-        <td rowspan="2">IW7</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Aurora IW7-mod</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">CoD4:MWR</td>
-        <td rowspan="2">H1</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Aurora H1-mod</td>
-        <td>❗ Tested, errors</td>
-        <td>param default value</td>
-    </tr>
-    <tr>
-        <td>WWII</td>
-        <td>S2</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>BO4</td>
-        <td>T8</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>MW</td>
-        <td>IW8</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>BOCW</td>
-        <td>T9</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Vanguard</td>
-        <td>S3</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>MWII</td>
-        <td>IW9</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>MWIII</td>
-        <td>S4</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>BO6</td>
-        <td>T10</td>
-        <td>original</td>
-        <td>❔</td>
-        <td></td>
-    </tr>
-</table>
+## Supported Games
 
-
-
-## Change log
-
-[View changes](CHANGELOG.md)
-
-
-
+| Game           | Code | Status             | Not working yet                                                                 |
+|----------------|------|--------------------|----------------------------------------------------------------------------------|
+| CoD1           | IW1  | ✅ Supported        |                                                                                  |
+| CoD2           | IW2  | ✅ Supported        |                                                                                  |
+| CoD4           | IW3  | ✅ Supported        |                                                                                  |
+| CoD5           | T4   | ✅ Supported        |                                                                                  |
+| MW2            | IW4  | ✅ Supported        |                                                                                  |
+| BO1            | T5   | ✅ Supported        |                                                                                  |
+| MW3            | IW5  | ✅ Supported        |                                                                                  |
+| BO2            | T6   | ❗ Tested, errors   | order of file references, `#insert`, `#define`, param default value, autoexec, const, `%xxx::yyy` |
+| Ghosts         | IW6  | ❔                  |                                                                                  |
+| AW             | S1   | ❔                  |                                                                                  |
+| BO3            | T7   | ❌                 | `#using`, `#namespace`, `function`, `.gscc`, `.csc`, `.cscc`                      |
+| IW             | IW7  | ❔                  |                                                                                  |
+| CoD4:MWR       | H1   | ❗ Tested, errors   | param default value                                                              |
+| WWII           | S2   | ❔                  |                                                                                  |
+| BO4            | T8   | ❌                 |                                                                                  |
+| MW (2019)      | IW8  | ❌                 |                                                                                  |
+| BOCW           | T9   | ❌                 |                                                                                  |
+| Vanguard       | S3   | ❌                 |                                                                                  |
+| MWII           | IW9  | ❌                 |                                                                                  |
+| MWIII          | S4   | ❌                 |                                                                                  |
+| BO6            | T10  | ❌                 |                                                                                  |
 
 ## Features
 
-### Syntax highlighting
+### Syntax Highlighting
 
 ![Syntax highlight](images/vscode-syntax-highlight-1.png)
 
 <br><br>
 
-### Completion items
-#### Completion items - local functions
+### Completion Items
+#### local functions
 
 ![Completion](images/vscode-completion-4.png)
 
-#### Completion items - included functions via #include
+#### included functions via #include
 
 ![Completion](images/vscode-completion-5.png)
 
-#### Completion items - with CoD2 MP functions
+#### common GSC functions (CoD2 in photo)
 
 ![Completion](images/vscode-completion-3.png)
 
-#### Completion items - variables
+#### variables
 
 ![Completion](images/vscode-completion-2.gif)
 
-#### Completion items - variables with recognized variable type
+#### variables with recognized variable type
 
 ![Completion](images/vscode-completion-1.png)
 
-#### Completion items - variables from included workspace folders
+#### variables from included workspace folders
 
 ![Completion](images/vscode-completion-6.png)
 
@@ -263,15 +72,15 @@ This extension is not yet finished and is being worked on. Check the list of the
 
 ### Diagnostics
 
-#### Diagnostics - error messages
+#### error messages
 
 ![Completion](images/vscode-diagnostics-1.png)
 
-#### Diagnostics - invalid file for #include
+#### invalid file for #include
 
 ![Completion](images/vscode-diagnostics-include.png)
 
-#### Diagnostics - possible missing semicolon indication
+#### possible missing semicolon indication
 
 ![Completion](images/vscode-diagnostics-single-line.png)
 
