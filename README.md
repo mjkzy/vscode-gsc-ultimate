@@ -1,10 +1,10 @@
-# CoD GSC extension for VS Code
+# vscode-gsc
 
-This extension adds language support for the GSC scripts used in Call of Duty games.
+A extension that adds language support for .GSC (and .GSH) scripts used in Call of Duty games. Modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode-cod-gsc).
 
-⚠️ This extension is still under development and is not fully finished. Check the list of the available features in [List of features](#list-of-features).
-
-
+:::warning
+This extension is not yet finished and is being worked on. Check the list of the available features in [List of features](#list-of-features).
+:::
 
 ## Supported games
 
