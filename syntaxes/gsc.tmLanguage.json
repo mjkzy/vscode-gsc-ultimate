@@ -58,12 +58,12 @@
 				{
 					"begin": "/#",
 					"end": "#/",
-					"name": "comment.block.developerscript.gsc"
+					"name": "keyword.control.directive.developer1.gsc"
 				},
 				{
 					"begin": "/@",
 					"end": "@/",
-					"name": "comment.block.annotation.gsc"
+					"name": "keyword.control.directive.developer2.gsc"
 				}
 			]
 		},
