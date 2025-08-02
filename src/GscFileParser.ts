@@ -2084,9 +2084,9 @@ export class GscFileParser {
 
         group_byKeywordNameAndGroup(
             ["#define"],
-            [GroupType.Identifier, GroupType.Constant], // Only group macro name first
+            [GroupType.Identifier],
             GroupType.PreprocessorStatementDefine,
-            GroupType.ReservedKeyword,
+            GroupType.PreprocessorStatementDefine,
             GroupType.Identifier
         );
 
