@@ -2117,6 +2117,14 @@ export class GscFileParser {
             GroupType.Identifier
         );
 
+        group_byKeywordNameAndGroup(
+            ["#undef"],
+            [GroupType.Identifier], // Only group macro name first
+            GroupType.PreprocessorStatementIfdef,
+            GroupType.ReservedKeyword,
+            GroupType.Identifier
+        );
+
         // TODO: add diagnostic for these 2 macros. 
         // currently, PreprocessorStatementIf just solves the diagnostic and continues..
         group_byKeyword(["#else"], GroupType.PreprocessorStatementEndif, GroupType.PreprocessorStatementEndif);

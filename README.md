@@ -121,7 +121,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Syntax parser
     - Comments (`/*...*/`, `//...`)
     - Developer blocks (`/# ... #/`, `/@ ... @/`)
-    - Preprocessor (`#include`, `#using_animtree`, `#animtree`, `#define`, `#if`, `#ifdef`, `#else`, `#endif`)
+    - Preprocessor (`#include`, `#using_animtree`, `#animtree`, `#define`, `#if`, `#ifdef`, `#else`, `#endif`, `#undef`)
     - Keywords (`return`, `if`, `else`, `for`, `foreach`, `while`, `do-while`, `switch`, `continue`, `break`, `case`, `default`, `childthread`, `call`, `thread`, `wait`, `waittillframeend`, `waittill`, `waittillmatch`, `endon`, `notify`, `breakpoint`)
     - Operators (`=`, `+=`, `-=`, `*=`, `/=`, `%=`, `|=`, `&=`, `^=`, `++`, `--`, `+`, `-`, `*`, `/`, `%`, `|`, `&`, `^`, `<<`, `>>`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, `||`, `!`, `~`)
     - Strings (`"default"`, `&"STRING_LOCALIZED"`, `#"sv_cvar_string"`)
