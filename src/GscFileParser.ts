@@ -1931,6 +1931,8 @@ export class GscFileParser {
 
                 case GroupType.PreprocessorStatementIf:
                     console.log("PreprocessorStatementIf");
+                    group.solved = true;
+                    break;
                 case GroupType.PreprocessorStatementIfdef:
                     console.log("PreprocessorStatementIfdef");
                     group.solved = true;
@@ -2107,7 +2109,6 @@ export class GscFileParser {
             GroupType.Constant
         );
 
-        /*
         group_byKeywordNameAndGroup(
             ["#ifdef"],
             [GroupType.Identifier], // Only group macro name first
@@ -2116,14 +2117,7 @@ export class GscFileParser {
             GroupType.Identifier
         );
 
-        group_byKeywordNameAndGroup(
-            ["#endif"],
-            [GroupType.Identifier], // Only group macro name first
-            GroupType.PreprocessorStatementEndif,
-            GroupType.ReservedKeyword,
-            GroupType.Identifier
-        );
-        */
+        group_byKeyword(["#endif"], GroupType.PreprocessorStatementEndif, GroupType.PreprocessorStatementEndif);
 
         group_byKeywordNameAndGroup(["#using_animtree"],
             [GroupType.Expression], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.PreprocessorAnimtreeParametersExpression);
