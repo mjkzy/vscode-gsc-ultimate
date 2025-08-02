@@ -36,96 +36,46 @@ _This is a heavily modified fork of [vscode-cod-gsc](https://github.com/eyza-cod
 ## Features
 
 ### Syntax Highlighting
+<div align="center">
+  <img src="images/vscode-syntax-highlight-1.png" width="30%">
+</div>
 
-![Syntax highlight](images/vscode-syntax-highlight-1.png)
+### Completion Items (variable, function, included functions, builtins, from workspaces)
+<div align="center">
+  <img src="images/vscode-completion-4.png" width="30%">
+  <img src="images/vscode-completion-5.png" width="30%">
+  <img src="images/vscode-completion-3.png" width="30%">
+  <img src="images/vscode-completion-2.gif" width="30%">
+  <img src="images/vscode-completion-1.png" width="30%">
+  <img src="images/vscode-completion-6.png" width="30%">
+</div>
 
-<br><br>
+### Diagnostics (error messages, invalid file for #include, possible missing semicolon)
+<div align="center">
+  <img src="images/vscode-diagnostics-1.png" width="30%">
+  <img src="images/vscode-diagnostics-include.png" width="30%">
+  <img src="images/vscode-diagnostics-single-line.png" width="30%">
+</div>
 
-### Completion Items
-#### local functions
-
-![Completion](images/vscode-completion-4.png)
-
-#### included functions via #include
-
-![Completion](images/vscode-completion-5.png)
-
-#### common GSC functions (CoD2 in photo)
-
-![Completion](images/vscode-completion-3.png)
-
-#### variables
-
-![Completion](images/vscode-completion-2.gif)
-
-#### variables with recognized variable type
-
-![Completion](images/vscode-completion-1.png)
-
-#### variables from included workspace folders
-
-![Completion](images/vscode-completion-6.png)
-
-
-
-<br><br>
-
-### Diagnostics
-
-#### error messages
-
-![Completion](images/vscode-diagnostics-1.png)
-
-#### invalid file for #include
-
-![Completion](images/vscode-diagnostics-include.png)
-
-#### possible missing semicolon indication
-
-![Completion](images/vscode-diagnostics-single-line.png)
-
-
-
-
-<br><br>
-
-### Functions
-
-#### Function - go to definition
-
-![Function definition](images/vscode-function-definition.gif)
-
-#### Function - hover info
-
-![Function hover](images/vscode-function-hover.gif)
-
-#### Function - hover info over CoD2 MP function spawn:
-
-![Function hover](images/vscode-function-hover-spawn.png)
-
-#### Function - hover over path
-
-![Function hover](images/vscode-hover-path.png)
-
-#### Function - references
-
-![Function hover](images/vscode-references-function.png)
-
-#### Function - rename
-
-![Function hover](images/vscode-rename-function.png)
-
-
-
-<br><br>
+### Functions (go to definition, hover info for various things, references, rename)
+<div align="center">
+  <img src="images/vscode-function-definition.gif" width="30%">
+  <img src="images/vscode-function-hover.gif" width="30%">
+  <img src="images/vscode-function-hover-spawn.png" width="30%">
+  <img src="images/vscode-hover-path.png" width="30%">
+  <img src="images/vscode-references-function.png" width="30%">
+  <img src="images/vscode-rename-function.png" width="30%">
+</div>
 
 ### Workspace folders
-VSCode multi-root workspace can be used to "join" your mod folders as they get loaded into the game.
+Visual Studio Code multi-root workspace can be used to "join" your mod folders as they get loaded into the game.
 
 The order of how files are being searched is now determined by how the workspace folder appears in explorer tab. 
 The last folder is searched first.
 
-![Function hover](images/vscode-workspace-order.png)
+<div align="center">
+  <img src="images/vscode-workspace-order.png" width="60%">
+</div>
 
 It can simulate your .IWD files - their file name determines which files gets loaded first in the game.
 
@@ -142,57 +92,29 @@ From game perspective, it could represents these files:
 The alphabetical order of .IWD is important to correctly replace original files.
 The order of the workspace folders must be the same!
 
-
-
-
-<br><br>
-
-### Code actions
-#### Code actions - include folder for file references
-
-![Function hover](images/vscode-workspace-folder-include.gif)
-
-#### Code actions - ignore missing files
-
-![Function hover](images/vscode-quick-fix.png)
-
-
-
-
-<br><br>
+### Code actions (include folder for file reference, ignore missing)
+<div align="center">
+  <img src="images/vscode-workspace-folder-include.gif" width="50%">
+  <img src="images/vscode-quick-fix.png" width="50%">
+</div>
 
 ### GSC Files
 
 #### Visualization of replaced (unreachable) files.
 
 When GSC file is replaced by another GSC file in multi-root workspace because of the same game path, the code in text editor is shown as semi-transparent (unreachable code)<br>
-Example:
 
-![Function hover](images/vscode-workspace-replaced-file-code.png)
-
-
-
-<br><br>
+<div align="center">
+  <img src="images/vscode-workspace-replaced-file-code.png" width="30%">
+</div>
 
 ### Other
 
 #### Status bar
-Allows quickly change the targeted game or open settings.
-
-![Function hover](images/vscode-statusbar-game.png)
-
-
-#### Side panel
-GSC side panel with "Workspace", "File" and "Other" views.
-It shows information about workspace setup, parsed GSC files and available commands to run.
-In future version it will allow to change settings more interactively.
-
-![Function hover](images/vscode-sidebar.png)
-
-
-
-
-
+<div align="center">
+  <img src="images/vscode-statusbar-game.png" width="30%">
+  <img src="images/vscode-sidebar.png" width="30%">
+</div>
 
 ## List of features
 - GSC file parser
@@ -263,13 +185,7 @@ In future version it will allow to change settings more interactively.
 
 
 ## Install
-This extension is available through Visual Studio Marketplace.
-
-
+This extension will soon be available through Visual Studio Marketplace under "Vvscode-gsc"
 
 ## Support
-Please test this extension in vscode on your GSC files and report bugs / suggestions on the github page or on discord [KILLTUBE #vscode-cod-gsc](https://discord.gg/5WUpcMqUG7)
-
-
-[![Donate with PayPal](images/paypal.png)](https://www.paypal.com/donate/?hosted_button_id=R59Y6UN9LJVXQ)
-
+[Click here to support the original developer!](https://www.paypal.com/donate/?hosted_button_id=R59Y6UN9LJVXQ)
