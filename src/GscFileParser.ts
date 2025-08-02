@@ -2117,6 +2117,9 @@ export class GscFileParser {
             GroupType.Identifier
         );
 
+        // TODO: add diagnostic for these 2 macros. 
+        // currently, PreprocessorStatementIf just solves the diagnostic and continues..
+        group_byKeyword(["#else"], GroupType.PreprocessorStatementEndif, GroupType.PreprocessorStatementEndif);
         group_byKeyword(["#endif"], GroupType.PreprocessorStatementEndif, GroupType.PreprocessorStatementEndif);
 
         group_byKeywordNameAndGroup(["#using_animtree"],
