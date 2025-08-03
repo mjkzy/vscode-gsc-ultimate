@@ -82,15 +82,14 @@ export class CodFunction {
 		}
 		md.appendCodeblock(text);
 
-
+		// add description of builtin
 		md.appendMarkdown("" + func.desc + "\n\n");
-
 
 		func.parameters.forEach(p => {
 			if (p.isCallOn) {
-				text = "@callon ";
+				text = "*@callon* ";
 			} else {
-				text = "@param ";
+				text = "*@param* ";
 			}
 			text += "```" + p.name + "``` — ";
 			if (p.type !== "") {
@@ -111,7 +110,7 @@ export class CodFunction {
 			md.appendMarkdown("@returns — " + func.returnType + "  \n");
 		}
 
-		md.appendMarkdown("  \n\n&nbsp; \n\n");
+		md.appendMarkdown("  \n\n&nbsp; \n");
 
 		if (func.example !== "") {
 			md.appendMarkdown("Example:");

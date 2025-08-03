@@ -122,20 +122,20 @@ suite('GscAll.CoD2MP', () => {
             assert.strictEqual(gsc.diagnostics.length, 8);
 
             var hover = await GscHoverProvider.getHover(gsc, new vscode.Position(10, 7));
-            var md = GscMarkdownGenerator.generateFunctionDescription({name: "func2", parameters: []}, true, undefined, undefined);
+            var md = GscMarkdownGenerator.generateFunctionDescription({name: "func2", parameters: []}, true, undefined, undefined, undefined);
             md.appendMarkdown('\n\r');
             md.appendMarkdown('--------------------------------------------------------------------------  \n\r');
-            md.appendMarkdown(GscMarkdownGenerator.generateFunctionDescription({name: "func2", parameters: []}, false, tests.filePathToUri("GscAll.CoD2MP/scripts/file2.gsc").toString(), "Included via '#include'").value);
+            md.appendMarkdown(GscMarkdownGenerator.generateFunctionDescription({name: "func2", parameters: []}, false, tests.filePathToUri("GscAll.CoD2MP/scripts/file2.gsc").toString(), "Included via '#include'", undefined).value);
             tests.checkHover(hover, md.value);
 
             var hover = await GscHoverProvider.getHover(gsc, new vscode.Position(17, 3));
-            var md = GscMarkdownGenerator.generateFunctionDescription({name: "func5", parameters: []}, true, undefined, undefined);
+            var md = GscMarkdownGenerator.generateFunctionDescription({name: "func5", parameters: []}, true, undefined, undefined, undefined);
             md.appendMarkdown('\n\r');
             md.appendMarkdown('--------------------------------------------------------------------------  \n\r');
-            md.appendMarkdown(GscMarkdownGenerator.generateFunctionDescription({name: "func5", parameters: []}, false, tests.filePathToUri("GscAll.CoD2MP/scripts/file5.gsc").toString(), "Included via '#include'").value);
+            md.appendMarkdown(GscMarkdownGenerator.generateFunctionDescription({name: "func5", parameters: []}, false, tests.filePathToUri("GscAll.CoD2MP/scripts/file5.gsc").toString(), "Included via '#include'", undefined).value);
             md.appendMarkdown('\n\r');
             md.appendMarkdown('--------------------------------------------------------------------------  \n\r');
-            md.appendMarkdown(GscMarkdownGenerator.generateFunctionDescription({name: "func5", parameters: []}, false, tests.filePathToUri("GscAll.CoD2MP/scripts/file6.gsc").toString(), "Included via '#include'").value);
+            md.appendMarkdown(GscMarkdownGenerator.generateFunctionDescription({name: "func5", parameters: []}, false, tests.filePathToUri("GscAll.CoD2MP/scripts/file6.gsc").toString(), "Included via '#include'", undefined).value);
             tests.checkHover(hover, md.value);
 
         } catch (error) {

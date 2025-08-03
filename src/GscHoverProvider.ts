@@ -38,8 +38,10 @@ export class GscHoverProvider implements vscode.HoverProvider {
         }
     }
 
-
-    public static async getHover(gscFile: GscFile, position: vscode.Position): Promise<vscode.Hover | undefined> {
+    public static async getHover(
+        gscFile: GscFile,
+        position: vscode.Position
+    ): Promise<vscode.Hover | undefined> {
         let hoverRange: vscode.Range | undefined = undefined;
         let markdown = new vscode.MarkdownString();
         markdown.isTrusted = true; // enable HTML tags
@@ -72,7 +74,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
                                 markdown.appendMarkdown('--------------------------------------------------------------------------  \n\r');
                             }
 
-                            markdown.appendMarkdown(d.func.generateMarkdownDescription(d.uri.toString() === uri.toString(), d.uri.toString(), d.reason).value);
+                            markdown.appendMarkdown(d.func.generateMarkdownDescription(d.uri.toString() === uri.toString(), d.uri.toString(), d.reason, d.func.commentBefore).value);
 
                             if (gscFile.config.gameConfig.duplicateFunctionDefinitions) {
                                 if (res.definitions.length > 1) {
@@ -166,12 +168,15 @@ export class GscHoverProvider implements vscode.HoverProvider {
             }
 
             markdown = GscMarkdownGenerator.generateFilePathDescription(fileReferences, gscFile, path);
-        } else {
-            if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
-                const variableName = groupAtCursor?.getTokensAsString();
-                if (variableName) {
-                    markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableName, groupAtCursor?.type === GroupType.VariableName);
-                }
+        } else if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
+            const variableName = groupAtCursor?.getTokensAsString();
+            if (variableName) {
+                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableName, groupAtCursor?.type === GroupType.VariableName);
+            }
+        } else if (groupAtCursor?.type === GroupType.Identifier) {
+            const variableName = groupAtCursor?.getTokensAsString();
+            const parent = groupAtCursor.parent;
+
             }
         }
 

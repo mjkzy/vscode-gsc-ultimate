@@ -366,7 +366,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
     
                 res.definitions.forEach(f => {
                     const item = new vscode.CompletionItem({label: f.func.name, description: "", detail: ""}, vscode.CompletionItemKind.Function);
-                    item.documentation = f.func.generateMarkdownDescription(f.uri.toString() === gscFile.uri.toString(), f.uri.toString(), f.reason);
+                    item.documentation = f.func.generateMarkdownDescription(f.uri.toString() === gscFile.uri.toString(), f.uri.toString(), f.reason, undefined);
                     completionItems.push(item);
                 });
             }

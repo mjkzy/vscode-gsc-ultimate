@@ -24,10 +24,17 @@ export class GscFunction {
         public range: vscode.Range,
         public rangeFunctionName: vscode.Range,
         public rangeScope: vscode.Range,
+    
+        public commentBefore: string | undefined
     ) {}
 
-	public generateMarkdownDescription(isLocalFunction: boolean, uri: string | undefined, reason: string): vscode.MarkdownString {
-        return GscMarkdownGenerator.generateFunctionDescription(this, isLocalFunction, uri, reason);
+	public generateMarkdownDescription(
+        isLocalFunction: boolean, 
+        uri: string | undefined, 
+        reason: string,
+        commentBefore: string | undefined, 
+    ): vscode.MarkdownString {
+        return GscMarkdownGenerator.generateFunctionDescription(this, isLocalFunction, uri, reason, commentBefore);
 	}	
 };
 

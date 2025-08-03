@@ -11,15 +11,17 @@ export class GscMarkdownGenerator {
      * @param func Function data
      * @param isLocalFunction If true it shows "Local function"
      * @param uri If defined and isLocalFunction is false, it shows the file path
-     * @param extraDescription 
+     * @param extraDescription A extra description to append
+     * @param commentBefore Optional comment before the function parameters
      * @returns Markdown string
      */
     public static generateFunctionDescription(
         func: GscFunction | { name: string, parameters: { name: string, commentBefore?: string }[] },
         isLocalFunction: boolean,
         uri: string | undefined,
-        extraDescription: string = "")
-        : vscode.MarkdownString {
+        extraDescription: string | undefined,
+        commentBefore: string | undefined
+    ): vscode.MarkdownString {
         const md = new vscode.MarkdownString();
         var text = "";
 
@@ -29,12 +31,22 @@ export class GscMarkdownGenerator {
         text += ")";
         md.appendCodeblock(text);
 
+        // add a clean comment in function preview if it exists
+        if (commentBefore !== undefined) {
+            commentBefore = commentBefore.trim();
+            if (commentBefore.endsWith("\n")) {
+                commentBefore = commentBefore.slice(0, -1);
+            }
+
+            md.appendText(`${commentBefore}\n\n`);
+        }
+
         // Description
         //md.appendMarkdown("" + func.desc + "\n\n");
 
         // Parameters
         func.parameters.forEach(p => {
-            text = "@param ```" + p.name + "```";
+            text = "*@param* ```" + p.name + "```";
             if (p.commentBefore !== undefined && p.commentBefore !== "") {
                 text += " — " + p.commentBefore;
             }
@@ -50,7 +62,7 @@ export class GscMarkdownGenerator {
             md.appendMarkdown("\n`Local function`");
         }
 
-        if (extraDescription !== "") {
+        if (extraDescription) {
             md.appendMarkdown("\n\n" + extraDescription);
         }
 

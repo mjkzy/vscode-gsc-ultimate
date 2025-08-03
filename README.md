@@ -150,7 +150,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - External functions (`maps\mp\gametypes\file::funcName()`)
   - Included functions (via `#include`)
 - Hover provider
-  - Function info <b><i>(TODO: add ScriptDoc comments, or normal comments for hover)</i></b>
+  - Function info with single & multi-line comments <b><i>(TODO: add ScriptDoc comments)</i></b>
   - Path info
 - Code action provider
   - Adding missing files into ignored list

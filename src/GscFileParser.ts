@@ -1441,7 +1441,6 @@ export class GscFileParser {
                         // hacky but... this works?
                         const has_valid_define = childGroup3?.getSingleToken()?.type !== TokenType.Unknown;
                         if (childTokenName === "#define" && has_valid_define) {
-                            console.log("childGroup1: " + childTokenName + ", childGroup2: " + childGroup2?.getTokensAsString() + ", childGroup3: ", childGroup3?.getTokensAsString());
                             const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2, childGroup3]);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
@@ -2397,7 +2396,24 @@ export class GscFileParser {
                                     paramTokens.push(element.getSingleToken()!);
                                 }
                             }
+
                             const funcName = innerGroup.items[0].items[0].getSingleToken()!.name;
+
+                            const tokens = parentGroup.getTokens(); // grab parent to see before innerGroup tokens
+                            let commentBefore: string | undefined = undefined;
+
+                            for (let j = tokens.length - 1; j >= 0; j--) {
+                                const token = tokens[j];
+
+                                // this check only passes on function name definitions i think...
+                                if (token.type === TokenType.Keyword && funcName === token.name)
+                                {
+                                    if (token.commentBefore) {
+                                        commentBefore = token.commentBefore;
+                                    }
+                                }
+                            }
+
                             func = new GscFunction(
                                 innerGroup,
                                 innerGroup.items[0].items[0],
@@ -2407,7 +2423,8 @@ export class GscFileParser {
                                 [],
                                 innerGroup.getRange(),
                                 innerGroup.items[0].items[0].getRange(),
-                                innerGroup.items[1].getRange()
+                                innerGroup.items[1].getRange(),
+                                commentBefore
                             );
 
                             data.functions.push(func);
