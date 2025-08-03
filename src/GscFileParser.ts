@@ -232,10 +232,19 @@ export class GscFileParser {
 
             // Count new lines and char
             // Windows: "\r\n"    Linux:  "\n"
+            let previousLine = line;
+
             if (i > 0) {
                 if (content[i - 1] === '\n') {
                     line++;
                     char = 0;
+
+                    // If the previous line was blank and we had a pending comment, clear it
+                    const lineContent = content
+                        .split('\n')[previousLine]?.trim();
+                    if (lineContent === '' && sLastComment) {
+                        sLastComment = undefined;
+                    }
                 } else {
                     char++;
                 }
@@ -2406,8 +2415,7 @@ export class GscFileParser {
                                 const token = tokens[j];
 
                                 // this check only passes on function name definitions i think...
-                                if (token.type === TokenType.Keyword && funcName === token.name)
-                                {
+                                if (token.type === TokenType.Keyword && funcName === token.name) {
                                     if (token.commentBefore) {
                                         commentBefore = token.commentBefore;
                                     }
