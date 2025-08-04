@@ -40,7 +40,7 @@ _This is a heavily modified fork of [vscode-cod-gsc](https://github.com/eyza-cod
   <img src="images/vscode-syntax-highlight-1.png" width="30%">
 </div>
 
-### Completion Items (variable, function, included functions, builtins, from workspaces)
+### Completion Items (variables, preprocessors, functions, included functions, builtins, workspaces)
 <div align="center">
   <img src="images/vscode-completion-4.png" width="30%">
   <img src="images/vscode-completion-5.png" width="30%">
