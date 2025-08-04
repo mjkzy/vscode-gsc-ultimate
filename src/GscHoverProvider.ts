@@ -172,6 +172,10 @@ export class GscHoverProvider implements vscode.HoverProvider {
                 return undefined;
             }
 
+            if (["self", "level", "game", "anim"].includes(variableName)) { 
+                return undefined;
+            }
+
             const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName);
             if (macro) {
                 markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
