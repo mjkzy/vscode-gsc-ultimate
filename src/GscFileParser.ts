@@ -2483,9 +2483,9 @@ export class GscFileParser {
                             const firstToken = variableReference.getFirstToken();
 
                             if (firstToken.name === "level") {
-                                addDefinition(data.levelVariablesDefinitions, variableReference);
+                                addDefinition(data.levelVariablesDefinitions, innerGroup.items[2].getTokensAsString(), variableReference);
                             } else if (firstToken.name === "game") {
-                                addDefinition(data.gameVariablesDefinitions, variableReference);
+                                addDefinition(data.gameVariablesDefinitions, innerGroup.items[2].getTokensAsString(), variableReference);
                             } else {
                                 // Arrays does not have to be explicitly defined like 'aaa = [];', 
                                 // Expression like 'aaa[0] = 1;' means that aaa is defined as array
@@ -2496,18 +2496,20 @@ export class GscFileParser {
                                     currentGroup = currentGroup.items[0];
                                 }
                                 otherReferences.forEach(r =>
-                                    addDefinition(lastFunction.localVariableDefinitions, r, GscVariableDefinitionType.Array)
+                                    addDefinition(lastFunction.localVariableDefinitions, innerGroup.items[2].getTokensAsString(), r, GscVariableDefinitionType.Array)
                                 );
-                                addDefinition(lastFunction.localVariableDefinitions, variableReference);
+                                addDefinition(lastFunction.localVariableDefinitions, innerGroup.items[2].getTokensAsString(), variableReference);
                             }
 
                             function addDefinition(
                                 array: GscVariableDefinition[],
+                                variableValue: string,
                                 variableReference: GscGroup,
                                 type: GscVariableDefinitionType = GscVariableDefinitionType.Unknown) {
                                 var variableDefinition: GscVariableDefinition = {
                                     variableReference: variableReference,
                                     type: type,
+                                    fullValue: variableValue,
                                     range: variableReference.getFirstToken()?.range ?? variableReference.getRange()
                                 };
 

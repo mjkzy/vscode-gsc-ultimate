@@ -167,16 +167,16 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
             markdown = GscMarkdownGenerator.generateFilePathDescription(fileReferences, gscFile, path);
         } else if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
-            const variableName = groupAtCursor?.getTokensAsString();
+            const variableName = groupAtCursor?.getFirstToken();
             if (!variableName) {
                 return undefined;
             }
 
-            if (["self", "level", "game", "anim"].includes(variableName)) { 
+            if (["self", "level", "game", "anim"].includes(variableName.name)) { 
                 return undefined;
             }
 
-            const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName);
+            const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName.name);
             if (macro) {
                 markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
             }
@@ -184,7 +184,28 @@ export class GscHoverProvider implements vscode.HoverProvider {
                 // a VariableName can be using a VariableNameGlobal because we're in a function scope and we wouldn't know... 
                 // we need to track global vars for errors & global variable desc
 
-                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableName, groupAtCursor?.type === GroupType.VariableName);
+                // get variable with definition line by grabbing localVariableDefinitions
+                const gscData = gscFile.data;
+                const tokenPos = variableName.range.start;
+                const func = gscData.functions.find(f =>
+                    f.rangeScope.start.isBeforeOrEqual(tokenPos) &&
+                    f.rangeScope.end.isAfterOrEqual(tokenPos)
+                );
+                if (!func) {
+                    return undefined;
+                }
+
+                const match = func.localVariableDefinitions.find(def => {
+                    const defToken = def.variableReference.getFirstToken();
+                    return defToken?.name === variableName.name;
+                });
+
+                let variableDefineLine = variableName.name;
+                if (match) {
+                    variableDefineLine = `${variableName.name} = ${match.fullValue};`;
+                }
+
+                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableDefineLine, groupAtCursor?.type === GroupType.VariableName);
             }
         } else if (document && groupAtCursor?.type === GroupType.Identifier) {
             const variableName = groupAtCursor?.getTokensAsString();

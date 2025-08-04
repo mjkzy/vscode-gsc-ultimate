@@ -53,6 +53,7 @@ export type GscMacroDefinition = {
 export type GscVariableDefinition = {
     variableReference: GscGroup,
     type: GscVariableDefinitionType,
+    fullValue: string,
     range: vscode.Range;
 };
 
