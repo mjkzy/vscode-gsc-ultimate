@@ -143,6 +143,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Invalid function parameters
   - Missing files
   - Invalid numbers of function parameters
+  - Variables used before definition (could be better)
 - Semantics token provider 
   - Proper colorization of tokens
 - Definition and Reference provider
