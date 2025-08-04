@@ -150,10 +150,11 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Local functions (`funcName()`)
   - External functions (`maps\mp\gametypes\file::funcName()`)
   - Included functions (via `#include`)
+  - Variables (`var_1 = 1;`) <b><i>(TODO: Reference provider)</i></b>
 - Hover provider
   - Function info with single & multi-line comments <b><i>(TODO: add ScriptDoc comments)</i></b>
   - Path info
-  - Variable and preprocessor info
+  - QoL variable and preprocessor info
 - Code action provider
   - Adding missing files into ignored list
   - Adding undefined functions into ignored list
@@ -176,7 +177,6 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - Improve detection of variable types - now it's detected only by explicitly assigned constant value
 - Show available string constants for `notify` `waittill` `waittillmatch` `endon` in completion item provider
 - Check for unreachable code
-- Implement "Go to definition" for variables
 - Implement rename variable functionality
 
 ## Install
