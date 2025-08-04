@@ -235,7 +235,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
                     continue;
                 }
 
-                macro = gscFile.data.macroVariableDefinitions.find(m => m.name === variableName);
+                macro = file.gscFile.data.macroVariableDefinitions.find(m => m.name === variableName);
                 if (macro) {
                     isInlineMacro = true;
                     inlinePath = i_inlinePath;
