@@ -207,7 +207,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
                 // TODO: this is meme but works for now lmfao
                 let type = 0;
-                if ( func.parameters.find(token => token.name.toLowerCase() === cursorVariable.name.toLowerCase()) !== undefined ) {
+                if ( func.parameters.find(token => token.name === cursorVariable.name) !== undefined ) {
                     type = 2;
                 }
                 else if (groupAtCursor?.type === GroupType.VariableName) {

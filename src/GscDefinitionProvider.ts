@@ -8,18 +8,17 @@ import { LoggerOutput } from './LoggerOutput';
 
 export class GscDefinitionProvider implements vscode.DefinitionProvider {
 
-    static async activate(context: vscode.ExtensionContext) {       
+    static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscDefinitionProvider] Activating");
-        
+
         context.subscriptions.push(vscode.languages.registerDefinitionProvider('gsc', new GscDefinitionProvider()));
     }
 
     async provideDefinition(
-        document: vscode.TextDocument, 
-        position: vscode.Position, 
+        document: vscode.TextDocument,
+        position: vscode.Position,
         token: vscode.CancellationToken
-    ): Promise<vscode.Location[] | null> 
-    {
+    ): Promise<vscode.Location[] | null> {
         try {
             // Get parsed file
             const gscFile = await GscFiles.getFileData(document.uri, false, "provide definition");
@@ -38,7 +37,7 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
         var locations: vscode.Location[] = [];
 
         const gscData = gscFile.data;
-        
+
         // Get group before cursor
         var groupAtCursor = gscData.root.findKeywordAtPosition(position);
         if (groupAtCursor === undefined || groupAtCursor.parent === undefined) {
@@ -105,7 +104,8 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
 
 
     /** This function finds local function variables */
-    private static async getVariableDefinitionLocations(gscFile: GscFile, groupAtCursor: GscGroup): Promise<vscode.Location[]> {        const locations: vscode.Location[] = [];
+    private static async getVariableDefinitionLocations(gscFile: GscFile, groupAtCursor: GscGroup): Promise<vscode.Location[]> {
+        const locations: vscode.Location[] = [];
         const gscData = gscFile.data;
         const token = groupAtCursor.getFirstToken();
         if (!token) {
@@ -123,12 +123,25 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
             return [];
         }
 
-        const match = func.localVariableDefinitions.find(def => {
+        let function_param = undefined;
+        let range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
+
+        let match = func.localVariableDefinitions.find(def => {
             const defToken = def.variableReference.getFirstToken();
             return defToken?.name === tokenName;
         });
 
-        return match ? [new vscode.Location(gscFile.uri, match.range)] : [];
+        if (!match) {
+            function_param = func.parameters.find(token => token.name === tokenName);
+        }
+
+        if (match) {
+            range = match.range;
+        } else if (function_param) {
+            range = function_param.range;
+        }
+
+        return (match || function_param) ? [new vscode.Location(gscFile.uri, range)] : [];
     }
 
 }
