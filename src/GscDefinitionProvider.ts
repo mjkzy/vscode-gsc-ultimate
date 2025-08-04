@@ -53,6 +53,10 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
             case GroupType.Path:
                 locations = await this.getPathDefinitionLocations(gscFile, groupAtCursor);
                 break;
+
+            case GroupType.VariableName:
+                locations = await this.getVariableDefinitionLocations(gscFile, groupAtCursor);
+                break;
         }
 
         //console.log(groupAtCursor.toString());
@@ -97,6 +101,34 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
         }
 
         return locations;
+    }
+
+
+    /** This function finds local function variables */
+    private static async getVariableDefinitionLocations(gscFile: GscFile, groupAtCursor: GscGroup): Promise<vscode.Location[]> {        const locations: vscode.Location[] = [];
+        const gscData = gscFile.data;
+        const token = groupAtCursor.getFirstToken();
+        if (!token) {
+            return [];
+        }
+
+        const tokenName = token.name;
+        const tokenPos = token.range.start;
+
+        const func = gscData.functions.find(f =>
+            f.rangeScope.start.isBeforeOrEqual(tokenPos) &&
+            f.rangeScope.end.isAfterOrEqual(tokenPos)
+        );
+        if (!func) {
+            return [];
+        }
+
+        const match = func.localVariableDefinitions.find(def => {
+            const defToken = def.variableReference.getFirstToken();
+            return defToken?.name === tokenName;
+        });
+
+        return match ? [new vscode.Location(gscFile.uri, match.range)] : [];
     }
 
 }

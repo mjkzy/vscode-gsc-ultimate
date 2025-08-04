@@ -2507,7 +2507,8 @@ export class GscFileParser {
                                 type: GscVariableDefinitionType = GscVariableDefinitionType.Unknown) {
                                 var variableDefinition: GscVariableDefinition = {
                                     variableReference: variableReference,
-                                    type: type
+                                    type: type,
+                                    range: variableReference.getFirstToken()?.range ?? variableReference.getRange()
                                 };
 
                                 array.push(variableDefinition);
