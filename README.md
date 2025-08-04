@@ -179,12 +179,8 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - Implement "Go to definition" for variables
 - Implement rename variable functionality
 
-
-
-
-
 ## Install
-This extension will soon be available through Visual Studio Marketplace under "vscode-gsc"
+This extension will soon be available through Visual Studio Marketplace under "vscode-gsc".
 
 ## Support
-[Click here to support the original developer!](https://www.paypal.com/donate/?hosted_button_id=R59Y6UN9LJVXQ)
+[Click here to tip the original developer via PayPal!](https://www.paypal.com/donate/?hosted_button_id=R59Y6UN9LJVXQ)
