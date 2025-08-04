@@ -133,27 +133,24 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
 
                     case GscFunctionState.NotFoundFunctionLocal:
-                        if (isUniversalGame) {
+                        // Try to find all possible predefined functions
+                        var preDefFunc = CodFunctions.getByName(funcInfo.name, funcInfo.callOn !== undefined, undefined);
 
-                            // Try to find all possible predefined functions
-                            var preDefFunc = CodFunctions.getByName(funcInfo.name, funcInfo.callOn !== undefined, undefined);
+                        if (preDefFunc === undefined) {
+                            preDefFunc = CodFunctions.getByName(funcInfo.name, undefined, undefined)!;
+                        }
 
-                            if (preDefFunc === undefined) {
-                                preDefFunc = CodFunctions.getByName(funcInfo.name, undefined, undefined)!;
-                            }
-
-                            if (preDefFunc !== undefined) {
-                                markdown.appendMarkdown(preDefFunc.generateMarkdownDescription(true).value);
-                            } else {
-                                GscHoverProvider.markdownAppendFunctionWasNotFound(markdown, funcInfo.name, funcInfo.path);
-                            }
+                        if (preDefFunc !== undefined) {
+                            markdown.appendMarkdown(preDefFunc.generateMarkdownDescription(true).value);
                         } else {
                             // There would be error by diagnostics, unless disabled
-                            if (errorDiagnosticsDisabled) {
-                                markdown.appendText(`⚠️ Function '${funcInfo.name}' is not defined!!`);
+                            if (errorDiagnosticsDisabled)
+                            {
+                                GscHoverProvider.markdownAppendFunctionWasNotFound(markdown, funcInfo.name, funcInfo.path);
                                 markdown.appendText(`\n\n🛈 Error diagnostics disabled via workspace settings`);
                             }
                         }
+                    
                         break;
                 }
 

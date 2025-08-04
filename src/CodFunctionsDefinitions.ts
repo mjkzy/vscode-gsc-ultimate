@@ -4923,7 +4923,7 @@ defs.push(new CodFunction({
     returnType: "",
     module: "Damage",
     supportedAt: "",
-    games: ['CoD2 SP'],
+    games: ['CoD2 SP', 'CoD MWR'],
     parameters: [
         {
             name: "entity",
@@ -5325,7 +5325,7 @@ defs.push(new CodFunction({
     returnType: "string",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
+    games: ['CoD2 SP', 'CoD2 MP'],
     parameters: [
         {
             name: "cvar",
@@ -5346,7 +5346,7 @@ defs.push(new CodFunction({
     returnType: "float",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
+    games: ['CoD2 SP', 'CoD2 MP'],
     parameters: [
         {
             name: "cvar",
@@ -5367,7 +5367,7 @@ defs.push(new CodFunction({
     returnType: "integer",
     module: "Dvars",
     supportedAt: "",
-    games: ['CoD2 SP', 'CoD2 MP', 'CoD MWR'],
+    games: ['CoD2 SP', 'CoD2 MP'],
     parameters: [
         {
             name: "cvar",
@@ -15447,3 +15447,39 @@ defs.push(new CodFunction({
         }
     ]
 }));
+
+/*
+
+    everything past here is CoD4 and on, but for MWR atp
+
+*/
+
+defs.push(new CodFunction({
+    name: "getdvar",
+    desc: "Gets the value of a dvar, as a string.",
+    example: `if( GetDvar( "debug_skipintro" ) == "on" ) ...`,
+    callOn: "",
+    returnType: "",
+    module: "Dvars",
+    supportedAt: "",
+    games: ['CoD MWR'],
+    parameters: [
+        {
+            name: "dvar",
+            desc: "The dvar name",
+            type: "",
+            isOptional: false,
+            isVariableLength: false,
+            isCallOn: false
+        },
+        {
+            name: "defaultValue",
+            desc: "The default value if dvar isn't found",
+            type: "",
+            isOptional: true,
+            isVariableLength: false,
+            isCallOn: false
+        }
+    ]
+}));
+
