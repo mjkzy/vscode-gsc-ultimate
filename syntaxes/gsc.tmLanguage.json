@@ -82,7 +82,7 @@
 					"name": "constant.language.c"
 				}
 			},
-			"end": "$"
+			"end": "(?=(\"|\\d|\\(|[A-Za-z_]))"
 		},
 		"if": {
 			"comment": "Example: #if MACRO_NAME == <CONSTANT>",
