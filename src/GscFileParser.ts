@@ -2462,9 +2462,9 @@ export class GscFileParser {
                             const macroName = innerGroup.items[1].getSingleToken()!.name;
                             const macroValue = innerGroup.items.length > 2 ? innerGroup.items[2] : undefined;
 
-                            console.log(`[GscFileParser] Found macro definition: ${macroName} = ${macroValue?.getTokensAsString()}`);
                             data.macroVariableDefinitions.push({
                                 name: macroName,
+                                value: macroValue,
                                 range: innerGroup.getRange()
                             });
                         }

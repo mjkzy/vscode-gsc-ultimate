@@ -4,7 +4,7 @@ import { GscFile } from './GscFile';
 import { GroupType } from './GscFileParser';
 import { CodFunctions } from './CodFunctions';
 import { ConfigErrorDiagnostics, GscConfig } from './GscConfig';
-import { GscFunctions, GscFunctionState } from './GscFunctions';
+import { GscFunctions, GscFunctionState, GscMacroDefinition } from './GscFunctions';
 import { Issues } from './Issues';
 import { LoggerOutput } from './LoggerOutput';
 import { GscMarkdownGenerator } from './GscMarkdownGenerator';
@@ -28,7 +28,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
             // Get parsed file
             const gscData = await GscFiles.getFileData(document.uri, false, "provide hover");
 
-            const hover = await GscHoverProvider.getHover(gscData, position);
+            const hover = await GscHoverProvider.getHover(gscData, position, document);
 
             LoggerOutput.log("[GscHoverProvider] Done, hover: " + (hover !== undefined), vscode.workspace.asRelativePath(document.uri));
 
@@ -40,7 +40,8 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
     public static async getHover(
         gscFile: GscFile,
-        position: vscode.Position
+        position: vscode.Position,
+        document: vscode.TextDocument | undefined = undefined
     ): Promise<vscode.Hover | undefined> {
         let hoverRange: vscode.Range | undefined = undefined;
         let markdown = new vscode.MarkdownString();
@@ -51,8 +52,8 @@ export class GscHoverProvider implements vscode.HoverProvider {
         const isUniversalGame = GscConfig.isUniversalGame(gscFile.config.currentGame);
         const errorDiagnosticsDisabled = gscFile.config.errorDiagnostics === ConfigErrorDiagnostics.Disable;
 
-        // Get group before cursor
-        var groupAtCursor = gscData.root.findKeywordAtPosition(position);
+        const groupAtCursor = gscData.root.findKeywordAtPosition(position);
+        console.log("[GscHoverProvider] group at cursor: ", groupAtCursor?.type, groupAtCursor?.getTokensAsString());
 
         if (groupAtCursor?.type === GroupType.FunctionName) {
             const funcInfo = groupAtCursor.getFunctionReferenceInfo();
@@ -170,13 +171,33 @@ export class GscHoverProvider implements vscode.HoverProvider {
             markdown = GscMarkdownGenerator.generateFilePathDescription(fileReferences, gscFile, path);
         } else if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
             const variableName = groupAtCursor?.getTokensAsString();
-            if (variableName) {
+            if (!variableName) {
+                return undefined;
+            }
+
+            const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName);
+            if (macro) {
+                markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
+            }
+            else {
+                // a VariableName can be using a VariableNameGlobal because we're in a function scope and we wouldn't know... 
+                // we need to track global vars for errors & global variable desc
+
                 markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableName, groupAtCursor?.type === GroupType.VariableName);
             }
-        } else if (groupAtCursor?.type === GroupType.Identifier) {
+        } else if (document && groupAtCursor?.type === GroupType.Identifier) {
             const variableName = groupAtCursor?.getTokensAsString();
             const parent = groupAtCursor.parent;
 
+            const isMacroStatement = parent?.type === GroupType.PreprocessorStatementIf
+                || parent?.type === GroupType.PreprocessorStatementIfdef
+                || parent?.type === GroupType.PreprocessorStatementDefine;
+
+            if (variableName && isMacroStatement) {
+                const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName);
+                if (macro) {
+                    markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
+                }
             }
         }
 
@@ -197,5 +218,33 @@ export class GscHoverProvider implements vscode.HoverProvider {
         md.appendText(`⚠️ Function '${funcName}' was not found${(path !== "" ? (" in '" + path + "'") : "")}!`);
     }
 
+    public static getMacroForHover(
+        gscFile: GscFile,
+        variableName: string
+    ): [GscMacroDefinition | undefined, boolean, string | undefined] {
+        let macro = gscFile.data.macroVariableDefinitions.find(m => m.name === variableName);
+        let isInlineMacro = false;
+        let inlinePath: string | undefined = undefined;
+
+        // check if the macro is included via #inline and that macro has the data we need
+        if (!macro) {
+            isInlineMacro = false;
+            for (const i_inlinePath of gscFile.data.inlines) {
+                const file = GscFiles.getReferencedFileForFile(gscFile, i_inlinePath);
+                if (!file) {
+                    continue;
+                }
+
+                macro = gscFile.data.macroVariableDefinitions.find(m => m.name === variableName);
+                if (macro) {
+                    isInlineMacro = true;
+                    inlinePath = i_inlinePath;
+                    break;
+                }
+            }
+        }
+
+        return [macro, isInlineMacro, inlinePath];
+    }
 
 }

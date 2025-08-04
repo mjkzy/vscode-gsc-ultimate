@@ -318,7 +318,6 @@ export class GscDiagnosticsCollection {
                                         const foreach_token = item.getSingleToken();
                                         if (foreach_token) {
                                             definedLocalVariables.add(foreach_token.name);
-                                            console.log(`[GscDiagnosticsCollection] Foreach variable '${foreach_token.name}' is being defined`);
                                         }
                                     }
 
@@ -351,34 +350,59 @@ export class GscDiagnosticsCollection {
                                     if (!name) { break; }
 
                                     // Check for object references we don't want to warn about
-                                    if (name === "self" || name === "level" || name === "game") { break; }
+                                    if (["self", "level", "game", "anim"].includes(name)) { break; }
 
                                     const parentReference = parents.at(-1);
-                                    const grandparentStatement = parents.at(-2);
+                                    const grandparent = parents.at(-2);
+                                    const greatGrandparent = parents.at(-3);
 
                                     if (parentReference?.type !== GroupType.Reference) { break; }
-                                    if (!grandparentStatement ||
-                                        (grandparentStatement.type !== GroupType.Statement &&
-                                            grandparentStatement.type !== GroupType.TerminatedStatement)) { break; }
 
-                                    const referenceIndex = grandparentStatement.items.indexOf(parentReference);
-                                    const tokenAfter = grandparentStatement.items.at(referenceIndex + 1);
-                                    const isBeingAssigned = tokenAfter?.getSingleToken()?.type === TokenType.Assignment;
+                                    let isAssignment = false;
 
-                                    if (isBeingAssigned) {
-                                        definedLocalVariables.add(name);
-                                    } else if (
-                                        !definedLocalVariables.has(name) &&
-                                        !gscFile.data.macroVariableDefinitions.some(macro => macro.name === name)
+                                    // case 1: var = value;
+                                    if (
+                                        grandparent &&
+                                        [GroupType.Statement, GroupType.TerminatedStatement].includes(grandparent.type)
                                     ) {
-                                        for (const inlinePath of gscFile.data.inlines) {
-                                            const includedPath = inlinePath + ".gsh";
-                                            const referenceData = GscFiles.getReferencedFileForFile(gscFile, includedPath);
-                                            if (referenceData?.gscFile.data.macroVariableDefinitions.some(macro => macro.name === name)) {
-                                                break;
-                                            }
+                                        const referenceIndex = grandparent.items.indexOf(parentReference);
+                                        const tokenAfter = grandparent.items.at(referenceIndex + 1);
+                                        if (tokenAfter?.getSingleToken()?.type === TokenType.Assignment) {
+                                            isAssignment = true;
                                         }
+                                    }
 
+                                    // case 2: var[0] = value;
+                                    if (
+                                        grandparent?.type === GroupType.ArrayAccess &&
+                                        greatGrandparent?.type === GroupType.Statement
+                                    ) {
+                                        const arrayIndex = greatGrandparent.items.indexOf(grandparent);
+                                        const nextToken = greatGrandparent.items.at(arrayIndex + 1);
+                                        if (nextToken?.getSingleToken()?.type === TokenType.Assignment) {
+                                            isAssignment = true;
+                                        }
+                                    }
+
+                                    if (isAssignment) {
+                                        definedLocalVariables.add(name);
+                                        break;
+                                    }
+
+                                    const isLocal = definedLocalVariables.has(name);
+                                    const isMacro = gscFile.data.macroVariableDefinitions.some(m => m.name === name);
+
+                                    // check if the macro is included via #inline and that macro has the data we need
+                                    let isInlineMacro = false;
+                                    for (const inlinePath of gscFile.data.inlines) {
+                                        const file = GscFiles.getReferencedFileForFile(gscFile, inlinePath);
+                                        if (file && file.gscFile.data.macroVariableDefinitions.some(m => m.name === name)) {
+                                            isInlineMacro = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!isLocal && !isMacro && !isInlineMacro) {
                                         return new vscode.Diagnostic(
                                             group.getRange(),
                                             `Variable '${name}' is used before it is defined.`,

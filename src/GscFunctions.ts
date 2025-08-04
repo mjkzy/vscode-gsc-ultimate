@@ -46,6 +46,7 @@ export type GscFunctionDefinition = {
 
 export type GscMacroDefinition = {
     name: string;
+    value: GscGroup | undefined,
     range: vscode.Range;
 };
 

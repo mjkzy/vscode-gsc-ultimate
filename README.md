@@ -153,6 +153,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - Hover provider
   - Function info with single & multi-line comments <b><i>(TODO: add ScriptDoc comments)</i></b>
   - Path info
+  - Variable and preprocessor info
 - Code action provider
   - Adding missing files into ignored list
   - Adding undefined functions into ignored list
@@ -176,9 +177,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - Show available string constants for `notify` `waittill` `waittillmatch` `endon` in completion item provider
 - Check for unreachable code
 - Implement "Go to definition" for variables
-- Implement some kind of JSDoc comments to improve function and variable description
 - Implement rename variable functionality
-- Detection of undefined variables
 
 
 

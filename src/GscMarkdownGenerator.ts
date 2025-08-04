@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { GscFileAndReferenceState, GscFileReferenceState, GscFiles } from './GscFiles';
 import { GscFile } from './GscFile';
 import { ConfigErrorDiagnostics } from './GscConfig';
-import { GscFunction } from './GscFunctions';
+import { GscFunction, GscMacroDefinition } from './GscFunctions';
 
 export class GscMarkdownGenerator {
 
@@ -76,10 +76,15 @@ export class GscMarkdownGenerator {
         return md;
     }
 
-    public static generatePreprocessorDescription(varName: string): vscode.MarkdownString {
+    public static generatePreprocessorDescription(macro: GscMacroDefinition, isInlineMacro: boolean = false, inlinePath : string = ""): vscode.MarkdownString {
         const md = new vscode.MarkdownString();
-        md.appendCodeblock(varName);
+        md.appendCodeblock(`#define ${macro.name} ${macro.value?.getTokensAsString()}`);
         md.appendMarkdown(`\`Preprocessor macro\``);
+
+        if (isInlineMacro) {
+            md.appendMarkdown(`File: \`${ vscode.workspace.asRelativePath(inlinePath, true) }\``);
+        }
+
         return md;
     }
 
