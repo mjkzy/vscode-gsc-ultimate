@@ -147,8 +147,10 @@ export class GscDiagnosticsCollection {
             const groupFunctionNames: { group: GscGroup, uri: vscode.Uri }[] = [];
             const groupIncludedPaths: { group: GscGroup, uri: vscode.Uri }[] = [];
 
+            const definedLocalVariables = new Set<string>();
+
             // Process the file
-            walkGroupItems(gscFile.data.root, gscFile.data.root.items);
+            walkGroupItems([gscFile.data.root], gscFile.data.root.items);
 
 
             // Create diagnostic for included files
@@ -175,15 +177,16 @@ export class GscDiagnosticsCollection {
             // ------------------------------------------------------------------------------------------------------------------------------------------
             // ------------------------------------------------------------------------------------------------------------------------------------------
 
-            function walkGroupItems(parentGroup: GscGroup, items: GscGroup[]) {
+            function walkGroupItems(parents: GscGroup[], items: GscGroup[]) {
                 // This object have child items, process them first
                 for (var i = 0; i < items.length; i++) {
                     const innerGroup = items[i];
                     const nextGroup = items.at(i + 1);
 
+                    const parentGroup = parents.at(-1)!; // last in the chain = direct parent
                     const diagnostic = action(parentGroup, innerGroup);
                     if (diagnostic === undefined) {
-                        walkGroupItems(innerGroup, innerGroup.items);
+                        walkGroupItems([...parents, innerGroup], innerGroup.items);
                     } else {
                         gscFile.diagnostics.push(diagnostic);
                     }
@@ -282,6 +285,109 @@ export class GscDiagnosticsCollection {
                                     }
                                     break;
 
+                                // add event variables after the event to defined local variables
+                                case GroupType.KeywordCallWithObject:
+                                    const keywordCall = group.items.at(1);
+                                    if (!keywordCall || keywordCall.type !== GroupType.KeywordCall) {
+                                        break;
+                                    }
+
+                                    const keyword = keywordCall.items.at(0)?.getSingleToken()?.name;
+                                    const paramGroup = keywordCall.items.find(g => g.type === GroupType.KeywordParametersExpression);
+
+                                    if (paramGroup) {
+                                        for (const param of paramGroup.items) {
+                                            let par_name = param.getTokensAsString();
+
+                                            // parameters are Reference in this case, NOT VariableName!!
+                                            if (param.type === GroupType.Reference) {
+                                                definedLocalVariables.add(par_name);
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+                                // add foreach variables to defined local variables
+                                case GroupType.ForEachExpression:
+                                    for (const item of group.items) {
+                                        if (item.type !== GroupType.VariableName) {
+                                            continue;
+                                        }
+
+                                        const foreach_token = item.getSingleToken();
+                                        if (foreach_token) {
+                                            definedLocalVariables.add(foreach_token.name);
+                                            console.log(`[GscDiagnosticsCollection] Foreach variable '${foreach_token.name}' is being defined`);
+                                        }
+                                    }
+
+                                    break;
+
+                                // add function definition parameters to defined local variables
+                                case GroupType.FunctionDefinition:
+                                    definedLocalVariables.clear();
+
+                                    const declaration = group.items.find(g => g.type === GroupType.FunctionDeclaration);
+
+                                    if (declaration?.type === GroupType.FunctionDeclaration) {
+                                        const paramExpr = declaration.items.find(g => g.type === GroupType.FunctionParametersExpression);
+                                        if (paramExpr) {
+                                            for (const param of paramExpr.items) {
+                                                if (param.type === GroupType.FunctionParameterName) {
+                                                    const token = param.getSingleToken();
+                                                    if (token) {
+                                                        definedLocalVariables.add(token.name);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+                                case GroupType.VariableName:
+                                    const name = group.getSingleToken()?.name;
+                                    if (!name) { break; }
+
+                                    // Check for object references we don't want to warn about
+                                    if (name === "self" || name === "level" || name === "game") { break; }
+
+                                    const parentReference = parents.at(-1);
+                                    const grandparentStatement = parents.at(-2);
+
+                                    if (parentReference?.type !== GroupType.Reference) { break; }
+                                    if (!grandparentStatement ||
+                                        (grandparentStatement.type !== GroupType.Statement &&
+                                            grandparentStatement.type !== GroupType.TerminatedStatement)) { break; }
+
+                                    const referenceIndex = grandparentStatement.items.indexOf(parentReference);
+                                    const tokenAfter = grandparentStatement.items.at(referenceIndex + 1);
+                                    const isBeingAssigned = tokenAfter?.getSingleToken()?.type === TokenType.Assignment;
+
+                                    if (isBeingAssigned) {
+                                        definedLocalVariables.add(name);
+                                    } else if (
+                                        !definedLocalVariables.has(name) &&
+                                        !gscFile.data.macroVariableDefinitions.some(macro => macro.name === name)
+                                    ) {
+                                        for (const inlinePath of gscFile.data.inlines) {
+                                            const includedPath = inlinePath + ".gsh";
+                                            const referenceData = GscFiles.getReferencedFileForFile(gscFile, includedPath);
+                                            if (referenceData?.gscFile.data.macroVariableDefinitions.some(macro => macro.name === name)) {
+                                                break;
+                                            }
+                                        }
+
+                                        return new vscode.Diagnostic(
+                                            group.getRange(),
+                                            `Variable '${name}' is used before it is defined.`,
+                                            vscode.DiagnosticSeverity.Error
+                                        );
+                                    }
+
+                                    break;
+
                                 case GroupType.VariableNameGlobal:
                                     if (gscFile.config.gameConfig.globalVariables === false) {
                                         return new vscode.Diagnostic(group.getRange(), "Global variable definitions are not supported for " + gscFile.config.currentGame, vscode.DiagnosticSeverity.Error);
@@ -354,9 +460,8 @@ export class GscDiagnosticsCollection {
         // Not terminated statement
         if (
             (group.type === GroupType.Statement && parentGroup.type !== GroupType.TerminatedStatement) ||
-            ( (group.type === GroupType.PreprocessorStatement || group.type === GroupType.PreprocessorStatementInline) 
-                && parentGroup.type !== GroupType.TerminatedPreprocessorStatement ) ) 
-        {
+            ((group.type === GroupType.PreprocessorStatement || group.type === GroupType.PreprocessorStatementInline)
+                && parentGroup.type !== GroupType.TerminatedPreprocessorStatement)) {
             if (nextGroup === undefined || nextGroup.solved) {
                 // Get the last character from the range where the ; should be
                 const range = group.getRange();

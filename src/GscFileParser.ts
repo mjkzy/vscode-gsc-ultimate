@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { GscFunction, GscVariableDefinition } from './GscFunctions';
+import { GscFunction, GscMacroDefinition, GscVariableDefinition } from './GscFunctions';
 
 
 export enum GroupType {
@@ -2106,7 +2106,7 @@ export class GscFileParser {
             ["#define"],
             [GroupType.Identifier],
             GroupType.PreprocessorStatementDefine,
-            GroupType.PreprocessorStatementDefine,
+            GroupType.ReservedKeyword,
             GroupType.Identifier
         );
 
@@ -2360,6 +2360,7 @@ export class GscFileParser {
      * Analyze the data structure tree and save it. Analyzed stuff:
      *  - function definitions
      *  - variable definitions
+     *  - macro definitions
      * @param rootGroup The root tree of data structure tree
      * @returns Data containing info about functions, global and local variables, etc...
      */
@@ -2386,6 +2387,10 @@ export class GscFileParser {
                             && parentGroup.getFirstToken().name === "#include" || parentGroup.getFirstToken().name === "#inline") {
                             // Add path to includes - duplicate paths are ignored via Set<>
                             data.includes.add(innerGroup.getTokensAsString());
+                            
+                            if (parentGroup.getFirstToken().name === "#inline") {
+                                data.inlines.add(innerGroup.getTokensAsString());
+                            }
                         }
                         break;
 
@@ -2438,6 +2443,31 @@ export class GscFileParser {
                             data.functions.push(func);
                         }
                         break;
+
+                    // Save macro definitions from inline (#inline scripts\zm\debug;)
+                    case GroupType.PreprocessorStatementInline:
+                        // get the GscFile for the target file we're looking for (ends in .gsh)
+                        // get the macro definitions from there
+                        // add them to our data macrovariabledefinitions 
+
+                        break;
+
+                    // Save macro definitions locally defined
+                    case GroupType.PreprocessorStatementDefine:
+                        if (innerGroup.items.length >= 2 &&
+                            innerGroup.items[0].type === GroupType.ReservedKeyword &&
+                            innerGroup.items[0].getSingleToken()?.name === "#define" &&
+                            innerGroup.items[1].type === GroupType.Identifier) {
+
+                            const macroName = innerGroup.items[1].getSingleToken()!.name;
+                            const macroValue = innerGroup.items.length > 2 ? innerGroup.items[2] : undefined;
+
+                            console.log(`[GscFileParser] Found macro definition: ${macroName} = ${macroValue?.getTokensAsString()}`);
+                            data.macroVariableDefinitions.push({
+                                name: macroName,
+                                range: innerGroup.getRange()
+                            });
+                        }
 
                     // Save variable definitions
                     case GroupType.Statement:
@@ -3414,10 +3444,15 @@ export class GscGroup {
 export class GscData {
     root: GscGroup;
     functions: GscFunction[] = [];
+    macroVariableDefinitions: GscMacroDefinition[] = [];
     levelVariablesDefinitions: GscVariableDefinition[] = [];
     gameVariablesDefinitions: GscVariableDefinition[] = [];
+
     /** Unique set of paths included via #include */
     includes: Set<string> = new Set();
+    /** Unique set of paths included via #inline */
+    inlines: Set<string> = new Set();
+
     content: string;
     /** The version number of open document (it will strictly increase after each change, including undo/redo). If file is not open in editor, it will be -1 */
     contentVersion: number = -1;

@@ -44,6 +44,10 @@ export type GscFunctionDefinition = {
     reason: string
 };
 
+export type GscMacroDefinition = {
+    name: string;
+    range: vscode.Range;
+};
 
 export type GscVariableDefinition = {
     variableReference: GscGroup,

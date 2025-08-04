@@ -76,6 +76,13 @@ export class GscMarkdownGenerator {
         return md;
     }
 
+    public static generatePreprocessorDescription(varName: string): vscode.MarkdownString {
+        const md = new vscode.MarkdownString();
+        md.appendCodeblock(varName);
+        md.appendMarkdown(`\`Preprocessor macro\``);
+        return md;
+    }
+
     public static generateFilePathDescription(fileReferences: GscFileAndReferenceState[], gscFile: GscFile, path: string): vscode.MarkdownString {
         const markdown = new vscode.MarkdownString();
 

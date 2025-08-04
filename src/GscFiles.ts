@@ -954,6 +954,9 @@ export class GscFiles {
         });
         console.log("");
         console.log("Variable definitions:");
+        gsc.macroVariableDefinitions.forEach(v => {
+            console.log("  " + v.name.padEnd(30));
+        });
         gsc.levelVariablesDefinitions.forEach(v => {
             console.log("  " + v.variableReference.getTokensAsString().padEnd(30));
         });
