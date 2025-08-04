@@ -150,7 +150,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Local functions (`funcName()`)
   - External functions (`maps\mp\gametypes\file::funcName()`)
   - Included functions (via `#include`)
-  - Variables (`var_1 = 1;`) <b><i>(TODO: Reference provider)</i></b>
+  - Variables definitions including function parameters <b><i>(TODO: Reference provider)</i></b>
 - Hover provider
   - Function info with single & multi-line comments <b><i>(TODO: add ScriptDoc comments)</i></b>
   - Path info
