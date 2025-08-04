@@ -4,11 +4,12 @@ import { GscFile } from './GscFile';
 import { GroupType, GscGroup, GscVariableDefinitionType } from './GscFileParser';
 import { CodFunctions } from './CodFunctions';
 import { GscConfig, GscGame } from './GscConfig';
-import { GscFunctions, GscVariableDefinition } from './GscFunctions';
+import { GscFunctions, GscMacroDefinition, GscVariableDefinition } from './GscFunctions';
 import { LoggerOutput } from './LoggerOutput';
 import { Issues } from './Issues';
 
 export interface CompletionConfig {
+    preprocessorItems: boolean;
     variableItems: boolean;
     pathItems: boolean;
     keywordItems: boolean;
@@ -17,16 +18,15 @@ export interface CompletionConfig {
 }
 
 export class GscCompletionItemProvider implements vscode.CompletionItemProvider {
-    
-    static async activate(context: vscode.ExtensionContext) {    
+
+    static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscCompletionItemProvider] Activating");
-            
+
         context.subscriptions.push(vscode.languages.registerCompletionItemProvider('gsc', new GscCompletionItemProvider(), '\\', '.', '[', ']'));
     }
-    
-    async provideCompletionItems( document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken
-    ): Promise<vscode.CompletionItem[] | vscode.CompletionList | undefined> 
-    {
+
+    async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken
+    ): Promise<vscode.CompletionItem[] | vscode.CompletionList | undefined> {
         try {
             // This function is called when user types a character or presses ctrl+space
 
@@ -44,12 +44,13 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
         }
     }
 
-    
-    
+
+
 
     /**
      * This function get suggestions for auto-complete. It supports:
      *  - variable names (eg. level.field1, game["abc"])
+     *  - preprocessor definitions
      *  - path (eg. maps\mp\gametypes)
      * @returns 
      */
@@ -58,8 +59,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
         position: vscode.Position,
         currentGame: GscGame,
         config?: CompletionConfig
-    ): Promise<vscode.CompletionItem[]> 
-    {
+    ): Promise<vscode.CompletionItem[]> {
         const completionItems: vscode.CompletionItem[] = [];
 
         LoggerOutput.log("[GscCompletionItemProvider] Start");
@@ -73,20 +73,19 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
         var groupAtCursor = gscData.root.findGroupOnLeftAtPosition(position);
         if (groupAtCursor === undefined || groupAtCursor.parent === undefined) {
             return completionItems;
-        }    
+        }
         //console.log("Group at cursor: " + groupAtCursor.toString());
 
 
         // Get current function data
         const functionGroup = gscData.functions.find(f => {
             const range = f.rangeScope;
-            if (((position.line === range.start.line && position.character > range.start.character) || position.line > range.start.line) && 
-                ((position.line === range.end.line && position.character < range.end.character) || position.line < range.end.line)) 
-            {
+            if (((position.line === range.start.line && position.character > range.start.character) || position.line > range.start.line) &&
+                ((position.line === range.end.line && position.character < range.end.character) || position.line < range.end.line)) {
                 return true;
             }
         });
-       
+
         // Debug all local variables of function
         //functionGroup?.localVariableDefinitions.forEach(c => console.log(c.variableReference.getTokensAsString() + " " + GscVariableDefinitionType[c.type]));
 
@@ -116,27 +115,43 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                 if (!config || config.variableItems) {
                     this.createVariableItems(completionItems, functionGroup.localVariableDefinitions, variableBeforeCursor, inWord, inStructureVariable, inArrayBrackets, gscFile.uri);
                 }
+
+                if (!config || config.preprocessorItems) {
+                    const allMacros = [...gscFile.data.macroVariableDefinitions];
+
+                    for (const inlinePath of gscFile.data.inlines) {
+                        const file = GscFiles.getReferencedFileForFile(gscFile, inlinePath);
+                        if (file) {
+                            allMacros.push(...file.gscFile.data.macroVariableDefinitions);
+                        }
+                    }
+
+                    this.createPreprocessorItems(completionItems, allMacros);
+                }
+
                 // Add items for predefined keywords (like true, false, undefined, if, else, waittillframeend, ...)
                 if (!config || config.keywordItems) {
                     this.createKeywordItems(completionItems, inWord, inStructureVariable, inArrayBrackets);
                 }
+
                 // Add items for predefined functions
                 if (!config || config.functionPredefinedItems) {
                     await this.createPredefinedFunctionItems(completionItems, inWord, inStructureVariable, inArrayBrackets, currentGame);
                 }
+
                 // Add items for predefined functions
                 if (!config || config.functionItems) {
                     await this.createFunctionItems(completionItems, inWord, inStructureVariable, inArrayBrackets, gscFile, currentGame);
                 }
-          
+
             } else {
 
                 // Add items for path
                 if (!config || config.pathItems) {
                     await this.createPathItems(completionItems, position, groupAtCursor);
-                }  
+                }
             }
-            
+
         }
 
         const duration = performance.now() - startTime;
@@ -148,11 +163,10 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
 
 
-    private static createVariableItems(completionItems: vscode.CompletionItem[], localVariableDefinitions: GscVariableDefinition[], 
-        variableBeforeCursor: string, inWord: boolean, inStructureVariable: boolean, inArrayBrackets: boolean, uri: vscode.Uri | undefined) 
-    {
+    private static createVariableItems(completionItems: vscode.CompletionItem[], localVariableDefinitions: GscVariableDefinition[],
+        variableBeforeCursor: string, inWord: boolean, inStructureVariable: boolean, inArrayBrackets: boolean, uri: vscode.Uri | undefined) {
         // Select local variables 
-        const variableItems: {name: string, detail: string | undefined, types: Set<GscVariableDefinitionType>, kind: vscode.CompletionItemKind}[] = [];
+        const variableItems: { name: string, detail: string | undefined, types: Set<GscVariableDefinitionType>, kind: vscode.CompletionItemKind }[] = [];
 
         // If user typed 'level.aaa.bbb', we want to get 'level.aaa.' (last non word char index)
         const nonWordChars = variableBeforeCursor.match(/\W/g);
@@ -166,9 +180,9 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
         // Definition of global variables
         if (!inStructureVariable && (inWord || inArrayBrackets)) {
-            variableItems.push({name: "level", detail: "", types: new Set<GscVariableDefinitionType>([GscVariableDefinitionType.Structure]), kind: vscode.CompletionItemKind.Variable});
-            variableItems.push({name: "game", detail: "", types: new Set<GscVariableDefinitionType>([GscVariableDefinitionType.Array]), kind: vscode.CompletionItemKind.Variable});
-            variableItems.push({name: "self", detail: "", types: new Set<GscVariableDefinitionType>([GscVariableDefinitionType.Unknown]), kind: vscode.CompletionItemKind.Variable});
+            variableItems.push({ name: "level", detail: "", types: new Set<GscVariableDefinitionType>([GscVariableDefinitionType.Structure]), kind: vscode.CompletionItemKind.Variable });
+            variableItems.push({ name: "game", detail: "", types: new Set<GscVariableDefinitionType>([GscVariableDefinitionType.Array]), kind: vscode.CompletionItemKind.Variable });
+            variableItems.push({ name: "self", detail: "", types: new Set<GscVariableDefinitionType>([GscVariableDefinitionType.Unknown]), kind: vscode.CompletionItemKind.Variable });
         }
 
         // Local variables
@@ -191,7 +205,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                         });
                     });
                 }
-    
+
                 // Game variables
                 if (variableBeforeCursor.startsWith("game")) {
                     gscFiles.forEach(g => {
@@ -222,7 +236,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
             for (var i = 0; i < variableParts.length; i++) {
                 const part = variableParts[i];
                 const isLast = i === (variableParts.length - 1);
-                
+
                 varName += part.text;
                 type = isLast ? g.type : part.implicitType;
                 kind = part.kind;
@@ -258,7 +272,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                     // If its in array, show only the root variable names
                     else if (inArrayBrackets) {
                         labelName = variableParts[0].text;
-                        type = (variableParts.length === 1) ? g.type : variableParts[0].implicitType;      
+                        type = (variableParts.length === 1) ? g.type : variableParts[0].implicitType;
                         kind = variableParts[0].kind;
                     }
                     break;
@@ -280,7 +294,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                 existingItem.types.add(type);
                 existingItem.kind = kind;
             } else {
-                variableItems.push({name: labelName, detail: detail, types: new Set<GscVariableDefinitionType>([type]), kind: kind});
+                variableItems.push({ name: labelName, detail: detail, types: new Set<GscVariableDefinitionType>([type]), kind: kind });
             }
         }
 
@@ -295,60 +309,74 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
     }
 
-    
+    private static createPreprocessorItems(completionItems: vscode.CompletionItem[], localVariableDefinitions: GscMacroDefinition[]) {
+        // Local variables
+        localVariableDefinitions.forEach(g => {
+            getCompletionItemFromVariableDefinition(g);
+        });
+
+        function getCompletionItemFromVariableDefinition(g: GscMacroDefinition) {
+            // 
+            completionItems.push(new vscode.CompletionItem({
+                label: g.name,
+                description: "(preprocessor)",
+                detail: "",
+            }, vscode.CompletionItemKind.Constant));
+        }
+    }
 
     private static createKeywordItems(completionItems: vscode.CompletionItem[], inWord: boolean, inStructureVariable: boolean, inArrayBrackets: boolean) {
-              
+
         if (inWord || inArrayBrackets) {
-            completionItems.push(new vscode.CompletionItem({label: "true", description: "", detail: ""}, vscode.CompletionItemKind.Constant));
-            completionItems.push(new vscode.CompletionItem({label: "false", description: "", detail: ""}, vscode.CompletionItemKind.Constant));
-            completionItems.push(new vscode.CompletionItem({label: "undefined", description: "", detail: ""}, vscode.CompletionItemKind.Constant));
+            completionItems.push(new vscode.CompletionItem({ label: "true", description: "", detail: "" }, vscode.CompletionItemKind.Constant));
+            completionItems.push(new vscode.CompletionItem({ label: "false", description: "", detail: "" }, vscode.CompletionItemKind.Constant));
+            completionItems.push(new vscode.CompletionItem({ label: "undefined", description: "", detail: "" }, vscode.CompletionItemKind.Constant));
         }
 
         if (inWord) {
-            completionItems.push(new vscode.CompletionItem({label: "if", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "else", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "for", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "foreach", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "while", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "switch", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "return", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            
-            completionItems.push(new vscode.CompletionItem({label: "case", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "default", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            
-            completionItems.push(new vscode.CompletionItem({label: "break", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "continue", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "if", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "else", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "for", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "foreach", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "while", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "switch", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "return", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
 
-            completionItems.push(new vscode.CompletionItem({label: "call", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            
-            completionItems.push(new vscode.CompletionItem({label: "thread", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "childthread", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "wait", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "waittill", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "waittillmatch", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));      
-            completionItems.push(new vscode.CompletionItem({label: "waittillframeend", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "notify", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "endon", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
-            completionItems.push(new vscode.CompletionItem({label: "breakpoint", description: "", detail: ""}, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "case", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "default", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+
+            completionItems.push(new vscode.CompletionItem({ label: "break", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "continue", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+
+            completionItems.push(new vscode.CompletionItem({ label: "call", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+
+            completionItems.push(new vscode.CompletionItem({ label: "thread", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "childthread", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "wait", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "waittill", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "waittillmatch", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "waittillframeend", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "notify", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "endon", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
+            completionItems.push(new vscode.CompletionItem({ label: "breakpoint", description: "", detail: "" }, vscode.CompletionItemKind.Keyword));
         }
     }
 
 
 
     private static async createPredefinedFunctionItems(completionItems: vscode.CompletionItem[], inWord: boolean, inStructureVariable: boolean, inArrayBrackets: boolean, currentGame: GscGame) {
-        
+
         if (inWord || inArrayBrackets) {
-            
+
             // Build-in functions
             const defs = CodFunctions.getDefinitions(currentGame);
-            const isUniversalGame = GscConfig.isUniversalGame(currentGame);        
+            const isUniversalGame = GscConfig.isUniversalGame(currentGame);
             defs.forEach(f => {
                 var desc = "";
                 if (f.returnType !== "") {
                     desc = "(" + f.returnType + ")";
                 }
-                const item = new vscode.CompletionItem({label: f.name, description: desc, detail: ""}, vscode.CompletionItemKind.Function);
+                const item = new vscode.CompletionItem({ label: f.name, description: desc, detail: "" }, vscode.CompletionItemKind.Function);
                 item.documentation = f.generateMarkdownDescription(isUniversalGame);
                 completionItems.push(item);
             });
@@ -357,15 +385,15 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
 
     private static async createFunctionItems(completionItems: vscode.CompletionItem[], inWord: boolean, inStructureVariable: boolean, inArrayBrackets: boolean, gscFile: GscFile | undefined, currentGame: GscGame) {
-        
-        if (inWord || inArrayBrackets) {        
+
+        if (inWord || inArrayBrackets) {
             // Uri is undefined in tests
             if (gscFile !== undefined) {
                 // Local functions and included functions
                 const res = GscFunctions.getFunctionReferenceState(undefined, gscFile);
-    
+
                 res.definitions.forEach(f => {
-                    const item = new vscode.CompletionItem({label: f.func.name, description: "", detail: ""}, vscode.CompletionItemKind.Function);
+                    const item = new vscode.CompletionItem({ label: f.func.name, description: "", detail: "" }, vscode.CompletionItemKind.Function);
                     item.documentation = f.func.generateMarkdownDescription(f.uri.toString() === gscFile.uri.toString(), f.uri.toString(), f.reason, undefined);
                     completionItems.push(item);
                 });
@@ -378,11 +406,11 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
      * Get path before cursor and search for this path in workspace folders.
      */
     private static async createPathItems(completionItems: vscode.CompletionItem[], position: vscode.Position, groupAtCursor: GscGroup) {
-        
+
         const pathBeforeCursor = groupAtCursor.getPathStringBeforePosition(position);
-      
+
         var fileSubPath = "";
-        
+
         // Remove last word after \
         //  maps\mp\file -> maps\mp
         var lastPathIndex = pathBeforeCursor.lastIndexOf("\\");
@@ -406,7 +434,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
         //files.forEach(f => console.log(f.path));
 
         // Loop files
-        const keywords: {label: string, detail: string, kind: vscode.CompletionItemKind}[] = [];
+        const keywords: { label: string, detail: string, kind: vscode.CompletionItemKind }[] = [];
         for (const file of files) {
 
             // Convert c:/folder1/workspaceFolder/maps/mp/file.gsc  ->  root/workspaceFolder/maps/mp/file.gsc
@@ -415,7 +443,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
             // Remove the folder prefix that user pre-typed
             //  root/workspaceFolder/maps/mp/file.gsc       -> file.gsc
             //  root/workspaceFolder/maps/mp/dir/file.gsc   -> dir/file.gsc
-            const subpathIndex = relativePath.indexOf(fileSubPath);  
+            const subpathIndex = relativePath.indexOf(fileSubPath);
             if (subpathIndex !== -1) {
                 var subpathKeyword = relativePath.substring(subpathIndex + fileSubPath.length + 1);
 
@@ -426,7 +454,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                     const folderName = subpathKeyword.substring(0, slashIndex);
                     const exists = keywords.some(k => k.label === folderName);
                     if (!exists) {
-                        keywords.push({label: folderName, detail: "", kind: vscode.CompletionItemKind.Folder});
+                        keywords.push({ label: folderName, detail: "", kind: vscode.CompletionItemKind.Folder });
                     }
                 }
                 // File
@@ -439,14 +467,14 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                     }
                     var fileName = subpathKeyword.substring(0, subpathKeyword.length - 4); // remove .gsc extension from file name
 
-                    keywords.push({label: fileName, detail: ".gsc", kind: vscode.CompletionItemKind.File});
+                    keywords.push({ label: fileName, detail: ".gsc", kind: vscode.CompletionItemKind.File });
                 }
             }
         }
 
         // Add completion items
         keywords.forEach(k => {
-            completionItems.push(new vscode.CompletionItem({ label: k.label, description: "", detail: k.detail}, k.kind));
+            completionItems.push(new vscode.CompletionItem({ label: k.label, description: "", detail: k.detail }, k.kind));
         });
     }
 
@@ -458,7 +486,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
     public static getItemDescriptionFromTypes(types: GscVariableDefinitionType[]) {
         const unknownValueTypes = [GscVariableDefinitionType.UnknownValue, GscVariableDefinitionType.UnknownValueFromFunction, GscVariableDefinitionType.UnknownValueFromVariable];
-        
+
         var typesString = types
             .filter(t => !unknownValueTypes.includes(t))
             .map(type => {

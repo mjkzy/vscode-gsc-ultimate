@@ -38,6 +38,7 @@ function printCompletionItems(items: vscode.CompletionItem[]) {
 }
 
 const cfgVariablesOnly: CompletionConfig = {
+    preprocessorItems: false,
     variableItems: true,
     pathItems: false,
     keywordItems: false,

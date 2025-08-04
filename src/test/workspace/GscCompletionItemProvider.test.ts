@@ -9,6 +9,7 @@ import { GscVariableDefinitionType } from '../../GscFileParser';
 
 
 const cfgFunctionsOnly: CompletionConfig = {
+    preprocessorItems: true,
     variableItems: false,
     pathItems: false,
     keywordItems: false,
@@ -17,6 +18,7 @@ const cfgFunctionsOnly: CompletionConfig = {
 };
 
 const cfgVariablesOnly: CompletionConfig = {
+    preprocessorItems: true,
     variableItems: true,
     pathItems: false,
     keywordItems: false,
