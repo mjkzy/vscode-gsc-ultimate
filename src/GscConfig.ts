@@ -113,13 +113,13 @@ export class GscConfig {
 			[GscGame.CoDMWR, {
 				game: GscGame.CoDMWR,
 				includeFileItself: false, 
-				globalVariables: false,
+				globalVariables: true,
 				developerBlocks: true,
 				developerBlocksRecursive: false,
 				duplicateFunctionDefinitions: false,
 				foreach: true, 
 				doWhile: false, 
-				arrayInitializer: false, 
+				arrayInitializer: true, 
 				ternary: true,
 				cvarString: false
 			}],
