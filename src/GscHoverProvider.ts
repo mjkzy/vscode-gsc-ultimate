@@ -167,26 +167,26 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
             markdown = GscMarkdownGenerator.generateFilePathDescription(fileReferences, gscFile, path);
         } else if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
-            const variableName = groupAtCursor?.getFirstToken();
-            if (!variableName) {
+            const cursorVariable = groupAtCursor?.getFirstToken();
+            if (!cursorVariable) {
                 return undefined;
             }
 
-            if (["self", "level", "game", "anim"].includes(variableName.name)) { 
+            if (["self", "level", "game", "anim"].includes(cursorVariable.name)) { 
                 return undefined;
             }
 
-            const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName.name);
+            const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, cursorVariable.name);
             if (macro) {
                 markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
             }
             else {
-                // a VariableName can be using a VariableNameGlobal because we're in a function scope and we wouldn't know... 
+                // a cursorVariable can be using a cursorVariableGlobal because we're in a function scope and we wouldn't know... 
                 // we need to track global vars for errors & global variable desc
 
                 // get variable with definition line by grabbing localVariableDefinitions
                 const gscData = gscFile.data;
-                const tokenPos = variableName.range.start;
+                const tokenPos = cursorVariable.range.start;
                 const func = gscData.functions.find(f =>
                     f.rangeScope.start.isBeforeOrEqual(tokenPos) &&
                     f.rangeScope.end.isAfterOrEqual(tokenPos)
@@ -197,26 +197,36 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
                 const match = func.localVariableDefinitions.find(def => {
                     const defToken = def.variableReference.getFirstToken();
-                    return defToken?.name === variableName.name;
+                    return defToken?.name === cursorVariable.name;
                 });
 
-                let variableDefineLine = variableName.name;
+                let variableDefineLine = cursorVariable.name;
                 if (match) {
-                    variableDefineLine = `${variableName.name} = ${match.fullValue};`;
+                    variableDefineLine = `${cursorVariable.name} = ${match.fullValue};`;
                 }
 
-                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableDefineLine, groupAtCursor?.type === GroupType.VariableName);
+                // TODO: this is meme but works for now lmfao
+                let type = 0;
+                if ( func.parameters.find(token => token.name.toLowerCase() === cursorVariable.name.toLowerCase()) !== undefined ) {
+                    type = 2;
+                }
+                else if (groupAtCursor?.type === GroupType.VariableName) {
+                    type = 1;
+                }
+                
+
+                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableDefineLine, type);
             }
         } else if (document && groupAtCursor?.type === GroupType.Identifier) {
-            const variableName = groupAtCursor?.getTokensAsString();
+            const cursorVariable = groupAtCursor?.getTokensAsString();
             const parent = groupAtCursor.parent;
 
             const isMacroStatement = parent?.type === GroupType.PreprocessorStatementIf
                 || parent?.type === GroupType.PreprocessorStatementIfdef
                 || parent?.type === GroupType.PreprocessorStatementDefine;
 
-            if (variableName && isMacroStatement) {
-                const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, variableName);
+            if (cursorVariable && isMacroStatement) {
+                const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, cursorVariable);
                 if (macro) {
                     markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
                 }

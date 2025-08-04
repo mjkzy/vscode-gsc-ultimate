@@ -154,7 +154,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - Hover provider
   - Function info with single & multi-line comments <b><i>(TODO: add ScriptDoc comments)</i></b>
   - Path info
-  - QoL variable and preprocessor info
+  - QoL variable and preprocessor info (including function parameters)
 - Code action provider
   - Adding missing files into ignored list
   - Adding undefined functions into ignored list

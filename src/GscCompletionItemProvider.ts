@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { GscFiles } from './GscFiles';
 import { GscFile } from './GscFile';
-import { GroupType, GscGroup, GscVariableDefinitionType } from './GscFileParser';
+import { GroupType, GscGroup, GscVariableDefinitionType, GscToken } from './GscFileParser';
 import { CodFunctions } from './CodFunctions';
 import { GscConfig, GscGame } from './GscConfig';
 import { GscFunctions, GscMacroDefinition, GscVariableDefinition } from './GscFunctions';
@@ -111,9 +111,12 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
             if (groupAtCursor.type !== GroupType.Path) {
 
-                // Add items for variables like level.aaa, game["bbb"] and local1.aaa[0][1]
                 if (!config || config.variableItems) {
+                    // Add items for variables like level.aaa, game["bbb"] and local1.aaa[0][1]
                     this.createVariableItems(completionItems, functionGroup.localVariableDefinitions, variableBeforeCursor, inWord, inStructureVariable, inArrayBrackets, gscFile.uri);
+                
+                    // Add items for function parameters
+                    this.createParameterItems(completionItems, functionGroup.parameters);
                 }
 
                 if (!config || config.preprocessorItems) {
@@ -322,6 +325,21 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                 description: "(preprocessor)",
                 detail: "",
             }, vscode.CompletionItemKind.Constant));
+        }
+    }
+
+    private static createParameterItems(
+        items: vscode.CompletionItem[],
+        parameters: GscToken[]
+    ) {
+        for (const token of parameters) {
+            console.log(`[createParameterItems] adding token ${token.name}`);
+            const item = new vscode.CompletionItem({
+                label: token.name,
+                description: "(function parameter)",
+                detail: "",
+            }, vscode.CompletionItemKind.Variable);
+            items.push(item);
         }
     }
 

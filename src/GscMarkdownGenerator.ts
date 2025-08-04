@@ -69,10 +69,10 @@ export class GscMarkdownGenerator {
         return md;
     }
 
-    public static generateLocalVariableDescription(varName: string, is_local_var: boolean): vscode.MarkdownString {
+    public static generateLocalVariableDescription(varName: string, type: number): vscode.MarkdownString {
         const md = new vscode.MarkdownString();
         md.appendCodeblock(varName);
-        md.appendMarkdown(`\`${is_local_var ? "Local" : "Global"} variable\``);
+        md.appendMarkdown(`\`${ type === 0 ? "Global variable" : (type === 1 ? "Local variable" : "Function parameter") }\``);
         return md;
     }
 
