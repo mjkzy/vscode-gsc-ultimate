@@ -8,19 +8,18 @@ import { LoggerOutput } from './LoggerOutput';
 
 export class GscReferenceProvider implements vscode.ReferenceProvider {
 
-    static async activate(context: vscode.ExtensionContext) {       
+    static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscReferenceProvider] Activating");
-        
+
         context.subscriptions.push(vscode.languages.registerReferenceProvider('gsc', new GscReferenceProvider()));
     }
 
     async provideReferences(
-        document: vscode.TextDocument, 
-        position: vscode.Position, 
-        context: vscode.ReferenceContext, 
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        context: vscode.ReferenceContext,
         token: vscode.CancellationToken
-    ): Promise<vscode.Location[]> 
-    {
+    ): Promise<vscode.Location[]> {
         try {
             // Get parsed file
             const gscFile = await GscFiles.getFileData(document.uri, false, "provide references");
@@ -39,7 +38,7 @@ export class GscReferenceProvider implements vscode.ReferenceProvider {
         const locations: vscode.Location[] = [];
 
         const gscData = gscFile.data;
-        
+
         // Get group before cursor
         var groupAtCursor = gscData.root.findKeywordAtPosition(position);
         if (groupAtCursor === undefined || groupAtCursor.parent === undefined) {
@@ -60,6 +59,74 @@ export class GscReferenceProvider implements vscode.ReferenceProvider {
 
             }
         }
+        else if (groupAtCursor.type === GroupType.VariableName || groupAtCursor.type === GroupType.VariableNameGlobal) {
+            const token = groupAtCursor.getFirstToken();
+            if (!token) {
+                return locations;
+            }
+
+            const name = token.name;
+
+            const tokenPos = token.range.start;
+
+            // Check if it's inside a function
+            const func = gscData.functions.find(f =>
+                f.rangeScope.start.isBeforeOrEqual(tokenPos) &&
+                f.rangeScope.end.isAfterOrEqual(tokenPos)
+            );
+
+            if (func) {
+                // check local variables (including function parameters)
+                const isParameter = func.parameters.find(p => p.name === name) !== undefined;
+                const matches = [...func.localVariableDefinitions]
+                    .filter(v => v.variableReference.getFirstToken()?.name === name)
+                    .map(v => v.variableReference);
+
+                if (isParameter) {
+                    locations.push(...func.parameters
+                        .filter(p => p.name === name)
+                        .map(p => new vscode.Location(gscFile.uri, p.range))
+                    );
+                }
+
+                // make sure we're not forgetting abt the global variable definition
+                const globalMatch = gscData.globalVariableDefinitions.find(p => p.variableReference.getFirstToken()?.name === name);
+                if (globalMatch !== undefined) {
+                    locations.push(new vscode.Location(gscFile.uri, globalMatch.range));
+                }
+
+                func.group.walk((group) => {
+                    if ((group.type === GroupType.VariableName || group.type === GroupType.VariableNameGlobal) &&
+                        group.getFirstToken()?.name === name
+                    ) {
+                        locations.push(new vscode.Location(gscFile.uri, group.getRange()));
+                    }
+                });
+
+                for (const def of matches) {
+                    locations.push(new vscode.Location(gscFile.uri, def.getRange()));
+                }
+            } else {
+                // global
+                const matches = gscData.globalVariableDefinitions
+                    .filter(v => v.variableReference.getFirstToken()?.name === name)
+                    .map(v => v.variableReference);
+
+                for (const def of matches) {
+                    locations.push(new vscode.Location(gscFile.uri, def.getRange()));
+                }
+
+                gscData.root.walk((group) => {
+                    if ((group.type === GroupType.VariableName || group.type === GroupType.VariableNameGlobal) &&
+                        group.getFirstToken()?.name === name
+                    ) {
+                        locations.push(new vscode.Location(gscFile.uri, group.getRange()));
+                    }
+                });
+            }
+
+        }
+
         return locations;
     }
 
