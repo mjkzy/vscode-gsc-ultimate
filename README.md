@@ -130,6 +130,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
     - Path (eg. `maps\mp\gametypes\sd`)
   - Detection of explicitly typed types of variables (string, localized string, cvar string, vector, integer, float, structure, array, function, entity, bool, xanim)
 - Completion item provider (auto-suggestion)
+    - <b>[NEW]</b> Builtin functions are now CoD4 functions (CoD2 exists for stuff like `getCvar()`)
     - Variables (local to function, global `level` and `game`)
     - Constants
     - Keywords 
@@ -172,17 +173,14 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 ### Priority
 - Add custom global include list of GSC function
 - Support for default function parameter value - supported in newer COD games
-- Improve auto-suggestion for files
 - When renaming GSC file, ask for reference update in other GSC files
 ### Non priority
 - Code action - implement unknown function
 - Add .csc files (client side scripts)
 - Parser for .menu files
-- Integrate list of built-in functions for CoD4
 - Improve detection of variable types - now it's detected only by explicitly assigned constant value
 - Show available string constants for `notify` `waittill` `waittillmatch` `endon` in completion item provider
 - Check for unreachable code
-- Implement rename variable functionality
 
 ## Install
 This extension will soon be available through Visual Studio Marketplace under "vscode-gsc".

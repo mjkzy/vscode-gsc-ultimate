@@ -150,11 +150,16 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                     await this.createFunctionItems(completionItems, inWord, inStructureVariable, inArrayBrackets, gscFile, currentGame);
                 }
 
+                // Add main path folder items
+                if (!config || config.pathItems) {
+                    await this.createPathItems(completionItems, position, groupAtCursor, false);
+                }
+
             } else {
 
                 // Add items for path
                 if (!config || config.pathItems) {
-                    await this.createPathItems(completionItems, position, groupAtCursor);
+                    await this.createPathItems(completionItems, position, groupAtCursor, true);
                 }
             }
 
@@ -442,7 +447,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
     /**
      * Get path before cursor and search for this path in workspace folders.
      */
-    private static async createPathItems(completionItems: vscode.CompletionItem[], position: vscode.Position, groupAtCursor: GscGroup) {
+    private static async createPathItems(completionItems: vscode.CompletionItem[], position: vscode.Position, groupAtCursor: GscGroup, isPathType: boolean) {
 
         const pathBeforeCursor = groupAtCursor.getPathStringBeforePosition(position);
 
@@ -458,68 +463,82 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
             fileSubPath = fileSubPath.replace(/\\/g, '/');
         }
 
-        if (fileSubPath === "") {
+        if (isPathType && fileSubPath === "") {
             //vscode.window.showInformationMessage("not a valid file path");
             return;
         }
 
         // Find any files in workspace that contains this path.
         // Since this function does not return folders, search also for files in subfolder
-        const files = await vscode.workspace.findFiles(`**/${fileSubPath}/{*.gsc,*/*.gsc}`);
+        const searchPattern = fileSubPath === ""
+            ? `**/**`
+            : `**/${fileSubPath}/{*.gsc,*/*.gsc}`;
+        const files = await vscode.workspace.findFiles(searchPattern);
+
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+            return;
+        }
 
         // Debug files
         //files.forEach(f => console.log(f.path));
 
         // Loop files
-        const keywords: { label: string, detail: string, kind: vscode.CompletionItemKind }[] = [];
-        for (const file of files) {
+        const keywords: { label: string, description: string, detail: string, kind: vscode.CompletionItemKind }[] = [];
 
-            // Convert c:/folder1/workspaceFolder/maps/mp/file.gsc  ->  root/workspaceFolder/maps/mp/file.gsc
-            var relativePath = vscode.workspace.asRelativePath(file.path, false);
+        if (isPathType) {
+            for (const file of files) {
+                // Convert c:/folder1/workspaceFolder/maps/mp/file.gsc  ->  root/workspaceFolder/maps/mp/file.gsc
+                let relativePath = vscode.workspace.asRelativePath(file.path, false);
 
-            // Remove the folder prefix that user pre-typed
-            //  root/workspaceFolder/maps/mp/file.gsc       -> file.gsc
-            //  root/workspaceFolder/maps/mp/dir/file.gsc   -> dir/file.gsc
-            const subpathIndex = relativePath.indexOf(fileSubPath);
-            if (subpathIndex !== -1) {
-                var subpathKeyword = relativePath.substring(subpathIndex + fileSubPath.length + 1);
+                // Remove the folder prefix that user pre-typed
+                //  root/workspaceFolder/maps/mp/file.gsc       -> file.gsc
+                //  root/workspaceFolder/maps/mp/dir/file.gsc   -> dir/file.gsc
+                const subpathIndex = relativePath.indexOf(fileSubPath);
+                if (subpathIndex !== -1) {
+                    var subpathKeyword = relativePath.substring(subpathIndex + fileSubPath.length + 1);
 
-                const slashIndex = subpathKeyword.indexOf("/");
+                    const slashIndex = subpathKeyword.indexOf("/");
 
-                // Folder
-                if (slashIndex !== -1) {
-                    const folderName = subpathKeyword.substring(0, slashIndex);
-                    const exists = keywords.some(k => k.label === folderName);
-                    if (!exists) {
-                        keywords.push({ label: folderName, detail: "", kind: vscode.CompletionItemKind.Folder });
+                    // Folder
+                    if (slashIndex !== -1) {
+                        const folderName = subpathKeyword.substring(0, slashIndex);
+                        const exists = keywords.some(k => k.label === folderName);
+                        if (!exists) {
+                            keywords.push({ label: folderName, description: "(folder)", detail: "", kind: vscode.CompletionItemKind.Folder });
+                        }
+                    }
+                    // File
+                    else {
+                        // Get file extension
+                        var re = /(?:\.([^.]+))?$/;
+                        const fileExtension = re.exec(subpathKeyword)?.[1] ?? "";
+                        if (fileExtension.toLowerCase() !== "gsc") {
+                            continue;
+                        }
+                        var fileName = subpathKeyword.substring(0, subpathKeyword.length - 4); // remove .gsc extension from file name
+
+                        keywords.push({ label: fileName, description: "(file)", detail: ".gsc", kind: vscode.CompletionItemKind.File });
                     }
                 }
-                // File
-                else {
-                    // Get file extension
-                    var re = /(?:\.([^.]+))?$/;
-                    const fileExtension = re.exec(subpathKeyword)?.[1] ?? "";
-                    if (fileExtension.toLowerCase() !== "gsc") {
-                        continue;
-                    }
-                    var fileName = subpathKeyword.substring(0, subpathKeyword.length - 4); // remove .gsc extension from file name
+            }
+        } else {
+            const showScripts = files.some(file => file.path.includes("/scripts/") || file.path.endsWith("/scripts") || file.path.includes("\\scripts\\") || file.path.endsWith("\\scripts"));
+            const showMaps = files.some(file => file.path.includes("/maps/") || file.path.endsWith("/maps") || file.path.includes("\\maps\\") || file.path.endsWith("\\maps"));
 
-                    keywords.push({ label: fileName, detail: ".gsc", kind: vscode.CompletionItemKind.File });
-                }
+            if (showScripts) {
+                keywords.push({ label: "scripts", description: "(folder)", detail: "", kind: vscode.CompletionItemKind.Folder });
+            }
+            if (showMaps) {
+                keywords.push({ label: "maps", description: "(folder)", detail: "", kind: vscode.CompletionItemKind.Folder });
             }
         }
 
         // Add completion items
         keywords.forEach(k => {
-            completionItems.push(new vscode.CompletionItem({ label: k.label, description: "", detail: k.detail }, k.kind));
+            completionItems.push(new vscode.CompletionItem({ label: k.label, description: (k.description ? k.description : ""), detail: k.detail }, k.kind));
         });
     }
-
-
-
-
-
-
 
     public static getItemDescriptionFromTypes(types: GscVariableDefinitionType[]) {
         const unknownValueTypes = [GscVariableDefinitionType.UnknownValue, GscVariableDefinitionType.UnknownValueFromFunction, GscVariableDefinitionType.UnknownValueFromVariable];
