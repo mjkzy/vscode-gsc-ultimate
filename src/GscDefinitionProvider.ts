@@ -55,6 +55,7 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
 
             case GroupType.VariableName:
             case GroupType.VariableNameGlobal:
+            case GroupType.Identifier:
                 locations = await this.getVariableDefinitionLocations(gscFile, groupAtCursor);
                 break;
         }
@@ -116,12 +117,14 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
         const tokenName = token.name;
         const tokenPos = token.range.start;
 
+        const macro = gscFile.data.macroVariableDefinitions.find(m => m.name === tokenName);
+
         const func = gscData.functions.find(f =>
             f.rangeScope.start.isBeforeOrEqual(tokenPos) &&
             f.rangeScope.end.isAfterOrEqual(tokenPos)
         );
         if (!func) {
-            return [];
+            return macro ? [new vscode.Location(gscFile.uri, macro.range)] : [];
         }
 
         let function_param = undefined;
@@ -132,20 +135,23 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
             return defToken?.name === tokenName;
         });
 
-        if (!match) {
+        if (!macro && !match) {
             function_param = func.parameters.find(token => token.name === tokenName);
             if (!function_param) {
                 match = gscFile.data.globalVariableDefinitions.find(m => m.variableReference.getFirstToken()?.name === tokenName);
             }
         }
 
-        if (match) {
+        if (macro) {
+            range = macro.range;
+        }
+        else if (match) {
             range = match.range;
         } else if (function_param) {
             range = function_param.range;
         }
 
-        return (match || function_param) ? [new vscode.Location(gscFile.uri, range)] : [];
+        return (macro || match || function_param) ? [new vscode.Location(gscFile.uri, range)] : [];
     }
 
 }
