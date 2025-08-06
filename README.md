@@ -161,6 +161,8 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Adding undefined functions into ignored list
 - Rename provider
   - Function rename
+  - Local & global variable rename
+  - Local file pvscreprocessor rename
 - Call hierarchy
   - Local, external, & included functions shown
 

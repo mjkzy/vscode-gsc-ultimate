@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { GscFiles } from './GscFiles';
 import { GroupType, GscGroup } from './GscFileParser';
-import { GscFunctions } from './GscFunctions';
+import { GscFunction, GscFunctions } from './GscFunctions';
 import { LoggerOutput } from './LoggerOutput';
 import { Issues } from './Issues';
 import { GscFile } from './GscFile';
@@ -39,7 +39,7 @@ export class GscRenameProvider implements vscode.RenameProvider {
             if (locations.length === 0) {
                 return Promise.reject(new Error("Cannot rename this element."));
             }
-    
+
             return document.getWordRangeAtPosition(position) ?? null;
 
         } catch (error) {
@@ -82,8 +82,7 @@ export class GscRenameProvider implements vscode.RenameProvider {
         gscFile: GscFile,
         position: vscode.Position,
         newName?: string
-    ): Promise<vscode.Location[]>
-    {
+    ): Promise<vscode.Location[]> {
         const locations: vscode.Location[] = [];
 
         const gscData = gscFile.data;
@@ -102,7 +101,14 @@ export class GscRenameProvider implements vscode.RenameProvider {
                     LoggerOutput.log(`[GscRenameProvider] Function for rename:  "${location.name}" -> "${newName}"  in ${vscode.workspace.asRelativePath(location.uri)} at ${location.range.start.line}:${location.range.start.character}`);
                 }
                 break;
-        
+
+            case GroupType.VariableName:
+            case GroupType.VariableNameGlobal:
+            case GroupType.Identifier:
+                const varLocations = GscRenameProvider.getRenameEditsForVariable(gscFile, groupAtCursor);
+                locations.push(...varLocations);
+                break;
+
             default:
                 break;
         }
@@ -113,7 +119,7 @@ export class GscRenameProvider implements vscode.RenameProvider {
 
     private static getRenameEditsForFunction(gscFile: GscFile, groupAtCursor: GscGroup): (RenameLocation)[] {
         const locations: RenameLocation[] = [];
-        
+
         // Get function info
         const funcInfo = groupAtCursor.getFunctionReferenceInfo();
         if (funcInfo === undefined) {
@@ -127,7 +133,96 @@ export class GscRenameProvider implements vscode.RenameProvider {
         }
 
         // Add function definitions for rename
-        locations.push(...funcReferences.map((funcRef) => { return {uri: funcRef.uri, range: funcRef.func.getRange(), name: funcRef.func.getTokensAsString()}; }));
+        locations.push(...funcReferences.map((funcRef) => { return { uri: funcRef.uri, range: funcRef.func.getRange(), name: funcRef.func.getTokensAsString() }; }));
+
+        return locations;
+    }
+
+
+    private static getRenameEditsForVariable(gscFile: GscFile, groupAtCursor: GscGroup): (RenameLocation)[] {
+        const locations: RenameLocation[] = [];
+
+        const token = groupAtCursor.getFirstToken();
+        if (!token) { return locations; };
+
+        const variableName = token.name;
+        const gscData = gscFile.data;
+
+        let macro = gscData.macroVariableDefinitions.find(v => v.name === variableName);
+
+        const globalMatch = gscData.globalVariableDefinitions.find(v =>
+            v.variableReference.getFirstToken()?.name === variableName
+        );
+
+        if (macro) {
+            // walk through entire file for every reference of macro
+            gscData.root.walk(group => {
+                if (group.type === GroupType.Identifier || group.type === GroupType.VariableName) {
+                    const tok = group.getFirstToken();
+                    if (tok?.name === variableName) {
+                        locations.push({
+                            uri: gscFile.uri,
+                            range: tok.range,
+                            name: variableName
+                        });
+                    }
+                }
+            });
+        }
+        else if (globalMatch) {
+            for (const ref of gscData.globalVariableDefinitions.filter(r =>
+                r.variableReference.getFirstToken()?.name === variableName
+            )) {
+                locations.push({
+                    uri: gscFile.uri,
+                    range: ref.range,
+                    name: variableName
+                });
+            }
+
+            // check each function body for this global variable
+            for (const func of gscData.functions) {
+                func.group.walk(group => {
+                    if (
+                        group.type === GroupType.VariableName ||
+                        group.type === GroupType.VariableNameGlobal
+                    ) {
+                        const token = group.getFirstToken();
+                        if (token?.name === variableName) {
+                            locations.push({
+                                uri: gscFile.uri,
+                                range: token.range,
+                                name: variableName
+                            });
+                        }
+                    }
+                });
+            }
+
+            return locations;
+        }
+
+        const tokenPos = token.range.start;
+        const enclosingFunction = gscData.functions.find(func =>
+            func.range.start.isBeforeOrEqual(tokenPos) &&
+            func.range.end.isAfterOrEqual(tokenPos)
+        );
+
+        // walk through the function to get each reference of local variable names
+        if (!macro && enclosingFunction) {
+            enclosingFunction.group.walk(group => {
+                if (group.type === GroupType.VariableName) {
+                    const tok = group.getFirstToken();
+                    if (tok?.name === variableName) {
+                        locations.push({
+                            uri: gscFile.uri,
+                            range: tok.range,
+                            name: variableName
+                        });
+                    }
+                }
+            });
+        }
 
         return locations;
     }
