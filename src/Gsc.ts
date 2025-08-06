@@ -15,6 +15,8 @@ import { GscRenameProvider } from './GscRenameProvider';
 import { LoggerOutput } from './LoggerOutput';
 import { Events } from './Events';
 
+import { GscCallHierarchyProvider } from './GscCallHierarchyProvider';
+
 
 export class Gsc {
 
@@ -37,6 +39,7 @@ export class Gsc {
             await GscHoverProvider.activate(context);
             await GscRenameProvider.activate(context);
             await GscStatusBar.activate(context);
+            await GscCallHierarchyProvider.activate(context);
 
             Events.GscActivated();
         } catch (error) {
