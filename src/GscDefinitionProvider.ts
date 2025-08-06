@@ -54,6 +54,7 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
                 break;
 
             case GroupType.VariableName:
+            case GroupType.VariableNameGlobal:
                 locations = await this.getVariableDefinitionLocations(gscFile, groupAtCursor);
                 break;
         }
@@ -133,6 +134,9 @@ export class GscDefinitionProvider implements vscode.DefinitionProvider {
 
         if (!match) {
             function_param = func.parameters.find(token => token.name === tokenName);
+            if (!function_param) {
+                match = gscFile.data.globalVariableDefinitions.find(m => m.variableReference.getFirstToken()?.name === tokenName);
+            }
         }
 
         if (match) {
