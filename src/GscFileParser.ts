@@ -1949,16 +1949,10 @@ export class GscFileParser {
                     group.solved = keyword === "#define" && !!macroName;
                     break;
 
+                // TODO: implement solving for #if, #ifdef
                 case GroupType.PreprocessorStatementIf:
-                    console.log("PreprocessorStatementIf");
-                    group.solved = true;
-                    break;
                 case GroupType.PreprocessorStatementIfdef:
-                    console.log("PreprocessorStatementIfdef");
-                    group.solved = true;
-                    break;
                 case GroupType.PreprocessorStatementEndif:
-                    console.log("PreprocessorStatementEndif");
                     group.solved = true;
                     break;
 
