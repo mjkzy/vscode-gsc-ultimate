@@ -389,8 +389,9 @@ export class GscDiagnosticsCollection {
                                         break;
                                     }
 
-                                    const isLocal = definedLocalVariables.has(name);
-                                    const isMacro = gscFile.data.macroVariableDefinitions.some(m => m.name === name);
+                                    const isLocal   = definedLocalVariables.has(name);
+                                    const isGlobal  = gscFile.data.globalVariableDefinitions.some(m => m.variableReference.getFirstToken()?.name === name);
+                                    const isMacro   = gscFile.data.macroVariableDefinitions.some(m => m.name === name);
 
                                     // check if the macro is included via #inline and that macro has the data we need
                                     let isInlineMacro = false;
@@ -402,7 +403,7 @@ export class GscDiagnosticsCollection {
                                         }
                                     }
 
-                                    if (!isLocal && !isMacro && !isInlineMacro) {
+                                    if (!isLocal && !isGlobal && !isMacro && !isInlineMacro) {
                                         return new vscode.Diagnostic(
                                             group.getRange(),
                                             `Variable '${name}' is used before it is defined.`,
