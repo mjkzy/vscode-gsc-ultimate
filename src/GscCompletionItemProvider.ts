@@ -114,7 +114,10 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                 if (!config || config.variableItems) {
                     // Add items for variables like level.aaa, game["bbb"] and local1.aaa[0][1]
                     this.createVariableItems(completionItems, functionGroup.localVariableDefinitions, variableBeforeCursor, inWord, inStructureVariable, inArrayBrackets, gscFile.uri);
-                
+
+                    // Add items for global variables not defined in a function scope
+                    this.createGlobalVariableItems(completionItems, gscFile.data.globalVariableDefinitions);
+
                     // Add items for function parameters
                     this.createParameterItems(completionItems, functionGroup.parameters);
                 }
@@ -310,6 +313,22 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
             }, i.kind));
         });
 
+    }
+
+    private static createGlobalVariableItems(completionItems: vscode.CompletionItem[], globalVariableDefinitions: GscVariableDefinition[]) {
+        // Global variables
+        globalVariableDefinitions.forEach(g => {
+            getCompletionItemFromVariableDefinition(g);
+        });
+
+        function getCompletionItemFromVariableDefinition(g: GscVariableDefinition) {
+            let types = new Set<GscVariableDefinitionType>([g.type]);
+            completionItems.push(new vscode.CompletionItem({
+                label: g.variableReference.getFirstToken()?.name,
+                description: GscCompletionItemProvider.getItemDescriptionFromTypes([...types]),
+                detail: ""
+            }, vscode.CompletionItemKind.Constant));
+        }
     }
 
     private static createPreprocessorItems(completionItems: vscode.CompletionItem[], localVariableDefinitions: GscMacroDefinition[]) {
