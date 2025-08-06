@@ -7,7 +7,7 @@ import { ConfigErrorDiagnostics, GscConfig } from './GscConfig';
 import { GscFunctions, GscFunctionState, GscMacroDefinition } from './GscFunctions';
 import { Issues } from './Issues';
 import { LoggerOutput } from './LoggerOutput';
-import { GscMarkdownGenerator } from './GscMarkdownGenerator';
+import { GscMarkdownGenerator, KeywordType } from './GscMarkdownGenerator';
 
 export class GscHoverProvider implements vscode.HoverProvider {
 
@@ -144,13 +144,12 @@ export class GscHoverProvider implements vscode.HoverProvider {
                             markdown.appendMarkdown(preDefFunc.generateMarkdownDescription(true).value);
                         } else {
                             // There would be error by diagnostics, unless disabled
-                            if (errorDiagnosticsDisabled)
-                            {
+                            if (errorDiagnosticsDisabled) {
                                 GscHoverProvider.markdownAppendFunctionWasNotFound(markdown, funcInfo.name, funcInfo.path);
                                 markdown.appendText(`\n\n🛈 Error diagnostics disabled via workspace settings`);
                             }
                         }
-                    
+
                         break;
                 }
 
@@ -172,7 +171,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
                 return undefined;
             }
 
-            if (["self", "level", "game", "anim"].includes(cursorVariable.name)) { 
+            if (["self", "level", "game", "anim"].includes(cursorVariable.name)) {
                 return undefined;
             }
 
@@ -191,31 +190,38 @@ export class GscHoverProvider implements vscode.HoverProvider {
                     f.rangeScope.start.isBeforeOrEqual(tokenPos) &&
                     f.rangeScope.end.isAfterOrEqual(tokenPos)
                 );
-                if (!func) {
-                    return undefined;
-                }
 
-                const match = func.localVariableDefinitions.find(def => {
-                    const defToken = def.variableReference.getFirstToken();
-                    return defToken?.name === cursorVariable.name;
-                });
-
+                let keyword_type = KeywordType.Local;
                 let variableDefineLine = cursorVariable.name;
-                if (match) {
-                    variableDefineLine = `${cursorVariable.name} = ${match.fullValue};`;
+
+                if (func) {
+                    const match = func.localVariableDefinitions.find(def => {
+                        const defToken = def.variableReference.getFirstToken();
+                        return defToken?.name === cursorVariable.name;
+                    });
+
+                    if (match) {
+                        variableDefineLine = `${cursorVariable.name} = ${match.fullValue};`;
+                    }
                 }
 
-                // TODO: this is meme but works for now lmfao
-                let type = 0;
-                if ( func.parameters.find(token => token.name === cursorVariable.name) !== undefined ) {
-                    type = 2;
+                if (func && func.parameters.length > 0 && func.parameters.find(token => token.name === cursorVariable.name) !== undefined) {
+                    keyword_type = KeywordType.FunctionParameter;
                 }
-                else if (groupAtCursor?.type === GroupType.VariableName) {
-                    type = 1;
-                }
-                
+                else {
+                    // sanity check its not actually a global variable we're looking at
+                    // check all global variables (VariableNameGroup) in root of file
+                    const globalMatch = gscData.globalVariableDefinitions.find(def =>
+                        def.variableReference.getFirstToken()?.name === cursorVariable.name
+                    );
 
-                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableDefineLine, type);
+                    if (globalMatch) {
+                        variableDefineLine = `${cursorVariable.name} = ${globalMatch.fullValue};`;
+                        keyword_type = KeywordType.Global;
+                    }
+                }
+
+                markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableDefineLine, keyword_type);
             }
         } else if (document && groupAtCursor?.type === GroupType.Identifier) {
             const cursorVariable = groupAtCursor?.getTokensAsString();

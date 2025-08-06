@@ -4,6 +4,12 @@ import { GscFile } from './GscFile';
 import { ConfigErrorDiagnostics } from './GscConfig';
 import { GscFunction, GscMacroDefinition } from './GscFunctions';
 
+export enum KeywordType {
+    Global,
+    Local,
+    FunctionParameter,
+}
+
 export class GscMarkdownGenerator {
 
     /**
@@ -69,20 +75,33 @@ export class GscMarkdownGenerator {
         return md;
     }
 
-    public static generateLocalVariableDescription(varName: string, type: number): vscode.MarkdownString {
+    public static getVariableType(type: KeywordType): string {
+        switch (type) {
+            case KeywordType.Global:
+                return "Global variable";
+            case KeywordType.Local:
+                return "Local variable";
+            case KeywordType.FunctionParameter:
+                return "Function parameter";
+            default:
+                return "Unknown";
+        }
+    }
+
+    public static generateLocalVariableDescription(varName: string, type: KeywordType): vscode.MarkdownString {
         const md = new vscode.MarkdownString();
         md.appendCodeblock(varName);
-        md.appendMarkdown(`\`${ type === 0 ? "Global variable" : (type === 1 ? "Local variable" : "Function parameter") }\``);
+        md.appendMarkdown(`\`${ GscMarkdownGenerator.getVariableType(type) }\``);
         return md;
     }
 
-    public static generatePreprocessorDescription(macro: GscMacroDefinition, isInlineMacro: boolean = false, inlinePath : string = ""): vscode.MarkdownString {
+    public static generatePreprocessorDescription(macro: GscMacroDefinition, isInlineMacro: boolean = false, inlinePath: string = ""): vscode.MarkdownString {
         const md = new vscode.MarkdownString();
         md.appendCodeblock(`#define ${macro.name} ${macro.value?.getTokensAsString()}`);
         md.appendMarkdown(`\`Preprocessor macro\``);
 
         if (isInlineMacro) {
-            md.appendMarkdown(`\n\nFile: \`${ vscode.workspace.asRelativePath(inlinePath, true) }\``);
+            md.appendMarkdown(`\n\nFile: \`${vscode.workspace.asRelativePath(inlinePath, true)}\``);
         }
 
         return md;

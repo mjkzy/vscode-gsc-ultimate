@@ -2387,7 +2387,7 @@ export class GscFileParser {
                             && parentGroup.getFirstToken().name === "#include" || parentGroup.getFirstToken().name === "#inline") {
                             // Add path to includes - duplicate paths are ignored via Set<>
                             data.includes.add(innerGroup.getTokensAsString());
-                            
+
                             if (parentGroup.getFirstToken().name === "#inline") {
                                 data.inlines.add(innerGroup.getTokensAsString());
                             }
@@ -2473,7 +2473,7 @@ export class GscFileParser {
                     case GroupType.Statement:
 
                         // varName = ...;    varNameStruct.aaa = ...;
-                        if (lastFunction !== undefined && innerGroup.items.length >= 2 &&
+                        if (innerGroup.items.length >= 2 &&
                             innerGroup.items[0].type === GroupType.Reference &&
                             innerGroup.items[0].items.length >= 1 &&
                             innerGroup.items[1].type === GroupType.Token &&
@@ -2482,7 +2482,10 @@ export class GscFileParser {
                             const variableReference = innerGroup.items[0];
                             const firstToken = variableReference.getFirstToken();
 
-                            if (firstToken.name === "level") {
+                            if (lastFunction === undefined) {
+                                addDefinition(data.globalVariableDefinitions, innerGroup.items[2].getTokensAsString(), variableReference);
+                            }
+                            else if (firstToken.name === "level") {
                                 addDefinition(data.levelVariablesDefinitions, innerGroup.items[2].getTokensAsString(), variableReference);
                             } else if (firstToken.name === "game") {
                                 addDefinition(data.gameVariablesDefinitions, innerGroup.items[2].getTokensAsString(), variableReference);
@@ -3450,6 +3453,7 @@ export class GscData {
     macroVariableDefinitions: GscMacroDefinition[] = [];
     levelVariablesDefinitions: GscVariableDefinition[] = [];
     gameVariablesDefinitions: GscVariableDefinition[] = [];
+    globalVariableDefinitions: GscVariableDefinition[] = [];
 
     /** Unique set of paths included via #include */
     includes: Set<string> = new Set();
