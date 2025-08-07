@@ -165,6 +165,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
             }
 
             markdown = GscMarkdownGenerator.generateFilePathDescription(fileReferences, gscFile, path);
+
         } else if (groupAtCursor?.type === GroupType.VariableName || groupAtCursor?.type === GroupType.VariableNameGlobal) {
             const cursorVariable = groupAtCursor?.getFirstToken();
             if (!cursorVariable) {
@@ -223,7 +224,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
                 markdown = GscMarkdownGenerator.generateLocalVariableDescription(variableDefineLine, keyword_type);
             }
-        } else if (document && groupAtCursor?.type === GroupType.Identifier) {
+        } else if (groupAtCursor?.type === GroupType.Identifier) {
             const cursorVariable = groupAtCursor?.getTokensAsString();
             const parent = groupAtCursor.parent;
 
@@ -231,10 +232,18 @@ export class GscHoverProvider implements vscode.HoverProvider {
                 || parent?.type === GroupType.PreprocessorStatementIfdef
                 || parent?.type === GroupType.PreprocessorStatementDefine;
 
-            if (cursorVariable && isMacroStatement) {
-                const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, cursorVariable);
-                if (macro) {
-                    markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
+            if (cursorVariable) {
+                // macro preprocessors
+                if (isMacroStatement) {
+                    const [macro, isInlineMacro, inlinePath] = GscHoverProvider.getMacroForHover(gscFile, cursorVariable);
+                    if (macro) {
+                        markdown = GscMarkdownGenerator.generatePreprocessorDescription(macro, isInlineMacro, inlinePath);
+                    }
+                }
+
+                // namespace
+                if (parent?.type === GroupType.PreprocessorStatementNamespace) {
+                    markdown = GscMarkdownGenerator.generateLocalVariableDescription(`#namespace ${cursorVariable};`, KeywordType.Namespace);
                 }
             }
         }

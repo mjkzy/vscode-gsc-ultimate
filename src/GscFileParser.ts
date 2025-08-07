@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { GscFunction, GscMacroDefinition, GscVariableDefinition } from './GscFunctions';
+import { GscFunction, GscMacroDefinition, GscNamespaceDefinition, GscVariableDefinition } from './GscFunctions';
 
 
 export enum GroupType {
@@ -2471,6 +2471,21 @@ export class GscFileParser {
                             });
                         }
 
+                    // Save namespace definition
+                    case GroupType.PreprocessorStatementNamespace:
+                        if (innerGroup.items.length >= 2 &&
+                            innerGroup.items[0].type === GroupType.ReservedKeyword &&
+                            innerGroup.items[0].getSingleToken()?.name === "#namespace" &&
+                            innerGroup.items[1].type === GroupType.Identifier) {
+
+                            const macroName = innerGroup.items[1].getSingleToken()!.name;
+
+                            data.namespaceDefinition = {
+                                name: macroName,
+                                range: innerGroup.getRange()
+                            };
+                        }
+
                     // Save variable definitions
                     case GroupType.Statement:
 
@@ -3451,6 +3466,9 @@ export class GscGroup {
 
 export class GscData {
     root: GscGroup;
+
+    namespaceDefinition: GscNamespaceDefinition | undefined = undefined;
+
     functions: GscFunction[] = [];
     macroVariableDefinitions: GscMacroDefinition[] = [];
     levelVariablesDefinitions: GscVariableDefinition[] = [];

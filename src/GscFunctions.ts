@@ -50,13 +50,17 @@ export type GscMacroDefinition = {
     range: vscode.Range;
 };
 
+export type GscNamespaceDefinition = {
+    name: string;
+    range: vscode.Range;
+}
+
 export type GscVariableDefinition = {
     variableReference: GscGroup,
     type: GscVariableDefinitionType,
     fullValue: string,
     range: vscode.Range;
 };
-
 
 export type GscFunctionReference = {
     func: GscGroup, 

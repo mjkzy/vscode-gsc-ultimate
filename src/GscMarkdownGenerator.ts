@@ -8,6 +8,7 @@ export enum KeywordType {
     Global,
     Local,
     FunctionParameter,
+    Namespace,
 }
 
 export class GscMarkdownGenerator {
@@ -83,6 +84,8 @@ export class GscMarkdownGenerator {
                 return "Local variable";
             case KeywordType.FunctionParameter:
                 return "Function parameter";
+            case KeywordType.Namespace:
+                return "Namespace definition";
             default:
                 return "Unknown";
         }
