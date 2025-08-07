@@ -58,7 +58,6 @@ export class GscHoverProvider implements vscode.HoverProvider {
         if (groupAtCursor?.type === GroupType.FunctionName) {
             const funcInfo = groupAtCursor.getFunctionReferenceInfo();
             if (funcInfo !== undefined) {
-
                 const res = GscFunctions.getFunctionReferenceState({ name: funcInfo.name, path: funcInfo.path }, gscFile);
 
                 switch (res.state as GscFunctionState) {
@@ -152,8 +151,6 @@ export class GscHoverProvider implements vscode.HoverProvider {
 
                         break;
                 }
-
-
             }
 
         } else if (groupAtCursor?.type === GroupType.Path) {

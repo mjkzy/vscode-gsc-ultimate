@@ -18,10 +18,10 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
 | MW2            | IW4  | ✅ |                                                                                  |
 | BO1            | T5   | ✅ |                                                                                  |
 | MW3            | IW5  | ✅ |                                                                                  |
-| BO2            | T6   | ❗ | order of file references, `#insert`, param default value, autoexec, const, `%xxx::yyy` |
+| BO2            | T6   | ❗ | order of file references, `#insert`, param default value, const, `%xxx::yyy`     |
 | Ghosts         | IW6  | ✅ |                                                                                  |
 | AW             | S1   | ✅ |                                                                                  |
-| BO3            | T7   | ❌ | `#namespace`, `function`, `.gscc`, `.csc`, `.cscc`                     |
+| BO3            | T7   | ❌ | `.gscc`, `.csc`, `.cscc`                                                         |
 | IW             | IW7  | ✅ |                                                                                  |
 | CoD4:MWR       | H1   | ❗ | param default value                                                              |
 | WWII           | S2   | ❔ |                                                                                  |
@@ -158,6 +158,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Function info with single & multi-line comments <b><i>(TODO: add ScriptDoc comments)</i></b>
   - Path info
   - QoL variable and preprocessor info (including function parameters)
+  - Namespace definition
 - Code action provider
   - Adding missing files into ignored list
   - Adding undefined functions into ignored list

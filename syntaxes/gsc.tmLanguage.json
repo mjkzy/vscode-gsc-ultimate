@@ -262,7 +262,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.gsc",
-					"match": "\\b(break(point)?|case|continue|default|else|for|foreach|if|return|switch|thread|waittill|waittillmatch|waittillframeend|while|do|wait|endon|notify|function|private)\\b"
+					"match": "\\b(break(point)?|case|continue|default|else|for|foreach|if|return|switch|thread|waittill|waittillmatch|waittillframeend|while|do|wait|endon|notify|function|private|autoexec)\\b"
 				},
 				{
 					"name": "variable.language",
