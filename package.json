@@ -2,7 +2,7 @@
   "name": "vscode-gsc-ultimate",
   "displayName": "Call of Duty GSC",
   "description": "The best VSCode extension for .GSC (& .GSH) scripts used in Call of Duty games",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "mjkzy",
   "icon": "logo.png",
   "license": "LGPL-3.0-or-later",
