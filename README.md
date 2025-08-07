@@ -135,7 +135,8 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
     - Constants
     - Keywords 
     - File path
-    - Function definitions
+    - Local & included function definitions
+    - External function definitions
 - Diagnostics (errors and warnings)
   - Syntax error
     - Unexpected tokens

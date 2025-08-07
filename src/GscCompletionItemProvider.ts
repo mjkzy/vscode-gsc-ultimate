@@ -22,7 +22,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
     static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscCompletionItemProvider] Activating");
 
-        context.subscriptions.push(vscode.languages.registerCompletionItemProvider('gsc', new GscCompletionItemProvider(), '\\', '.', '[', ']'));
+        context.subscriptions.push(vscode.languages.registerCompletionItemProvider('gsc', new GscCompletionItemProvider(), '\\', '.', '[', ']', ':'));
     }
 
     async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken
@@ -108,8 +108,55 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                 (variableBeforeCursor.at(-1) === "[") // xxx[
             );
 
-
             if (groupAtCursor.type !== GroupType.Path) {
+
+                // Add items for predefined functions
+                if (!config || config.functionItems) {
+                    const token = groupAtCursor.getFirstToken();
+                    if (token?.name === ":") {
+                        return completionItems;
+                    }
+
+                    // grab path from FunctionPointerExternal
+                    let functionPointerExternal: GscGroup | undefined;
+
+                    if (groupAtCursor.type === GroupType.Token &&
+                        groupAtCursor.parent?.type === GroupType.FunctionPointer &&
+                        groupAtCursor.parent.parent?.type === GroupType.FunctionPointerExternal
+                    ) {
+                        const functionPointerExternal = groupAtCursor.parent.parent;
+                        const pathGroup = functionPointerExternal.items[0];
+                        if (pathGroup?.type === GroupType.Path) {
+                            const rawPath = pathGroup.getTokensAsString().replace(/\\/g, "/");
+                            const refFile = GscFiles.getReferencedFileForFile(gscFile, rawPath);
+                            if (refFile) {
+                                const functions = refFile.gscFile.data.functions;
+
+                                for (const func of functions) {
+                                    const paramList = func.parameters.map(p => p.name).join(", ");
+                                    const funcNameWithParams = `${func.name}(${paramList})`;
+
+                                    const item = new vscode.CompletionItem(func.name, vscode.CompletionItemKind.Function);
+                                    item.insertText = funcNameWithParams;
+                                    item.label = {
+                                        label: func.name,
+                                        description: `(${rawPath})`,
+                                        detail: `(${paramList})`,
+                                    };
+                                    item.detail = `(${paramList})`;
+                                    item.documentation = `Function from "${rawPath}"`;
+
+                                    completionItems.push(item);
+                                }
+                            }
+
+                            return completionItems;
+                        }
+                    }
+
+                    await this.createFunctionItems(completionItems, inWord, inStructureVariable, inArrayBrackets, gscFile, currentGame);
+
+                }
 
                 if (!config || config.variableItems) {
                     // Add items for variables like level.aaa, game["bbb"] and local1.aaa[0][1]
@@ -143,11 +190,6 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                 // Add items for predefined functions
                 if (!config || config.functionPredefinedItems) {
                     await this.createPredefinedFunctionItems(completionItems, inWord, inStructureVariable, inArrayBrackets, currentGame);
-                }
-
-                // Add items for predefined functions
-                if (!config || config.functionItems) {
-                    await this.createFunctionItems(completionItems, inWord, inStructureVariable, inArrayBrackets, gscFile, currentGame);
                 }
 
                 // Add main path folder items
