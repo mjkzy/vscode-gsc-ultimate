@@ -33,6 +33,7 @@
           "gsc"
         ],
         "extensions": [
+          ".csc",
           ".gsc",
           ".gsh"
         ],

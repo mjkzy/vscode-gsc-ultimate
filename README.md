@@ -21,7 +21,7 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
 | BO2            | T6   | ❗ | order of file references, `#insert`, param default value, const, `%xxx::yyy`     |
 | Ghosts         | IW6  | ✅ |                                                                                  |
 | AW             | S1   | ✅ |                                                                                  |
-| BO3            | T7   | ❌ | `.gscc`, `.csc`, `.cscc`                                                         |
+| BO3            | T7   | ❌ | `.gscc`, `.cscc`                                                                 |
 | IW             | IW7  | ✅ |                                                                                  |
 | CoD4:MWR       | H1   | ❗ | param default value                                                              |
 | WWII           | S2   | ❔ |                                                                                  |
