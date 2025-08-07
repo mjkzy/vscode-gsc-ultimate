@@ -27,6 +27,9 @@
 			"include2": "#include"
 		},
 		{
+			"include2": "#using"
+		},
+		{
 			"include2": "#inline"
 		},
 		{
@@ -188,6 +191,23 @@
 				}
 			]
 		},
+		"using": {
+			"comment": "Example: #using maps\\mp\\gametypes",
+			"name": "meta.preprocessor.using.gsc",
+			"begin": "(#using)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.using.gsc"
+				}
+			},
+			"end": ";",
+			"patterns": [
+				{
+					"name": "entity.name.class.gsc",
+					"match": "[A-Za-z_][A-Za-z_0-9]*(\\\\[A-Za-z_][A-Za-z_0-9]*)*"
+				}
+			]
+		},
 		"inline": {
 			"comment": "Example: #inline maps\\mp\\gametypes",
 			"name": "meta.preprocessor.inline.gsc",
@@ -225,7 +245,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.gsc",
-					"match": "\\b(break(point)?|case|continue|default|else|for|foreach|if|return|switch|thread|waittill|waittillmatch|waittillframeend|while|do|wait|endon|notify)\\b"
+					"match": "\\b(break(point)?|case|continue|default|else|for|foreach|if|return|switch|thread|waittill|waittillmatch|waittillframeend|while|do|wait|endon|notify|function|private)\\b"
 				},
 				{
 					"name": "variable.language",

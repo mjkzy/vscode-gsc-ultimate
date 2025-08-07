@@ -62,7 +62,7 @@ export enum GroupType {
     Statement,
     /** Statement like a=1 or a+=1 or a++ terminated with ; */
     TerminatedStatement,
-    /** Statement like #include path\name */
+    /** Statement like #include path\name (or #using) */
     PreprocessorStatement,
     /** Statement like #inline path\name */
     PreprocessorStatementInline,
@@ -74,7 +74,7 @@ export enum GroupType {
     PreprocessorStatementIf,
     /** Statement like #endif */
     PreprocessorStatementEndif,
-    /** Statement like #include path\name terminated with ; */
+    /** Statement like #include path\name terminated with ; or (#using) */
     TerminatedPreprocessorStatement,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementInline,
@@ -2093,6 +2093,9 @@ export class GscFileParser {
         group_byKeywordNameAndGroup(["#include"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.Path);
 
+        group_byKeywordNameAndGroup(["#using"],
+            [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.Path);
+
         group_byKeywordNameAndGroup(["#inline"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
 
@@ -2375,10 +2378,13 @@ export class GscFileParser {
 
                 switch (innerGroup.type as GroupType) {
 
-                    // Save #include and #inline path
+                    // Save include and inlines paths
                     case GroupType.Path:
                         if ((parentGroup.type === GroupType.PreprocessorStatement || parentGroup.type === GroupType.PreprocessorStatementInline)
-                            && parentGroup.getFirstToken().name === "#include" || parentGroup.getFirstToken().name === "#inline") {
+                            && (parentGroup.getFirstToken().name === "#include" ||
+                                parentGroup.getFirstToken().name === "#inline"  ||
+                                parentGroup.getFirstToken().name === "#using"
+                            )) {
                             // Add path to includes - duplicate paths are ignored via Set<>
                             data.includes.add(innerGroup.getTokensAsString());
 

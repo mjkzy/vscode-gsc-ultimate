@@ -9,29 +9,29 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
 
 ## Supported Games
 
-| Game           | Code | Status             | Not working yet                                                                 |
-|----------------|------|--------------------|----------------------------------------------------------------------------------|
-| CoD1           | IW1  | ✅ Supported        |                                                                                  |
-| CoD2           | IW2  | ✅ Supported        |                                                                                  |
-| CoD4           | IW3  | ✅ Supported        |                                                                                  |
-| CoD5           | T4   | ✅ Supported        |                                                                                  |
-| MW2            | IW4  | ✅ Supported        |                                                                                  |
-| BO1            | T5   | ✅ Supported        |                                                                                  |
-| MW3            | IW5  | ✅ Supported        |                                                                                  |
-| BO2            | T6   | ❗ Tested, errors   | order of file references, `#insert`, `#define`, param default value, autoexec, const, `%xxx::yyy` |
-| Ghosts         | IW6  | ❔                  |                                                                                  |
-| AW             | S1   | ❔                  |                                                                                  |
-| BO3            | T7   | ❌                 | `#using`, `#namespace`, `function`, `.gscc`, `.csc`, `.cscc`                      |
-| IW             | IW7  | ❔                  |                                                                                  |
-| CoD4:MWR       | H1   | ❗ Tested, errors   | param default value                                                              |
-| WWII           | S2   | ❔                  |                                                                                  |
-| BO4            | T8   | ❌                 |                                                                                  |
-| MW (2019)      | IW8  | ❌                 |                                                                                  |
-| BOCW           | T9   | ❌                 |                                                                                  |
-| Vanguard       | S3   | ❌                 |                                                                                  |
-| MWII           | IW9  | ❌                 |                                                                                  |
-| MWIII          | S4   | ❌                 |                                                                                  |
-| BO6            | T10  | ❌                 |                                                                                  |
+| Game           | Code | Status             | Not working yet                                                   |
+|----------------|------|--------------------|------------------------------------------------------------------ |
+| CoD1           | IW1  | ✅ |                                                                                  |
+| CoD2           | IW2  | ✅ |                                                                                  |
+| CoD4           | IW3  | ✅ |                                                                                  |
+| CoD5           | T4   | ✅ |                                                                                  |
+| MW2            | IW4  | ✅ |                                                                                  |
+| BO1            | T5   | ✅ |                                                                                  |
+| MW3            | IW5  | ✅ |                                                                                  |
+| BO2            | T6   | ❗ | order of file references, `#insert`, param default value, autoexec, const, `%xxx::yyy` |
+| Ghosts         | IW6  | ✅ |                                                                                  |
+| AW             | S1   | ✅ |                                                                                  |
+| BO3            | T7   | ❌ | `#namespace`, `function`, `.gscc`, `.csc`, `.cscc`                     |
+| IW             | IW7  | ✅ |                                                                                  |
+| CoD4:MWR       | H1   | ❗ | param default value                                                              |
+| WWII           | S2   | ❔ |                                                                                  |
+| BO4            | T8   | ❌ |                                                                                  |
+| MW (2019)      | IW8  | ❌ |                                                                                  |
+| BOCW           | T9   | ❌ |                                                                                  |
+| Vanguard       | S3   | ❌ |                                                                                  |
+| MWII           | IW9  | ❌ |                                                                                  |
+| MWIII          | S4   | ❌ |                                                                                  |
+| BO6            | T10  | ❌ |                                                                                  |
 
 ## Features
 
@@ -50,7 +50,7 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
   <img src="images/vscode-completion-6.png" width="30%">
 </div>
 
-### Diagnostics (error messages, invalid file for #include, possible missing semicolon)
+### Diagnostics (error messages, invalid file for #include/#using, possible missing semicolon)
 <div align="center">
   <img src="images/vscode-diagnostics-1.png" width="30%">
   <img src="images/vscode-diagnostics-include.png" width="30%">
@@ -121,7 +121,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   - Syntax parser
     - Comments (`/*...*/`, `//...`)
     - Developer blocks (`/# ... #/`, `/@ ... @/`)
-    - Preprocessor (`#include`, `#using_animtree`, `#animtree`, `#define`, `#if`, `#ifdef`, `#else`, `#endif`, `#undef`)
+    - Preprocessor (`#include`, `#using` (3arc), `#using_animtree`, `#animtree`, `#define`, `#if`, `#ifdef`, `#else`, `#endif`, `#undef`)
     - Keywords (`return`, `if`, `else`, `for`, `foreach`, `while`, `do-while`, `switch`, `continue`, `break`, `case`, `default`, `childthread`, `call`, `thread`, `wait`, `waittillframeend`, `waittill`, `waittillmatch`, `endon`, `notify`, `breakpoint`)
     - Operators (`=`, `+=`, `-=`, `*=`, `/=`, `%=`, `|=`, `&=`, `^=`, `++`, `--`, `+`, `-`, `*`, `/`, `%`, `|`, `&`, `^`, `<<`, `>>`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, `||`, `!`, `~`)
     - Strings (`"default"`, `&"STRING_LOCALIZED"`, `#"sv_cvar_string"`)
@@ -151,7 +151,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - Definition and Reference provider
   - Local functions (`funcName()`)
   - External functions (`maps\mp\gametypes\file::funcName()`)
-  - Included functions (via `#include`)
+  - Included functions (via `#include` or `#using` in T7-T9)
   - Local & global variables (including function parameters)
   - Macros
 - Hover provider

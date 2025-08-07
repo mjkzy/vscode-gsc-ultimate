@@ -210,7 +210,7 @@ export class GscDiagnosticsCollection {
                                     // Save only #include paths  
                                     if (
                                         group.parent?.type === GroupType.PreprocessorStatement || group.parent?.type === GroupType.PreprocessorStatementInline
-                                        && group.parent.items.at(0)?.isReservedKeywordOfName("#include", "#inline") === true
+                                        && group.parent.items.at(0)?.isReservedKeywordOfName("#include", "#inline", "#using") === true
                                     ) {
                                         groupIncludedPaths.push({ group, uri });
                                     }
@@ -530,7 +530,7 @@ export class GscDiagnosticsCollection {
                 count++;
             }
             if (count >= 2) {
-                return new vscode.Diagnostic(group.getRange(), "Duplicate #include/#inline file path", vscode.DiagnosticSeverity.Error);
+                return new vscode.Diagnostic(group.getRange(), "Duplicate file path being referenced", vscode.DiagnosticSeverity.Error);
             }
         }
 
