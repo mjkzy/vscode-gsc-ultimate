@@ -134,7 +134,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
                                 for (const func of functions) {
                                     const paramList = func.parameters.map(p => p.name).join(", ");
-                                    const funcNameWithParams = `${func.name}(${paramList})`;
+                                    const funcNameWithParams = new vscode.SnippetString(`${func.name}(${paramList})`);
 
                                     const item = new vscode.CompletionItem(func.name, vscode.CompletionItemKind.Function);
                                     item.insertText = funcNameWithParams;
@@ -144,7 +144,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                                         detail: `(${paramList})`,
                                     };
                                     item.detail = `(${paramList})`;
-                                    item.documentation = `Function from "${rawPath}"`;
+                                    item.documentation = `From file "${rawPath}"`;
 
                                     completionItems.push(item);
                                 }
@@ -470,19 +470,46 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
 
     private static async createFunctionItems(completionItems: vscode.CompletionItem[], inWord: boolean, inStructureVariable: boolean, inArrayBrackets: boolean, gscFile: GscFile | undefined, currentGame: GscGame) {
 
-        if (inWord || inArrayBrackets) {
-            // Uri is undefined in tests
-            if (gscFile !== undefined) {
-                // Local functions and included functions
-                const res = GscFunctions.getFunctionReferenceState(undefined, gscFile);
-
-                res.definitions.forEach(f => {
-                    const item = new vscode.CompletionItem({ label: f.func.name, description: "", detail: "" }, vscode.CompletionItemKind.Function);
-                    item.documentation = f.func.generateMarkdownDescription(f.uri.toString() === gscFile.uri.toString(), f.uri.toString(), f.reason, undefined);
-                    completionItems.push(item);
-                });
-            }
+        if (!inWord && !inArrayBrackets) {
+            return;
         }
+
+        if (gscFile === undefined) {
+            return;
+        }
+
+        // Local functions and included functions
+        const res = GscFunctions.getFunctionReferenceState(undefined, gscFile);
+
+        res.definitions.forEach(f => {
+            const paramList = f.func.parameters.map(p => p.name).join(", ");
+            const insertSnippet = new vscode.SnippetString(`${f.func.name}(${paramList})`);
+
+            // make the description below (local) or (included from f.func.name)
+            const isLocal = f.uri.toString() === gscFile.uri.toString();
+
+            const includeName = vscode.workspace
+                .asRelativePath(f.uri, false)
+                .replace(/\.gsc$|\.gsh$/i, '')
+                .replace(/[\\/]/g, '\\')
+                .toLowerCase();
+
+            const item = new vscode.CompletionItem(f.func.name, vscode.CompletionItemKind.Function);
+            item.label = {
+                label: f.func.name,
+                description: `(${isLocal ? `local` : `${includeName}`})`,
+                detail: `(${paramList})`,
+            };
+            item.insertText = insertSnippet;
+            item.documentation = f.func.generateMarkdownDescription(
+                isLocal,
+                f.uri.toString(),
+                f.reason,
+                undefined
+            );
+
+            completionItems.push(item);
+        });
     }
 
 
