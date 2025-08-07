@@ -18,7 +18,7 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
 | MW2            | IW4  | ✅ |                                                                                  |
 | BO1            | T5   | ✅ |                                                                                  |
 | MW3            | IW5  | ✅ |                                                                                  |
-| BO2            | T6   | ❗ | order of file references, `#insert`, param default value, const, `%xxx::yyy`     |
+| BO2            | T6   | ❗ | order of file references, param default value, const, `%xxx::yyy`                |
 | Ghosts         | IW6  | ✅ |                                                                                  |
 | AW             | S1   | ✅ |                                                                                  |
 | BO3            | T7   | ❌ | `.gscc`, `.cscc`                                                                 |

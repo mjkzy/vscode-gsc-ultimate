@@ -66,6 +66,8 @@ export enum GroupType {
     PreprocessorStatement,
     /** Statement like #inline path\name */
     PreprocessorStatementInline,
+    /** Statement like #insert path\name.gsh */
+    PreprocessorStatementInsert,
     /** Statement like #namespace my_cool_namespace; */
     PreprocessorStatementNamespace,
     /** Statement like #define <name> <condition> */
@@ -80,6 +82,8 @@ export enum GroupType {
     TerminatedPreprocessorStatement,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementInline,
+    /** Statement like #insert path\name.gsh terminated with ; */
+    TerminatedPreprocessorStatementInsert,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementNamespace,
     /** Parameters expression of preprocessor #using_animtree */
@@ -1447,6 +1451,23 @@ export class GscFileParser {
 
                     if (childGroup1.solved || childGroup2.solved) { continue; }
 
+                    // #insert maps\...\file.gsh  -> make sure to solve .gsh suffix after
+                    if (childTokenName === "#insert") {
+                        const ext = parentGroup.items[i + 3];
+
+                        const isDot = childGroup3?.isUnknownUnsolvedSingleTokenOfOneOfType(TokenType.Structure); // '.'
+                        const isExt = ext?.type === GroupType.Identifier;
+
+                        if (isDot && isExt) {
+                            const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2, childGroup3, ext]);
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type); // "#insert"
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type); // Path or Identifier base
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup3, GroupType.Token);         // '.'
+                            changeGroupToSolvedAndChangeType(newGroup, ext, GroupType.Identifier);    // 'gsh'
+                            i--; continue;
+                        }
+                    }
+
                     // if ()
                     if (childGroup1.type === GroupType.ReservedKeyword && keywordNames.includes(childTokenName ?? "") &&
                         childGroup2.typeEqualsToOneOf(...groupTypesRight)) {
@@ -2213,6 +2234,9 @@ export class GscFileParser {
         group_byKeywordNameAndGroup(["#inline"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
 
+        group_byKeywordNameAndGroup(["#insert"],
+            [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInsert, GroupType.ReservedKeyword, GroupType.Path);
+
         group_byKeywordNameAndGroup(["#namespace"],
             [GroupType.Identifier], GroupType.PreprocessorStatementNamespace, GroupType.ReservedKeyword, GroupType.Identifier);
 
@@ -2431,6 +2455,9 @@ export class GscFileParser {
 
         group_byGroupAndGroup([GroupType.PreprocessorStatementInline], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatementInline, GroupType.PreprocessorStatementInline, GroupType.Terminator);
+
+        group_byGroupAndGroup([GroupType.PreprocessorStatementInsert], [GroupType.Terminator],
+            GroupType.TerminatedPreprocessorStatementInsert, GroupType.PreprocessorStatementInsert, GroupType.Terminator);
 
         group_byGroupAndGroup([GroupType.PreprocessorStatementNamespace], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatementNamespace, GroupType.PreprocessorStatementNamespace, GroupType.Terminator);

@@ -209,8 +209,10 @@ export class GscDiagnosticsCollection {
                                 case GroupType.Path:
                                     // Save only #include paths  
                                     if (
-                                        group.parent?.type === GroupType.PreprocessorStatement || group.parent?.type === GroupType.PreprocessorStatementInline
-                                        && group.parent.items.at(0)?.isReservedKeywordOfName("#include", "#inline", "#using") === true
+                                        (group.parent?.type === GroupType.PreprocessorStatement ||
+                                            group.parent?.type === GroupType.PreprocessorStatementInline ||
+                                            group.parent?.type === GroupType.PreprocessorStatementInsert
+                                        ) && group.parent.items.at(0)?.isReservedKeywordOfName("#include", "#inline", "#using", "#insert") === true
                                     ) {
                                         groupIncludedPaths.push({ group, uri });
                                     }
@@ -389,9 +391,9 @@ export class GscDiagnosticsCollection {
                                         break;
                                     }
 
-                                    const isLocal   = definedLocalVariables.has(name);
-                                    const isGlobal  = gscFile.data.globalVariableDefinitions.some(m => m.variableReference.getFirstToken()?.name === name);
-                                    const isMacro   = gscFile.data.macroVariableDefinitions.some(m => m.name === name);
+                                    const isLocal = definedLocalVariables.has(name);
+                                    const isGlobal = gscFile.data.globalVariableDefinitions.some(m => m.variableReference.getFirstToken()?.name === name);
+                                    const isMacro = gscFile.data.macroVariableDefinitions.some(m => m.name === name);
 
                                     // check if the macro is included via #inline and that macro has the data we need
                                     let isInlineMacro = false;
@@ -487,6 +489,7 @@ export class GscDiagnosticsCollection {
             (group.type === GroupType.Statement && parentGroup.type !== GroupType.TerminatedStatement) ||
             ((group.type === GroupType.PreprocessorStatement
                 || group.type === GroupType.PreprocessorStatementInline
+                || group.type === GroupType.PreprocessorStatementInsert
                 || group.type === GroupType.PreprocessorStatementNamespace)
                 && parentGroup.type !== GroupType.TerminatedPreprocessorStatement)
         ) {
@@ -881,6 +884,7 @@ export class GscDiagnosticsCollection {
 
                 case GroupType.TerminatedPreprocessorStatement:
                 case GroupType.TerminatedPreprocessorStatementInline:
+                case GroupType.TerminatedPreprocessorStatementInsert:
                 case GroupType.TerminatedPreprocessorStatementNamespace:
                     break;
 

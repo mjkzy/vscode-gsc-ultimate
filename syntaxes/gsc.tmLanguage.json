@@ -36,6 +36,9 @@
 			"include2": "#inline"
 		},
 		{
+			"include": "#insert"
+		},
+		{
 			"include2": "#using_animtree"
 		},
 		{
@@ -102,7 +105,7 @@
 					"name": "variable.other.gsc"
 				}
 			},
-			"end": "(?=(\"|\\d|\\(|[A-Za-z_]))"
+			"end": ";"
 		},
 		"if": {
 			"comment": "Example: #if MACRO_NAME == <CONSTANT>",
@@ -232,13 +235,27 @@
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.control.directive.inline.gsc"
+				},
+				"2": {
+					"name": "keyword.control.gsc"
+				}
+			},
+			"end": ";"
+		},
+		"insert": {
+			"comment": "Example: #insert scripts\\shared\\shared.gsh;",
+			"name": "meta.preprocessor.insert.gsc",
+			"begin": "(#insert)\\s+",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.insert.gsc"
 				}
 			},
 			"end": ";",
 			"patterns": [
 				{
 					"name": "entity.name.class.gsc",
-					"match": "[A-Za-z_][A-Za-z_0-9]*(\\\\[A-Za-z_][A-Za-z_0-9]*)*"
+					"match": "[A-Za-z_][A-Za-z_0-9]*(\\\\[A-Za-z_][A-Za-z_0-9]*)*(\\.[A-Za-z_0-9]+)"
 				}
 			]
 		},
