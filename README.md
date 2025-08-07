@@ -1,8 +1,8 @@
 # vscode-gsc
 
-A Visual Studio Code extension that adds language support for `.GSC` and `.GSH` scripts used in Call of Duty games. The extension supports all games, but is primarily focusing on CoD Ghosts and on. This is **NOT** a GSC compiler!
+A Visual Studio Code extension that adds language support for `.GSC` and `.GSH` files used for ingame scripting on Call of Duty games. The extension supports all COD games, but is primarily focusing on Call of Duty: 4 and on. This is **NOT** a GSC compiler and is [a extension used in Visual Studio Code!](https://marketplace.visualstudio.com/items?itemName=mjkzy.vscode-gsc-ultimate)
 
-_This is a heavily modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode-cod-gsc)._
+_This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode-cod-gsc)._
 
 > [!WARNING] 
 > This extension is still in development. For current functionality, check the [List of Features](#list-of-features).
