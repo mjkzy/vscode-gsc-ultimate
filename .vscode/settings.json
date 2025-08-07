@@ -31,5 +31,6 @@
         "waittillframeend",
         "waittillmatch",
         "xanim"
-    ]
+    ],
+    "gsc.errorDiagnostics": "Disable"
 }

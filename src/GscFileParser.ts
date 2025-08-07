@@ -66,6 +66,8 @@ export enum GroupType {
     PreprocessorStatement,
     /** Statement like #inline path\name */
     PreprocessorStatementInline,
+    /** Statement like #namespace my_cool_namespace; */
+    PreprocessorStatementNamespace,
     /** Statement like #define <name> <condition> */
     PreprocessorStatementDefine,
     /** Statement like #ifdef <name> */
@@ -78,6 +80,8 @@ export enum GroupType {
     TerminatedPreprocessorStatement,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementInline,
+    /** Statement like #inline path\name terminated with ; */
+    TerminatedPreprocessorStatementNamespace,
     /** Parameters expression of preprocessor #using_animtree */
     PreprocessorAnimtreeParametersExpression,
 
@@ -1922,6 +1926,7 @@ export class GscFileParser {
 
                 case GroupType.TerminatedPreprocessorStatement:
                 case GroupType.TerminatedPreprocessorStatementInline:
+                case GroupType.TerminatedPreprocessorStatementNamespace:
                 case GroupType.FunctionDefinition:
                     if (parentGroup !== undefined && lastFunctionScope === undefined &&
                         parentGroup.typeEqualsToOneOf(GroupType.Root, GroupType.DeveloperBlock, GroupType.DeveloperBlock2)) {
@@ -2098,6 +2103,9 @@ export class GscFileParser {
 
         group_byKeywordNameAndGroup(["#inline"],
             [GroupType.Path, GroupType.Identifier], GroupType.PreprocessorStatementInline, GroupType.ReservedKeyword, GroupType.Path);
+
+        group_byKeywordNameAndGroup(["#namespace"],
+            [GroupType.Identifier], GroupType.PreprocessorStatementNamespace, GroupType.ReservedKeyword, GroupType.Identifier);
 
         group_byKeywordNameAndGroup(
             ["#define"],
@@ -2303,8 +2311,7 @@ export class GscFileParser {
         // waittill(...);
         // level waittill(...);
         const terminationNeededFor = [GroupType.Statement, ...GscFileParser.functionCallTypes,
-        GroupType.KeywordCall, GroupType.KeywordCallWithObject
-        ];
+        GroupType.KeywordCall, GroupType.KeywordCallWithObject];
 
         group_byGroupAndGroup(terminationNeededFor, [GroupType.Terminator],
             GroupType.TerminatedStatement, GroupType.Statement, GroupType.Terminator);
@@ -2315,6 +2322,9 @@ export class GscFileParser {
 
         group_byGroupAndGroup([GroupType.PreprocessorStatementInline], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatementInline, GroupType.PreprocessorStatementInline, GroupType.Terminator);
+
+        group_byGroupAndGroup([GroupType.PreprocessorStatementNamespace], [GroupType.Terminator],
+            GroupType.TerminatedPreprocessorStatementNamespace, GroupType.PreprocessorStatementNamespace, GroupType.Terminator);
 
 
         // Declaration join
@@ -2382,7 +2392,7 @@ export class GscFileParser {
                     case GroupType.Path:
                         if ((parentGroup.type === GroupType.PreprocessorStatement || parentGroup.type === GroupType.PreprocessorStatementInline)
                             && (parentGroup.getFirstToken().name === "#include" ||
-                                parentGroup.getFirstToken().name === "#inline"  ||
+                                parentGroup.getFirstToken().name === "#inline" ||
                                 parentGroup.getFirstToken().name === "#using"
                             )) {
                             // Add path to includes - duplicate paths are ignored via Set<>
@@ -2442,14 +2452,6 @@ export class GscFileParser {
 
                             data.functions.push(func);
                         }
-                        break;
-
-                    // Save macro definitions from inline (#inline scripts\zm\debug;)
-                    case GroupType.PreprocessorStatementInline:
-                        // get the GscFile for the target file we're looking for (ends in .gsh)
-                        // get the macro definitions from there
-                        // add them to our data macrovariabledefinitions 
-
                         break;
 
                     // Save macro definitions locally defined

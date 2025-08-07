@@ -485,8 +485,11 @@ export class GscDiagnosticsCollection {
         // Not terminated statement
         if (
             (group.type === GroupType.Statement && parentGroup.type !== GroupType.TerminatedStatement) ||
-            ((group.type === GroupType.PreprocessorStatement || group.type === GroupType.PreprocessorStatementInline)
-                && parentGroup.type !== GroupType.TerminatedPreprocessorStatement)) {
+            ((group.type === GroupType.PreprocessorStatement
+                || group.type === GroupType.PreprocessorStatementInline
+                || group.type === GroupType.PreprocessorStatementNamespace)
+                && parentGroup.type !== GroupType.TerminatedPreprocessorStatement)
+        ) {
             if (nextGroup === undefined || nextGroup.solved) {
                 // Get the last character from the range where the ; should be
                 const range = group.getRange();
@@ -878,6 +881,7 @@ export class GscDiagnosticsCollection {
 
                 case GroupType.TerminatedPreprocessorStatement:
                 case GroupType.TerminatedPreprocessorStatementInline:
+                case GroupType.TerminatedPreprocessorStatementNamespace:
                     break;
 
                 case GroupType.VariableReference:

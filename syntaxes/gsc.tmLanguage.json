@@ -9,6 +9,9 @@
 			"include": "#define"
 		},
 		{
+			"include": "#namespace"
+		},
+		{
 			"include": "#if"
 		},
 		{
@@ -83,6 +86,20 @@
 				},
 				"2": {
 					"name": "constant.language.c"
+				}
+			},
+			"end": "(?=(\"|\\d|\\(|[A-Za-z_]))"
+		},
+		"namespace": {
+			"comment": "Example: #namespace my_cool_namespace;",
+			"name": "meta.preprocessor.namespace.gsc",
+			"begin": "(#namespace)\\s+([A-Za-z_][A-Za-z_0-9]*)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.namespace.gsc"
+				},
+				"2": {
+					"name": "variable.other.gsc"
 				}
 			},
 			"end": "(?=(\"|\\d|\\(|[A-Za-z_]))"
