@@ -1,477 +1,1022 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extension Updated</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call of Duty GSC updated!</title>
     <style>
+        :root {
+            --bg: #0f1116;
+            --panel: #151821;
+            --panel-2: #0d0f15;
+            --text: #e7e7e9;
+            --muted: #b3b7c0;
+            --border: #262a36;
+            --accent: #007acc;
+            --accent-2: #1f6feb;
+            --good: #2ea043;
+            --warn: #f0ad4e;
+            --bad: #e5534b;
+            --link: #7cc7ff;
+            --shadow: 0 6px 24px rgba(0, 0, 0, .3);
+            --radius: 14px;
+            --radius-sm: 10px;
+            --code: #0b0d12;
+            --code-border: #232839;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #ffffff;
+                --panel: #f7f8fb;
+                --panel-2: #f1f2f6;
+                --text: #0c0d0e;
+                --muted: #4b5563;
+                --border: #e4e7ee;
+                --accent: #007acc;
+                --accent-2: #0d7be8;
+                --good: #1a7f37;
+                --warn: #996c00;
+                --bad: #b3261e;
+                --link: #0b68c9;
+                --shadow: 0 6px 18px rgba(0, 0, 0, .08);
+                --code: #f7f8fb;
+                --code-border: #e6e9f2;
+            }
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            height: 100%
         }
-        h1 {
-            color: #007acc;
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.55;
         }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            border: 1px solid rgb(25, 25, 25);
-            margin-top: 0px;
-            margin-bottom: 20px;
-        }
-        p {
-            margin-top: 20px;
-        }
-        p.lines {
-            white-space: pre-line; 
-            margin-top: 0;
-        }
+
         a {
-            text-decoration: none;
-            color: #007acc;
+            color: var(--link);
+            text-decoration: none
         }
+
         a:hover {
-            text-decoration: underline;
+            text-decoration: underline
         }
-        hr {
-            margin-top: 80px;
+
+        /* Header */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: linear-gradient(180deg, rgba(0, 0, 0, .12), rgba(0, 0, 0, 0)), var(--panel);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+        }
+
+        .topbar-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .logo {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: var(--shadow);
+        }
+
+        .title {
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .from-to {
+            font-size: .9rem;
+            color: var(--muted)
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn:hover {
+            filter: brightness(1.05)
+        }
+
+        /* Layout */
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 20px 80px
+        }
+
+        .intro {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: 1.3fr .7fr;
+        }
+
+        @media (max-width: 950px) {
+            .intro {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
         }
 
         .welcome {
-            padding: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            background-color: lightgreen;
-            border-radius: 8px;
-            color: black;
+            border-left: 6px solid var(--good);
         }
 
         .warning {
-            padding: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            font-weight: bold;
+            border-left: 6px solid var(--warn);
         }
 
-        .new-version, .old-version {
-            border: 1px solid grey;
+        .toc {
+            position: sticky;
+            top: 72px;
+            max-height: calc(100vh - 110px);
+            overflow: auto;
+        }
+
+        .toc h3 {
+            margin: 4px 0 10px 0;
+            font-size: .95rem;
+            color: var(--muted)
+        }
+
+        .toc a {
+            display: block;
+            padding: 6px 10px;
             border-radius: 8px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding: 10px;
+            border: 1px solid transparent;
+            color: var(--text);
         }
-        .new-version h2, .old-version h2 {
-            margin-top: 0;
+
+        .toc a:hover {
+            background: var(--panel-2);
+            border-color: var(--border)
         }
-        .new-version {
-            border-left: 5px solid;
-            border-color: green;
+
+        .toc .small {
+            color: var(--muted);
+            font-size: .85rem;
+            margin: 10px 0 0 0
         }
-        .old-version {
-            border-left: 3px solid grey;
+
+        /* Version cards */
+        details.version {
+            margin: 14px 0;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--panel);
+            overflow: hidden;
+        }
+
+        details.version[open] {
+            box-shadow: var(--shadow);
+        }
+
+        /* Legacy group styling */
+        details.version-group {
+            margin: 18px 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--panel);
+            overflow: hidden;
+        }
+
+        details.version-group summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--muted);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .02));
+        }
+
+        details.version-group summary::-webkit-details-marker {
+            display: none
+        }
+
+        details.version-group .label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        details.version-group .pill {
+            font-size: .85rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            color: var(--muted);
+        }
+
+        summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .02));
+        }
+
+        summary::-webkit-details-marker {
+            display: none
+        }
+
+        .summary-left {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .85rem;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: .8rem;
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            color: var(--muted)
+        }
+
+        .verdate {
+            color: var(--muted);
+            font-size: .9rem
+        }
+
+        .summary-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted)
+        }
+
+        .ver-body {
+            padding: 0 18px 18px 18px
+        }
+
+        h2,
+        h3 {
+            margin: 14px 0 8px
+        }
+
+        h2 {
+            font-size: 1.25rem
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            color: var(--muted)
+        }
+
+        /* Image gallery */
+        .gallery {
+            display: grid;
+            gap: 10px;
+            margin: 10px 0 16px;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 800px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media (max-width: 520px) {
+            .gallery {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #00000010;
+            transition: transform .15s ease;
+            cursor: zoom-in;
+        }
+
+        .gallery img:hover {
+            transform: translateY(-2px)
+        }
+
+        img.inline {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 10px 0 16px;
+        }
+
+        /* Lines -> auto badge coloring */
+        p.lines {
+            white-space: pre-line;
+            margin: 10px 0 0;
+            background: var(--code);
+            border: 1px solid var(--code-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: .95rem;
+        }
+
+        .line {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--border)
+        }
+
+        .line:last-child {
+            border-bottom: none
+        }
+
+        .chip {
+            font-size: .75rem;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            white-space: nowrap
+        }
+
+        .chip.added {
+            background: #153417;
+            color: #86efac;
+            border-color: #1f4d25
+        }
+
+        .chip.improved {
+            background: #112235;
+            color: #93c5fd;
+            border-color: #193352
+        }
+
+        .chip.fixed {
+            background: #35171a;
+            color: #fecaca;
+            border-color: #572027
+        }
+
+        .chip.changed {
+            background: #2c2432;
+            color: #e9d5ff;
+            border-color: #3e2f49
+        }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .lightbox img {
+            max-width: 92vw;
+            max-height: 88vh;
+            border-radius: 14px;
+            border: 1px solid var(--border)
+        }
+
+        .lightbox.open {
+            display: flex
+        }
+
+        /* Footer spacer */
+        .footer-sp {
+            height: 40px
         }
     </style>
 </head>
+
 <body>
-    <h1>COD GSC Extension ${fromVersionToVersion}</h1>
-
-    <div class="welcome">
-        <b>Thank you for using this extension!</b> <br>
-        Below you can find the list of changes and improvements for each version.
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div class="logo" aria-hidden="true"></div>
+                <div>
+                    <div class="title">Call of Duty GSC</div>
+                    <div class="from-to">${fromVersionToVersion}</div>
+                </div>
+            </div>
+            <div class="actions">
+                <a class="btn" href="${GITHUB_URL}" target="_blank">GitHub</a>
+                <a class="btn primary" href="${GITHUB_ISSUES_URL}" target="_blank">Report an Issue</a>
+            </div>
+        </div>
     </div>
 
-    <div class="warning">
-        ⚠️ This extension is still in development. If you encounter any issues, please report them
-        <ul>
-            <li><a href="${GITHUB_URL}" target="_blank">GitHub Issues</a></li>
-            <li><a href="${DISCORD_URL}" target="_blank">Discord Server</a></li>
-            <li><a href="${EMAIL}">Email</a></li>
-        </ul>
-    </div>
+    <div class="wrap">
+        <div class="intro">
+            <div class="card welcome">
+                <b>Thanks for using and supporting the extension!</b><br />
+                Below are the changes and improvements for each version with a summary of each new feature added and
+                what they do.
+            </div>
+            <div class="card warning">
+                ⚠️ This extension is still in development. If you hit issues, please open one on GitHub.
+                <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap">
+                    <a class="btn" href="${GITHUB_URL}" target="_blank">Repository</a>
+                    <a class="btn" href="${GITHUB_ISSUES_URL}" target="_blank">Issues</a>
+                </div>
+            </div>
+        </div>
 
-    <div ${VERSION_0.3.0}>
-        <h2>Version [0.3.0] - 2024-11-08</h2>
+        <div style="display:grid; grid-template-columns: 1fr 280px; gap:16px">
+            <div id="changelog">
 
-        <p>This update focuses on the user experience with GSC files and functions.</p>
-        <br>
+                <div id="changelog">
 
-        <h3>Hover provider for GSC paths</h3>
-        <p>
-            Hover over a path (e.g. "maps\mp\gametypes\script") will show the paths used for searching the file.<br>
-            When multi-root workspace is used, the paths are shown for each workspace folder.
-        </p>
-        <img src="../images/vscode-hover-path.png">
+                    <!-- 1.1.0 (NEW) -->
+                    <details class="version" id="v-1-1-0" ${VERSION_1.1.0} open>
+                        <summary>
+                            <div class="summary-left">
+                                <span class="badge">1.1.0</span>
+                                <span class="verdate">2025-08-07</span>
+                                <span class="tag">Latest version</span>
+                            </div>
+                            <div class="summary-right">Click to expand</div>
+                        </summary>
+                        <div class="ver-body">
+                            <p>This is the first documented release of Call of Duty GSC. This update includes many new
+                                quality of life features, as well as support for Treyarch GSC files.
+                                <br><br>All of the preprocessor tokens added for non-Treyarch games are from <a
+                                    href="https://github.com/xensik/gsc-tool">gsc-tool</a>, which adds GSC
+                                preprocessors and headers based off Black Ops 3's source GSC scripts.
+                            </p>
 
+                            <h3>Added GSC header support (.gsh)</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-gsh-1.png" alt="GSC headers" width="70%">
+                            </div>
 
-        <h3>Reference provider for GSC function definitions</h3>
-        <p>
-            Now its possible to show references of a function via right-click on the function name and selecting "Go to References" or "Find all References" in the context menu.
-        </p>
-        <img src="../images/vscode-references-function.png">
+                            <h3>Added preprocessor #define, #ifdef, #if, #elif, #else, #endif, #undef</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-gsctoolmacros-1.png" alt="gsc-tool macros" width="40%">
+                            </div>
 
+                            <h3>Added preprocessor #using, #insert, #precache, #namespace</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-3arcmacros-1.png" alt="gsc-tool macros" width="40%">
+                            </div>
 
-        <h3>Visualization of replaced (unreachable) files</h3>
-        <p>
-            When GSC file is replaced by another GSC file in multi-root workspace because of the same game path, the code in text editor is shown as semi-transparent (unreachable code)<br>
-            Example:
-        </p>
-        <img src="../images/vscode-workspace-replaced-file-code.png">
+                            <h3>Added childthread, call, and function (Treyarch) keywords</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-newthreadcalls-1.png" alt="new thread keywords"
+                                    width="40%">
+                                <img src="../images/1.1.0/vscode-functionkeyword-1.png" alt="new function keyword"
+                                    width="50%">
+                            </div>
 
+                            <h3>Added single/multi-line comments above function hovers</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-functioncomments-1.png" alt="func single comment"
+                                    width="40%">
+                                <img src="../images/1.1.0/vscode-functioncomments-2.png" alt="func multi line comment"
+                                    width="50%">
+                            </div>
 
-        <h3>Rename provider</h3>
-        <p>
-            Function names can be renamed across all GSC files.
-        </p>
-        <img src="../images/vscode-rename-function.png">
+                            <h3>Added hovers for variables & preprocessor macros</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-hover-1.png" alt="hover variables" width="70%">
+                                <img src="../images/1.1.0/vscode-hover-2.png" alt="hover macros" width="50%">
+                            </div>
 
+                            <h3>Support variables (including function parameters) & macros for "Go to Definition", "Go To References", and "Rename
+                                Symbol"</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-rightclick-1.png" alt="right click options"
+                                    width="55%">
+                            </div>
 
-        <h3>Side panel</h3>
-        <p>
-            GSC side panel with "Workspace", "File" and "Other" views. <br>
-            It shows information about workspace setup, parsed GSC files and available commands to run.<br>
-            In future version it will allow to change settings more interactively.
-        </p>
-        <img src="../images/vscode-sidebar.png">
+                            <h3>Added Call Hierarchy for functions</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-call-hierarchy-1.png" alt="call hierarchy" width="75%">
+                            </div>
 
+                            <h3>Added basic local variable error diagnostics</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-basic-var-diagnosis-1.png" alt="local var errors"
+                                    width="75%">
+                            </div>
 
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Added definition provider and hover provider for GSC paths
-            - Added reference provider for GSC function definitions
-            - Added: When GSC file is replaced by another GSC file in multi-root workspace because of the same game path (e.g. maps\mp\gametypes\script), the code in text editor is shown as semi-transparent (unreachable code)
-            - Added rename provider that supports GSC function rename
-            - Added GSC side panel with "Workspace", "File" and "Other" views. It shows information about workspace setup, parsed GSC files and available commands to run.
-            - Added new Output window "GSC File Logs" to diagnose changes to file system.
-            - Improved detection of GSC file and folder changes, moving, renaming, etc...
-            - Improved Issues, cached exception now appears in status bar, source code is included into report
-            - Improved GSC file references when two or more workspace folders are referenced for each other. When there are 2 workspaces where in each there is one file with the same "game" path (e.q. maps\mp\gametypes\script.gsc), only the last file is used (according to the workspace folder order in explorer). It applies for function and variable definitions in hover provider, auto-completion etc.
-            - Changed function precedence for universal game to prioritize local functions, then included functions, then built-in functions; if a function is defined multiple times, the first one found is used and others are ignored without error - unlike CoD2, where duplicate function names in local or included files cause an error.
-            - Change: the extension activate function now does not wait for all GSC files to be parsed
-            - Fixed error "'range' cannot span multiple lines" - when typing file path in GSC file.
-            - Fixed a bug where the status bar item was not displayed when parsing all files again
-            - Fixed LoggerOutput to show local time in logs instead of ISO time
-            - Fixed diagnostic errors for GSC file references on Linux systems
-            - Fixed hover and go to definition not working when cursor is right at start of the function name / keyword 
-            - Fixed CoD2 function 'getBrushModelCenter(entity)' - missing argument           
-        </p>
-    </div>
+                            <h3>Added auto-completion for preprocessor macros & global variables</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-macro-autofill-1.png" alt="macro vars autofill"
+                                    width="50%">
+                                <img src="../images/1.1.0/vscode-global-var-1.png" alt="global vars autofill"
+                                    width="50%">
+                            </div>
 
+                            <h3>Now using COD4 builtins instead of COD2</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-cod4-builtins-1.png" alt="cod4 functions"
+                                    width="75%">
+                            </div>
 
+                            <h3>Added function parameters inside autocomplete for functions</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-better-func-autofill-1.png" alt="better func autofill"
+                                    width="75%">
+                            </div>
 
+                            <h3>Added auto-complete for folders that contain GSC</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-folder-autofill-1.png" alt="better func autofill"
+                                    width="45%">
+                            </div>
 
+                            <h3>Added external functions only showing in auto-complete for paths</h3>
+                            <div align="center">
+                                <img src="../images/1.1.0/vscode-external-func-autofill-1.png" alt="better func autofill"
+                                    width="100%">
+                            </div>
 
-    <div ${VERSION_0.2.0}>
-        <h2>Version [0.2.0] - 2024-10-01</h2>
+                        </div>
+                    </details>
 
-        <h3>Added support for global variable definitions (CONST_VAR1 = 1;)</h3>
-        <h3>Added support for array initializers, like "arr = [10, 20, 30]"</h3>
-        <h3>Added support for conditional ternary operators (var = a ? b : c)</h3>
-        <h3>Added support for do {} while ();</h3>
-        <img src="../images/vscode-update-news-1.png">
+                    <!-- Legacy wrapper (starts collapsed) -->
+                    <details class="version-group" id="legacy-group">
+                        <summary>
+                            <div class="label">
+                                <strong>Legacy Versions</strong>
+                                <span class="pill">All versions prior to 1.1.0</span>
+                            </div>
+                            <div class="summary-right">Click to expand</div>
+                        </summary>
 
-        <h3>Added list of supported GSC features for each game.</h3>
-        <p>
-            Universal game supports everything.<br>
-            For example CoD2 does not support foreach, do-while, array initializer, global variables, ternary, recursive developer blocks, etc. When not supported, error diagnostics is shown.
-        </p>
-        <img src="../images/vscode-update-news-2.png">
+                        <!-- 0.3.0 -->
+                        <details class="version" id="v-0-3-0" ${VERSION_0.3.0} open>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.3.0</span>
+                                    <span class="verdate">2024-11-08</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p>This update focuses on the user experience with GSC files and functions.</p>
 
-        <h3>Improved missing semicolon error indication</h3>
-        <p>
-            The red underline is visible only at the end of the statement where the semicolon should be placed
-        </p>
-        <img src="../images/vscode-update-news-3.png">
+                                <h3>Hover provider for GSC paths</h3>
+                                <p>Hover a path (e.g. <code>maps\mp\gametypes\script</code>) to see all search locations
+                                    per
+                                    workspace folder.</p>
+                                <div class="gallery">
+                                    <img src="../images/vscode-hover-path.png" alt="Hover paths" />
+                                </div>
 
-        <h3>Improved missing semicolon detection</h3>
-        <p>
-            By verifying if (object + function call) and (variable + structure accessor) are on single line
-        </p>
-        <img src="../images/vscode-diagnostics-single-line.png">
+                                <h3>Reference provider for GSC function definitions</h3>
+                                <p>Right-click a function name → “Go to References” / “Find all References”.</p>
+                                <div class="gallery">
+                                    <img src="../images/vscode-references-function.png" alt="References" />
+                                </div>
 
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Added support for global variable definitions (CONST_VAR1 = 1;)
-            - Added support for array initializers, like "arr = [10, 20, 30]"
-            - Added support for conditional ternary operators (var = a ? b : c)
-            - Added support for do {} while ();
-            - Added list of supported GSC features for each game. Universal game supports everything. For example CoD2 does not support foreach, do-while, array initializer, global variables, ternary, recursive developer blocks, etc. When not supported, error diagnostics is shown.
-            - Improved missing semicolon error indication - now the red underline is visible only at the end of the statement where the semicolon should be placed
-            - Improved missing semicolon detection by verifying if variable + structure accessor, object + function call are on single line
-            - Improved error diagnostics for 'if', 'else', 'for', 'while', 'do' when inline statement is used instead of scope (single-line scope) and there is some error in that inline statement. (for example "if (true) some error here;" would no longer consider "if (true)" as bad syntax)
-            - Improved exception messages when parsing GSC files.
-            - Fixed correct update of currently selected game in status bar when manually changed
-            - Fixed foreach with function call in array parameter -> "foreach(v in getArray())" -> 'in' keyword was recognized as variable name
-            - Fixed 'for' with function call in condition statement -> "for (i = 1; self isOk(); i++)"
-            - Fixed double negations -> "var1 = !!true;"
-            - Fixed no error detected when foreach expression is empty -> foreach() {}
-            - Fixed error for unclosed scope bracket -> { }
-        </p>
-    </div>
+                                <h3>Visualization of replaced (unreachable) files</h3>
+                                <p>When a GSC file is shadowed by another in a multi-root setup, unreachable code is
+                                    semi-transparent.</p>
+                                <img class="inline" src="../images/vscode-workspace-replaced-file-code.png"
+                                    alt="Unreachable code" />
 
+                                <h3>Rename provider</h3>
+                                <p>Rename function names across the workspace.</p>
+                                <img class="inline" src="../images/vscode-rename-function.png" alt="Rename provider" />
 
-    <div ${VERSION_0.1.10}>
-        <h2>Version [0.1.10] - 2024-09-22</h2>
+                                <h3>Side panel</h3>
+                                <p>
+                                    GSC side panel with “Workspace”, “File” and “Other” views showing setup, parsed
+                                    files and
+                                    quick commands.
+                                </p>
+                                <img class="inline" src="../images/vscode-sidebar.png" alt="Sidebar" />
 
-        <h3>Added support for foreach</h3>
-        <p>
-            Foreach syntax is now correctly recognized.
-        </p>
-        <img src="../images/vscode-foreach.png">
+                                <h3>All changes:</h3>
+                                <p class="lines">
+                                    - Added definition provider and hover provider for GSC paths
+                                    - Added reference provider for GSC function definitions
+                                    - Added: When GSC file is replaced by another GSC file in multi-root workspace
+                                    because of
+                                    the same game path (e.g. maps\mp\gametypes\script), the code in text editor is shown
+                                    as
+                                    semi-transparent (unreachable code)
+                                    - Added rename provider that supports GSC function rename
+                                    - Added GSC side panel with "Workspace", "File" and "Other" views. It shows
+                                    information
+                                    about workspace setup, parsed GSC files and available commands to run.
+                                    - Added new Output window "GSC File Logs" to diagnose changes to file system.
+                                    - Improved detection of GSC file and folder changes, moving, renaming, etc...
+                                    - Improved Issues, cached exception now appears in status bar, source code is
+                                    included into
+                                    report
+                                    - Improved GSC file references when two or more workspace folders are referenced for
+                                    each
+                                    other. When there are 2 workspaces where in each there is one file with the same
+                                    "game" path
+                                    (e.q. maps\mp\gametypes\script.gsc), only the last file is used (according to the
+                                    workspace
+                                    folder order in explorer). It applies for function and variable definitions in hover
+                                    provider, auto-completion etc.
+                                    - Changed function precedence for universal game to prioritize local functions, then
+                                    included functions, then built-in functions; if a function is defined multiple
+                                    times, the
+                                    first one found is used and others are ignored without error - unlike CoD2, where
+                                    duplicate
+                                    function names in local or included files cause an error.
+                                    - Change: the extension activate function now does not wait for all GSC files to be
+                                    parsed
+                                    - Fixed error "'range' cannot span multiple lines" - when typing file path in GSC
+                                    file.
+                                    - Fixed a bug where the status bar item was not displayed when parsing all files
+                                    again
+                                    - Fixed LoggerOutput to show local time in logs instead of ISO time
+                                    - Fixed diagnostic errors for GSC file references on Linux systems
+                                    - Fixed hover and go to definition not working when cursor is right at start of the
+                                    function
+                                    name / keyword
+                                    - Fixed CoD2 function 'getBrushModelCenter(entity)' - missing argument
+                                </p>
+                            </div>
+                        </details>
 
+                        <!-- 0.2.0 -->
+                        <details class="version" id="v-0-2-0" ${VERSION_0.2.0}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.2.0</span>
+                                    <span class="verdate">2024-10-01</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <h3>Added support highlights</h3>
+                                <p>Globals, array initializers, ternaries, do-while, and per-game feature matrix &
+                                    diagnostics.
+                                </p>
+                                <div class="gallery">
+                                    <img src="../images/vscode-update-news-1.png" alt="New features 1" />
+                                    <img src="../images/vscode-update-news-2.png" alt="Supported features" />
+                                    <img src="../images/vscode-update-news-3.png" alt="Semicolon UX" />
+                                </div>
+                                <img class="inline" src="../images/vscode-diagnostics-single-line.png"
+                                    alt="Single-line checks" />
 
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Added support for "foreach"
-            - Added error diagnostic if a file is included by itself via #include. Now it also does not consider - functions to be duplicated.
-            - Added error diagnostics if file is included twice or more via #include
-            - Improved debugging window of parsed files to show parsed data of selected range of text
-            - Improved tests so a few lines of source code is printed for all files in error stack for tests
-            - Fixed Github Actions .yml file - manual triggering allowed and if conditions wrapped into ${{ }}
-        </p>
-    </div>
+                                <h3>All changes:</h3>
+                                <p class="lines">
+                                    - Added support for global variable definitions (CONST_VAR1 = 1;)
+                                    - Added support for array initializers, like "arr = [10, 20, 30]"
+                                    - Added support for conditional ternary operators (var = a ? b : c)
+                                    - Added support for do {} while ();
+                                    - Added list of supported GSC features for each game. Universal game supports
+                                    everything.
+                                    For example CoD2 does not support foreach, do-while, array initializer, global
+                                    variables,
+                                    ternary, recursive developer blocks, etc. When not supported, error diagnostics is
+                                    shown.
+                                    - Improved missing semicolon error indication - now the red underline is visible
+                                    only at the
+                                    end of the statement where the semicolon should be placed
+                                    - Improved missing semicolon detection by verifying if variable + structure
+                                    accessor, object
+                                    + function call are on single line
+                                    - Improved error diagnostics for 'if', 'else', 'for', 'while', 'do' when inline
+                                    statement is
+                                    used instead of scope (single-line scope) and there is some error in that inline
+                                    statement.
+                                    (for example "if (true) some error here;" would no longer consider "if (true)" as
+                                    bad
+                                    syntax)
+                                    - Improved exception messages when parsing GSC files.
+                                    - Fixed correct update of currently selected game in status bar when manually
+                                    changed
+                                    - Fixed foreach with function call in array parameter -> "foreach(v in getArray())"
+                                    -> 'in'
+                                    keyword was recognized as variable name
+                                    - Fixed 'for' with function call in condition statement -> "for (i = 1; self isOk();
+                                    i++)"
+                                    - Fixed double negations -> "var1 = !!true;"
+                                    - Fixed no error detected when foreach expression is empty -> foreach() {}
+                                    - Fixed error for unclosed scope bracket -> { }
+                                </p>
+                            </div>
+                        </details>
 
-    <div ${VERSION_0.1.9}>
-        <h2>Version [0.1.9] - 2024-09-21</h2>
-        <p class="lines">
-            - Fixed errors for file references on Linux systems
-            - Fixed unnecessary file parsing
-            - Improved exceptions handling
-            - Improved logging data into 'Output' tab
-            - Improved internal notifying of GscFiles
-            - Improved internal storage of diagnostics for files
-            - Updated README with list of all CoD games and their support status
-        </p>
-    </div>
+                        <!-- Keep converting the rest to the same <details class="version"> structure -->
+                        <!-- 0.1.10 -->
+                        <details class="version" id="v-0-1-10" ${VERSION_0.1.10}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.10</span>
+                                    <span class="verdate">2024-09-22</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <h3>Added support for foreach</h3>
+                                <p>Foreach syntax is now correctly recognized.</p>
+                                <img class="inline" src="../images/vscode-foreach.png" alt="Foreach" />
 
-    <div ${VERSION_0.1.8}>
-        <h2>Version [0.1.8] - 2024-09-15</h2>
-        <p class="lines">
-            - Fixed file path separator on linux system for GSC file path references
-            - Added CI for Github Actions (automated integration tests)
-            - Dependencies updated
-        </p>
-    </div>
+                                <h3>All changes:</h3>
+                                <p class="lines">
+                                    - Added support for "foreach"
+                                    - Added error diagnostic if a file is included by itself via #include. Now it also
+                                    does not
+                                    consider - functions to be duplicated.
+                                    - Added error diagnostics if file is included twice or more via #include
+                                    - Improved debugging window of parsed files to show parsed data of selected range of
+                                    text
+                                    - Improved tests so a few lines of source code is printed for all files in error
+                                    stack for
+                                    tests
+                                    - Fixed Github Actions .yml file - manual triggering allowed and if conditions
+                                    wrapped into
+                                    ${{ }}
+                                </p>
+                            </div>
+                        </details>
 
-    <div ${VERSION_0.1.7}>
-        <h2>Version [0.1.7] - 2024-09-15</h2>
+                        <!-- 0.1.9 -->
+                        <details class="version" id="v-0-1-9" ${VERSION_0.1.9}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.9</span>
+                                    <span class="verdate">2024-09-21</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">
+                                    - Fixed errors for file references on Linux systems
+                                    - Fixed unnecessary file parsing
+                                    - Improved exceptions handling
+                                    - Improved logging data into 'Output' tab
+                                    - Improved internal notifying of GscFiles
+                                    - Improved internal storage of diagnostics for files
+                                    - Updated README with list of all CoD games and their support status
+                                </p>
+                            </div>
+                        </details>
 
-        <h3>Validation of #include paths</h3>
-        <p>
-            Added error diagnostics for invalid file path in '#include' directive.
-        </p>
-        <img src="../images/vscode-diagnostics-include.png">
-        
-        <h3>Auto-suggestion for variables 'level' and 'game' from included workspace folders</h3>
-        <p>
-            Variables from included workspace folders are now available in auto-suggestion.
-        </p>
-        <img src="../images/vscode-completion-6.png">
-        
-        <h3>Order of the workspace folders</h3>
-        <p>
-            When other workspace folders are included for file references,
-            the order of how files are being searched is now determined by how the workspace folder appears in explorer tab. 
-            The last folder is searched first.
-        </p>
-        <img src="../images/vscode-workspace-order.png">
+                        <!-- 0.1.8 -->
+                        <details class="version" id="v-0-1-8" ${VERSION_0.1.8}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.8</span>
+                                    <span class="verdate">2024-09-15</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">
+                                    - Fixed file path separator on linux system for GSC file path references
+                                    - Added CI for Github Actions (automated integration tests)
+                                    - Dependencies updated
+                                </p>
+                            </div>
+                        </details>
 
-    
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Auto-suggestion for variables 'level' and 'game' now take included workspace folder into account
-            - Improved caching of parsed files
-            - Changed the order of how files are being searched in workspace when they get referenced - its sorted by how the workspace folder appears in explorer tab, the last folder is searched first
-            - Added error diagnostic for #include
-            - Added new debugging window to inspect the files
-            - Added log window into Output Channels
-        </p>
-    </div>
+                        <!-- 0.1.7 -->
+                        <details class="version" id="v-0-1-7" ${VERSION_0.1.7}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.7</span>
+                                    <span class="verdate">2024-09-15</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <h3>Validation of #include paths</h3>
+                                <p>Diagnostics for invalid file paths in <code>#include</code>.</p>
+                                <img class="inline" src="../images/vscode-diagnostics-include.png"
+                                    alt="Include diagnostics" />
 
-    <div ${VERSION_0.1.6}>
-        <h2>Version [0.1.6] - 2024-08-28</h2>
-        <p class="lines">
-            - Fixed missing file ./src/Updates.html in package
-        </p>
-    </div>
+                                <h3>Auto-suggestion for 'level' and 'game'</h3>
+                                <p>Suggestions now include variables from included workspace folders.</p>
+                                <img class="inline" src="../images/vscode-completion-6.png" alt="Completion" />
 
-    <div ${VERSION_0.1.5}>
-        <h2>Version [0.1.5] - 2024-08-28</h2>
-        <p class="lines">
-            - Fixed missing package 'semver'
-        </p>
-    </div>
+                                <h3>Workspace folder order</h3>
+                                <p>Search order follows Explorer folder order (last first).</p>
+                                <img class="inline" src="../images/vscode-workspace-order.png" alt="Order" />
 
-    <div ${VERSION_0.1.4}>
-        <h2>Version [0.1.4] - 2024-08-28</h2>
+                                <h3>All changes:</h3>
+                                <p class="lines">
+                                    - Auto-suggestion for variables 'level' and 'game' now take included workspace
+                                    folder into
+                                    account
+                                    - Improved caching of parsed files
+                                    - Changed the order of how files are being searched in workspace when they get
+                                    referenced -
+                                    its sorted by how the workspace folder appears in explorer tab, the last folder is
+                                    searched
+                                    first
+                                    - Added error diagnostic for #include
+                                    - Added new debugging window to inspect the files
+                                    - Added log window into Output Channels
+                                </p>
+                            </div>
+                        </details>
 
-        <h3>Included folders</h3>
-        <p>
-            Added ability to include workspace folders for external GSC files references. 
-            Useful if your mod contains only part of the files and other files are in different folder. 
-            You have to add these folders into your workspace setup to be able to include the folders. 
-            If empty, each workspace folder is isolated from each other.
-        </p>
-        <img src="../images/vscode-workspace-folder-include.gif">
-        
-        <h3>
-            Added local and included functions into auto-suggestion
-        </h3>
-        <p>
-            Local functions are now included in auto-suggestion.
-        </p>
-        <img src="../images/vscode-completion-4.png">
-        <p>
-            Function included via '#include' are now included in auto-suggestion.
-        </p>
-        <img src="../images/vscode-completion-5.png">
-    
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Added ability to include workspace folders for external GSC files references
-            - Added local and included functions into auto-suggestion 
-            - Added settings to disable error diagnostics
-            - Improved hover over local functions
-            - Improved update change log popup window
-            - Fixed code action "Change game root folder to xxx" - it suggested folders from different workspace folders + it was able to use file instead of folder
-            - Fixed re-diagnosing files when file is moved to another folder
-            - Fixed automatic extension activation on startup - now the extension is activated when some GSC file is opened
-            - Fixed error message appearing when new folder is added into multi-root workspace
-        </p>
-    </div>
-    
-    <div ${VERSION_0.1.3}>
-        <h2>Version [0.1.3] - 2024-08-24</h2>
-        <p class="lines">
-            - Fixed error message appearing when new folder is created in workspace
-        </p>
-    </div>
+                        <!-- 0.1.6 -->
+                        <details class="version" id="v-0-1-6" ${VERSION_0.1.6}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.6</span>
+                                    <span class="verdate">2024-08-28</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">- Fixed missing file ./src/Updates.html in package</p>
+                            </div>
+                        </details>
 
-    <div ${VERSION_0.1.2}>
-        <h2>Version [0.1.2] - 2024-08-24</h2>
-        <p class="lines">
-            - Added code action "Change game root folder to 'xxx'" - it will automatically detects if files are in deeper folder structure
-            - Fixed quick fix option "Ignore file xxx (workspace settings)"
-            - Updated all packages
-        </p>
-    </div>
+                        <!-- 0.1.5 -->
+                        <details class="version" id="v-0-1-5" ${VERSION_0.1.5}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.5</span>
+                                    <span class="verdate">2024-08-28</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">- Fixed missing package 'semver'</p>
+                            </div>
+                        </details>
 
-    <div ${VERSION_0.1.1}>
-        <h2>Version [0.1.1] - 2024-08-24</h2>
-        <p class="lines">
-            - Fixed images in update notification window
-        </p>
-    </div>
+                        <!-- 0.1.4 -->
+                        <details class="version" id="v-0-1-4" ${VERSION_0.1.4}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.4</span>
+                                    <span class="verdate">2024-08-28</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <h3>Included folders</h3>
+                                <p>Include other workspace folders for external GSC references.</p>
+                                <img class="inline" src="../images/vscode-workspace-folder-include.gif"
+                                    alt="Include folders" />
 
-    <div ${VERSION_0.1.0}>
-        <h2>Version [0.1.0] - 2024-08-24</h2>
+                                <h3>Local & included functions in IntelliSense</h3>
+                                <img class="inline" src="../images/vscode-completion-4.png" alt="Local funcs" />
+                                <img class="inline" src="../images/vscode-completion-5.png" alt="Included funcs" />
 
-        <h3>Completion items (with CoD2 MP functions)</h3>
-        <p>Currently supported games are CoD2 MP and CoD2 SP. There is also 'Universal game' that will show functions from all games</p>
-        <img src="../images/vscode-completion-3.png">
+                                <h3>All changes:</h3>
+                                <p class="lines">
+                                    - Added ability to include workspace folders for external GSC files references
+                                    - Added local and included functions into auto-suggestion
+                                    - Added settings to disable error diagnostics
+                                    - Improved hover over local functions
+                                    - Improved update change log popup window
+                                    - Fixed code action "Change game root folder to xxx" - it suggested folders from
+                                    different
+                                    workspace folders + it was able to use file instead of folder
+                                    - Fixed re-diagnosing files when file is moved to another folder
+                                    - Fixed automatic extension activation on startup - now the extension is activated
+                                    when some
+                                    GSC file is opened
+                                    - Fixed error message appearing when new folder is added into multi-root workspace
+                                </p>
+                            </div>
+                        </details>
 
-        <h3>Hover over function name</h3>
-        <p>Additional info is showed when hovering over function names</p>
-        <img src="../images/vscode-function-hover-spawn.png">
+                        <!-- 0.1.3 -->
+                        <details class="version" id="v-0-1-3" ${VERSION_0.1.3}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.3</span>
+                                    <span class="verdate">2024-08-24</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">- Fixed error message appearing when new folder is created in workspace
+                                </p>
+                            </div>
+                        </details>
 
-        <h3>Status bar</h3>
-        <p>Games can be changed in status bar. Optionally it can be changed in extension settings.</p>
-        <img src="../images/vscode-statusbar-game.png">
+                        <!-- 0.1.2 -->
+                        <details class="version" id="v-0-1-2" ${VERSION_0.1.2}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.2</span>
+                                    <span class="verdate">2024-08-24</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">
+                                    - Added code action "Change game root folder to 'xxx'" - it will automatically
+                                    detects if
+                                    files are in deeper folder structure
+                                    - Fixed quick fix option "Ignore file xxx (workspace settings)"
+                                    - Updated all packages
+                                </p>
+                            </div>
+                        </details>
 
-        <h3>Code Actions</h3>
-        <p>You can ignore error about missing files.</p>
-        <img src="../images/vscode-quick-fix.png">
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Added settings - game selection, game root folder, ignored file paths, ignored function names
-            - Added option in status bar to switch the game
-            - Added support for CoD2 MP + SP
-            - Added CoD2 MP + SP function definitions for auto-suggestion, hover a parameters error diagnostics
-            - Added warning message when build-in function is overwritten by local function
-            - Added code action provider to easily add file path into ignored list
-            - Added yellow status bar information indicating parsing and diagnosing tasks in background
-            - Added issue manual reporting
-            - Fixed case-sensitivity for file paths and function names
-            - Fixed structure & array auto-suggestion when written after keyword (e.g. 'wait level.xxx')
-            - Fixed re-diagnosing files when renamed, deleted or workspace folder changed
-            - Fixed handling GSC files outside of the workspace
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.7}>
-        <h2>Version [0.0.7] - 2024-06-23</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Improved hover-over function names (colorization, warnings, case insensitive match)
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.6}>
-        <h2>Version [0.0.6] - 2024-06-22</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Fixed hover-over function name case-sensitive error (functions are case insensitive)
-            - Fixed parsing error when double-quote does not have ending pair (a = "string;)
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.5}>
-        <h2>Version [0.0.5] - 2024-06-20</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Improved error reporting of unexpected tokens / missing semicolon
-            - Added syntax support for casting (used in COD1)
-            - Fixed stack overflow error while parsing large files (caused by ...spread operator + recursive functions)
-            - Fixed developer block /##/ which can be used as regular scope
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.4}>
-        <h2>Version [0.0.4] - 2024-06-17</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - New GSC parser
-            - New analyzer
-            - New completion item provider
-            - New diagnostics provider
-            - New semantics provider
-            - New definition provider
-            - New hover provider
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.3}>
-        <h2>Version [0.0.3] - 2024-03-29</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Added "HoverProvider" and "DefinitionProvider" that works with functions-
-            - Improved gsc syntax highlighting
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.2}>
-        <h2>Version [0.0.2] - 2024-03-28</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Changed from "New Language Support" to "New Extension (TypeScript)" in 'yo code' template
-            - Basic syntax highlights of .gsc files
-        </p>
-    </div>
-
-    <div ${VERSION_0.0.1}>
-        <h2>Version [0.0.1] - 2024-03-27</h2>
-
-        <h3>All changes:</h3>
-        <p class="lines">
-            - Initial release
-        </p>
-    </div>
+                        <!-- 0.1.1 -->
+                        <details class="version" id="v-0-1-1" ${VERSION_0.1.1}>
+                            <summary>
+                                <div class="summary-left">
+                                    <span class="badge">0.1.1</span>
+                                    <span class="verdate">2024-08-24</span>
+                                    <span class="tag"></span>
+                                </div>
+                                <div class="summary-right">Click to expand</div>
+                            </summary>
+                            <div class="ver-body">
+                                <p class="lines">- Fixed images in update notification window</p>
+                            </div>
+                        </details>
+                </div>
+            </div>
+        </div>
 </body>
-</html>

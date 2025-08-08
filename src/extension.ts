@@ -8,8 +8,8 @@ import { LoggerOutput } from './LoggerOutput';
 import { Events } from './Events';
 
 export const EXTENSION_ID = 'eyza.cod-gsc';
-export const GITHUB_ISSUES_URL = 'https://github.com/eyza-cod2/vscode-cod-gsc/issues';
-export const GITHUB_URL = 'https://github.com/eyza-cod2/vscode-cod-gsc';
+export const GITHUB_ISSUES_URL = 'https://github.com/mjkzy/vscode-gsc-ultimate/issues/new';
+export const GITHUB_URL = 'https://github.com/mjkzy/vscode-gsc-ultimate';
 export const DISCORD_URL = 'https://discord.gg/5WUpcMqUG7';
 export const EMAIL = 'mailto:kratas.tom' + '@' + 'seznam.cz';
 
