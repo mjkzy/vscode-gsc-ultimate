@@ -42,6 +42,9 @@
 			"include2": "#using_animtree"
 		},
 		{
+			"include2": "#precache"
+		},
+		{
 			"include": "#constants"
 		},
 		{
@@ -263,6 +266,22 @@
 			"comment": "Example: #using_animtree(\"drones\");",
 			"name": "meta.preprocessor.include.gsc",
 			"begin": "(#using_animtree)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.directive.include.gsc"
+				}
+			},
+			"end": ";",
+			"patterns": [
+				{
+					"include": "#strings"
+				}
+			]
+		},
+		"precache": {
+			"comment": "Example: #precache(\"model\", \"tag_origin\");",
+			"name": "meta.preprocessor.include.gsc",
+			"begin": "(#precache)",
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.control.directive.include.gsc"

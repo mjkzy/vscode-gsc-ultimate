@@ -78,16 +78,22 @@ export enum GroupType {
     PreprocessorStatementIf,
     /** Statement like #endif */
     PreprocessorStatementEndif,
+    /** Statement like #precache(type, value) */
+    PreprocessorStatementPrecache,
     /** Statement like #include path\name terminated with ; or (#using) */
     TerminatedPreprocessorStatement,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementInline,
     /** Statement like #insert path\name.gsh terminated with ; */
     TerminatedPreprocessorStatementInsert,
+    /** Statement like #precache(type, value) terminated with ; */
+    TerminatedPreprocessorStatementPrecache,
     /** Statement like #inline path\name terminated with ; */
     TerminatedPreprocessorStatementNamespace,
     /** Parameters expression of preprocessor #using_animtree */
     PreprocessorAnimtreeParametersExpression,
+    /** Parameters expression of preprocessor #precache */
+    PreprocessorPrecacheParametersExpression,
 
     /** Single ; */
     Terminator,
@@ -1464,7 +1470,35 @@ export class GscFileParser {
                             changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type); // Path or Identifier base
                             changeGroupToSolvedAndChangeType(newGroup, childGroup3, GroupType.Token);         // '.'
                             changeGroupToSolvedAndChangeType(newGroup, ext, GroupType.Identifier);    // 'gsh'
+
                             i--; continue;
+                        }
+                    }
+
+                    // #precache( "model", "tag_origin" );
+                    if (childTokenName === "#precache" && childGroup2.type === GroupType.Expression) {
+                        const expr = childGroup2;
+                        const a0 = expr?.items[0]; // a0: "model"
+                        const a1 = expr?.items[1]; // a1: ,
+                        const a2 = expr?.items[2]; // a2: "tag_origin"
+
+                        const hasPrecacheParameters =
+                            a0?.type === GroupType.Constant &&
+                            a1?.type === GroupType.Unknown &&
+                            a2?.type === GroupType.Constant;
+
+                        if (hasPrecacheParameters) {
+                            const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
+                            
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type); 
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
+
+                            a0.solved = true;
+                            a2.solved = true;
+                            changeGroupToSolvedAndChangeType(childGroup2, a1, GroupType.Token);
+
+                            i--;
+                            continue;
                         }
                     }
 
@@ -1653,8 +1687,6 @@ export class GscFileParser {
                     const maybeModifier = tokens[item.tokenIndexStart];
                     const maybeFunction = tokens[item.tokenIndexStart - 1];
                     const maybePreFunction = tokens[item.tokenIndexStart - 2];
-
-                    console.log(`modifier: ${maybeModifier?.name}, func: ${maybeFunction?.name}, prefunc: ${maybePreFunction?.name}`)
 
                     const isModifier = ["private", "autoexec"].includes(maybeModifier?.name);
                     const isFunction = isModifier
@@ -2056,6 +2088,7 @@ export class GscFileParser {
 
                 case GroupType.TerminatedPreprocessorStatement:
                 case GroupType.TerminatedPreprocessorStatementInline:
+                case GroupType.TerminatedPreprocessorStatementPrecache:
                 case GroupType.TerminatedPreprocessorStatementNamespace:
                 case GroupType.FunctionDefinition:
                     if (parentGroup !== undefined && lastFunctionScope === undefined &&
@@ -2291,6 +2324,9 @@ export class GscFileParser {
         group_byKeywordNameAndGroup(["#using_animtree"],
             [GroupType.Expression], GroupType.PreprocessorStatement, GroupType.ReservedKeyword, GroupType.PreprocessorAnimtreeParametersExpression);
 
+        group_byKeywordNameAndGroup(["#precache"],
+            [GroupType.Expression], GroupType.PreprocessorStatementPrecache, GroupType.ReservedKeyword, GroupType.PreprocessorPrecacheParametersExpression);
+
         group_byKeyword(["#animtree"],
             GroupType.Constant, GroupType.ReservedKeyword);
 
@@ -2461,6 +2497,11 @@ export class GscFileParser {
 
         group_byGroupAndGroup([GroupType.PreprocessorStatementNamespace], [GroupType.Terminator],
             GroupType.TerminatedPreprocessorStatementNamespace, GroupType.PreprocessorStatementNamespace, GroupType.Terminator);
+
+        group_byGroupAndGroup([GroupType.PreprocessorStatementPrecache], [GroupType.Terminator],
+            GroupType.TerminatedPreprocessorStatementPrecache,
+            GroupType.PreprocessorStatementPrecache,
+            GroupType.Terminator);
 
 
         // Declaration join
