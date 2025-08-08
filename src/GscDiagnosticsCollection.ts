@@ -523,10 +523,29 @@ export class GscDiagnosticsCollection {
     private static createDiagnosticsForIncludedPaths(gscFile: GscFile, group: GscGroup, path: string, allIncludedPaths: string[], index: number): vscode.Diagnostic | undefined {
         assert(group.type === GroupType.Path);
 
+        let range = group.getRange();
+
+        // get range for entire include paths
+        const parentStmt = group.parent;
+        const kw = parentStmt?.items.at(0)?.getSingleToken()?.name ?? "";
+        if (kw === "#insert") {
+            const iPath = parentStmt!.items.indexOf(group);
+            const dot = parentStmt!.items.at(iPath + 1);
+            const extIdent = parentStmt!.items.at(iPath + 2);
+
+            const isDot = dot?.getSingleToken()?.type === TokenType.Structure; // '.'
+            const isGsh = extIdent?.type === GroupType.Identifier &&
+                extIdent.getTokensAsString() === "gsh";
+
+            if (isDot && isGsh) {
+                range = new vscode.Range(range.start, extIdent.getRange().end);
+            }
+        }
+
         const referenceData = GscFiles.getReferencedFileForFile(gscFile, path);
 
         if (!gscFile.config.gameConfig.includeFileItself && referenceData?.gscFile.uri.toString() === gscFile.uri.toString()) {
-            return new vscode.Diagnostic(group.getRange(), "File is including itself", vscode.DiagnosticSeverity.Error);
+            return new vscode.Diagnostic(range, "File is including itself", vscode.DiagnosticSeverity.Error);
         }
 
         // Find how many times this file is included
@@ -536,7 +555,7 @@ export class GscDiagnosticsCollection {
                 count++;
             }
             if (count >= 2) {
-                return new vscode.Diagnostic(group.getRange(), "Duplicate file path being referenced", vscode.DiagnosticSeverity.Error);
+                return new vscode.Diagnostic(range, "Duplicate file path being referenced", vscode.DiagnosticSeverity.Error);
             }
         }
 
@@ -565,7 +584,7 @@ export class GscDiagnosticsCollection {
                 for (const alreadyDefinedFunction of alreadyDefinedFunctions) {
                     if (funcDef.nameId === alreadyDefinedFunction.func.nameId) {
                         const s = alreadyDefinedFunction.reason === "Local file" ? "this file" : "included file '" + vscode.workspace.asRelativePath(alreadyDefinedFunction.uri) + "'";
-                        return new vscode.Diagnostic(group.getRange(), `Function '${funcDef.name}' is already defined in ${s}!`, vscode.DiagnosticSeverity.Error);
+                        return new vscode.Diagnostic(range, `Function '${funcDef.name}' is already defined in ${s}!`, vscode.DiagnosticSeverity.Error);
                     }
                 }
             }
@@ -578,7 +597,7 @@ export class GscDiagnosticsCollection {
                 return;
             }
             const d = new vscode.Diagnostic(
-                group.getRange(),
+                range,
                 `File '${path}.gsc' was not found in workspace folder ${gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ")}`,
                 vscode.DiagnosticSeverity.Error);
             d.code = "unknown_file_path_" + path;
