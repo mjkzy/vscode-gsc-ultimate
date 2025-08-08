@@ -21,16 +21,16 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
 | BO2            | T6   | ❗ | order of file references, param default value, const, `%xxx::yyy`                |
 | Ghosts         | IW6  | ✅ |                                                                                  |
 | AW             | S1   | ✅ |                                                                                  |
-| BO3            | T7   | ❌ | `.gscc`, `.cscc`                                                                 |
+| BO3            | T7   | ❗ | `.gscc`, `.cscc`                                                                 |
 | IW             | IW7  | ✅ |                                                                                  |
 | CoD4:MWR       | H1   | ❗ | param default value                                                              |
-| WWII           | S2   | ❔ |                                                                                  |
-| BO4            | T8   | ❌ |                                                                                  |
-| MW (2019)      | IW8  | ❌ |                                                                                  |
-| BOCW           | T9   | ❌ |                                                                                  |
+| WWII           | S2   | ✅ |                                                                                  |
+| BO4            | T8   | ❗ |                                                                                  |
+| MW (2019)      | IW8  | ✅ |                                                                                  |
+| BOCW           | T9   | ❗ |                                                                                  |
 | Vanguard       | S3   | ❌ |                                                                                  |
-| MWII           | IW9  | ❌ |                                                                                  |
-| MWIII          | S4   | ❌ |                                                                                  |
+| MWII           | IW9  | ✅ |                                                                                  |
+| MWIII          | S4   | ✅ |                                                                                  |
 | BO6            | T10  | ❌ |                                                                                  |
 
 ## Features
