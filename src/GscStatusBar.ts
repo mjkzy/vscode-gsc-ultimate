@@ -9,8 +9,8 @@ export class GscStatusBar {
 	private static gameBarItem: vscode.StatusBarItem;
 	private static settingsBarItem: vscode.StatusBarItem;
 
-	static async activate(context: vscode.ExtensionContext) {      
-		LoggerOutput.log("[GscStatusBar] Activating"); 
+	static async activate(context: vscode.ExtensionContext) {
+		LoggerOutput.log("[GscStatusBar] Activating");
 
 		// Command to open extension settings
 		const openExtensionSettingsCommand = 'gsc.openExtensionSettings';
@@ -52,16 +52,21 @@ export class GscStatusBar {
 	// Function to update the visibility of the status bar item based on the language type
 	public static async updateStatusBar(debugText: string) {
 		const activeEditor = vscode.window.activeTextEditor;
-		
-		this.gameBarItem.hide();
-		this.settingsBarItem.hide();
+
+		if (this.gameBarItem) {
+			this.gameBarItem.hide();
+		}
+
+		if (this.settingsBarItem) {
+			this.settingsBarItem.hide();
+		}
 
 		if (activeEditor) {
 			const languageId = activeEditor.document.languageId;
 			if (languageId === 'gsc') {
 
 				const uri = activeEditor.document.uri;
-				
+
 				// This file is not part of workspace
 				const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
 				if (workspaceFolder === undefined) {
@@ -71,15 +76,15 @@ export class GscStatusBar {
 				LoggerOutput.log(`[GscStatusBar] Updating status bar because: ${debugText}`, vscode.workspace.asRelativePath(uri));
 
 				const gscFile = GscFiles.getCachedFile(uri);
-				
+
 				const currentGame = (gscFile === undefined || debugText === "configChanged") ? GscConfig.getSelectedGame(workspaceFolder.uri) : gscFile.config.currentGame;
-				
+
 				LoggerOutput.log(`[GscStatusBar] Status bar updated with game: "${currentGame}"`, vscode.workspace.asRelativePath(uri));
 
 				this.gameBarItem.text = "$(notebook-open-as-text) " + (currentGame);
-				
+
 				this.gameBarItem.show();
-				this.settingsBarItem.show();	
+				this.settingsBarItem.show();
 			}
 		}
 
