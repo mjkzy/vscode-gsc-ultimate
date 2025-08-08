@@ -73,12 +73,12 @@
 				{
 					"begin": "/#",
 					"end": "#/",
-					"name": "keyword.control.directive.developer1.gsc"
+					"name": "keyword.control.directive.developer.gsc"
 				},
 				{
 					"begin": "/@",
 					"end": "@/",
-					"name": "keyword.control.directive.developer2.gsc"
+					"name": "keyword.control.directive.script-doc.gsc"
 				}
 			]
 		},

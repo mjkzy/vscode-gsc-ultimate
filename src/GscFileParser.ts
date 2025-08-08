@@ -1665,105 +1665,26 @@ export class GscFileParser {
         function split_function_keyword_from_call(group: GscGroup) {
             for (let i = 0; i < group.items.length; i++) {
                 const item = group.items[i];
+                if (item.type !== GroupType.Identifier) {
+                    continue;
+                }
 
-                // such a meme solution... lol
-                if (item.type === GroupType.Identifier) {
-                    const tokens = item.tokensAll;
-                    const possibleModifier = tokens[item.tokenIndexStart];
-                    if (possibleModifier?.name === "function") {
+                const maybeModifier = tokens[item.tokenIndexStart];
+                const maybeFunction = tokens[item.tokenIndexStart - 1];
+
+                const isModifier = ["private", "autoexec"].includes(maybeModifier?.name);
+                const isFunction = isModifier
+                    ? maybeFunction?.name === "function"
+                    : maybeModifier?.name === "function";
+
+                if (isModifier) {
+                    if (isFunction) {
                         item.solved = true;
                         continue;
                     }
-                }
-
-                if (
-                    item.type === GroupType.FunctionCallWithObject &&
-                    item.tokenIndexEnd - item.tokenIndexStart >= 1
-                ) {
-                    const tokens = item.tokensAll;
-
-                    const maybeModifier = tokens[item.tokenIndexStart];
-                    const maybeFunction = tokens[item.tokenIndexStart - 1];
-
-                    const isModifier = ["private", "autoexec"].includes(maybeModifier?.name);
-                    const isFunction = isModifier
-                        ? maybeFunction?.name === "function"
-                        : maybeModifier?.name === "function";
-
-                    if (!isFunction) {
-                        split_function_keyword_from_call(item);
-                        continue;
-                    }
-
-                    const functionTokenIndex = isModifier
-                        ? maybeFunction.index
-                        : maybeModifier.index;
-
-                    const callStartIndex = isModifier ? functionTokenIndex + 2 : functionTokenIndex + 1;
-                    const closeIndex = tokens.findIndex(
-                        (t, idx) => idx > callStartIndex && t.type === TokenType.ExpressionEnd
-                    );
-
-                    if (!tokens[callStartIndex] || closeIndex === -1) {
-                        continue;
-                    }
-
-                    const callEndIndex = closeIndex;
-
-                    // Build new groups
-                    const newGroups: GscGroup[] = [];
-
-                    const functionKeywordGroup = new GscGroup({
-                        parent: group,
-                        type: GroupType.ReservedKeyword,
-                        tokenIndexStart: functionTokenIndex,
-                        tokenIndexEnd: functionTokenIndex
-                    }, tokens);
-                    functionKeywordGroup.solved = true;
-                    newGroups.push(functionKeywordGroup);
-
-                    if (isModifier) {
-                        const modifierGroup = new GscGroup({
-                            parent: group,
-                            type: GroupType.ReservedKeyword,
-                            tokenIndexStart: functionTokenIndex + 1,
-                            tokenIndexEnd: functionTokenIndex + 1
-                        }, tokens);
-                        modifierGroup.solved = true;
-                        newGroups.push(modifierGroup);
-                    }
-
-                    const funcCall = new GscGroup({
-                        parent: group,
-                        type: GroupType.FunctionCall,
-                        tokenIndexStart: callStartIndex,
-                        tokenIndexEnd: callEndIndex
-                    }, tokens);
-
-                    const funcNameGroup = new GscGroup({
-                        parent: funcCall,
-                        type: GroupType.FunctionName,
-                        tokenIndexStart: callStartIndex,
-                        tokenIndexEnd: callStartIndex
-                    }, tokens);
-                    funcNameGroup.solved = true;
-
-                    const paramsGroup = new GscGroup({
-                        parent: funcCall,
-                        type: GroupType.Expression,
-                        tokenIndexStart: callStartIndex + 1,
-                        tokenIndexEnd: callEndIndex
-                    }, tokens);
-                    paramsGroup.solved = true;
-
-                    funcCall.items.push(funcNameGroup, paramsGroup);
-                    newGroups.push(funcCall);
-
-                    // Replace original 'function' group with structured ones
-                    group.items.splice(i, 1, ...newGroups);
-                    i += newGroups.length - 1;
-
-                    split_function_keyword_from_call(funcCall);
+                } else if (isFunction) {
+                    item.solved = true;
+                    continue;
                 }
             }
         }
@@ -2330,8 +2251,7 @@ export class GscFileParser {
         // [[funcPointer]]()
         group_functionPointerDereference();
 
-        // MEME: this is mainly meant for 3arc cods. it splits keywords like function & private so that they can exist alongside a function np
-        // this has to be done before the join functions call - diagnostics wont error on these :)
+        // Splits keywords like function & private so that they can exist alongside a function no problem
         split_function_keyword_from_call(rootGroup);
 
         // Join function call = function name + expression
