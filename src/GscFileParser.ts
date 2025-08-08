@@ -1487,8 +1487,8 @@ export class GscFileParser {
 
                         if (hasPrecacheParameters) {
                             const newGroup = groupItems(parentGroup, i, finalType, 0, 0, [childGroup1, childGroup2]);
-                            
-                            changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type); 
+
+                            changeGroupToSolvedAndChangeType(newGroup, childGroup1, finalGroup1Type);
                             changeGroupToSolvedAndChangeType(newGroup, childGroup2, finalGroup2Type);
 
                             a0.solved = true;
@@ -1684,7 +1684,6 @@ export class GscFileParser {
 
                     const maybeModifier = tokens[item.tokenIndexStart];
                     const maybeFunction = tokens[item.tokenIndexStart - 1];
-                    const maybePreFunction = tokens[item.tokenIndexStart - 2];
 
                     const isModifier = ["private", "autoexec"].includes(maybeModifier?.name);
                     const isFunction = isModifier
@@ -1751,7 +1750,7 @@ export class GscFileParser {
 
                     const paramsGroup = new GscGroup({
                         parent: funcCall,
-                        type: GroupType.FunctionParametersExpression,
+                        type: GroupType.Expression,
                         tokenIndexStart: callStartIndex + 1,
                         tokenIndexEnd: callEndIndex
                     }, tokens);
@@ -2331,7 +2330,9 @@ export class GscFileParser {
         // [[funcPointer]]()
         group_functionPointerDereference();
 
-
+        // MEME: this is mainly meant for 3arc cods. it splits keywords like function & private so that they can exist alongside a function np
+        // this has to be done before the join functions call - diagnostics wont error on these :)
+        split_function_keyword_from_call(rootGroup);
 
         // Join function call = function name + expression
         // CountPlayers()
@@ -2511,9 +2512,6 @@ export class GscFileParser {
         group_declarations();
 
         // Function definition
-        // this is mainly meant for 3arc cods - it splits keywords like function & private so that they can exist alongside
-        // diagnostics wont error on these :)
-        split_function_keyword_from_call(rootGroup);
 
         // {FunctionCall} {Scope}    ->  funcName() { ... }
         group_byGroupAndGroup([GroupType.FunctionCall], [GroupType.Scope],
