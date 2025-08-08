@@ -299,7 +299,7 @@ export class GscFileParser {
                     continue; // go to next char
 
                 case Level.MultiLineComment:
-                    if (((c === '*' || c === '#' || c === '@') && c_next === '/') || c === '') {
+                    if (((c === '*' || c === '@') && c_next === '/') || c === '') {
                         skip += 1;
                         sLastComment = content.substring(levelChangeStart + 2, i);
                         level = Level.Default;
@@ -406,7 +406,8 @@ export class GscFileParser {
                             continue;
 
                         case "@":
-                            addToken(TokenType.DeveloperStart2, i, i + 2);
+                            level = Level.MultiLineComment;
+                            levelChangeStart = i;
                             skip += 1;
                             continue; // go to next char
 
@@ -433,15 +434,11 @@ export class GscFileParser {
                         skip += 1;
                         continue;
                     }
-                    else {
-                        addToken(TokenType.Hashtag, i, i + 1);     // #
-                        continue;
-                    }
-                    break;
+                    addToken(TokenType.Hashtag, i, i + 1); // #
+                    continue;
 
                 case '@':
                     if (c_next === '/') {
-                        addToken(TokenType.DeveloperEnd2, i, i + 2);
                         skip += 1;
                         continue; // go to next char
                     }
@@ -538,6 +535,7 @@ export class GscFileParser {
                     }
 
                 case '*':
+                case '@':
                 case '%':
                 case '^':
                     switch (c_next) {
@@ -2229,9 +2227,6 @@ export class GscFileParser {
             groupByBracketPairs(group, TokenType.DeveloperStart, TokenType.DeveloperEnd, GroupType.DeveloperBlock);
         });
         walkGroup(rootGroup, (group) => {
-            groupByBracketPairs(group, TokenType.DeveloperStart2, TokenType.DeveloperEnd2, GroupType.DeveloperBlock2);
-        });
-        walkGroup(rootGroup, (group) => {
             groupByBracketPairs(group, TokenType.ScopeStart, TokenType.ScopeEnd, GroupType.Scope);
         });
         walkGroup(rootGroup, (group) => {
@@ -3019,9 +3014,6 @@ export enum TokenType {
 
     DeveloperStart,
     DeveloperEnd,
-
-    DeveloperStart2,  // for /@
-    DeveloperEnd2,    // for @/
 
     Preprocessor,
     /** Char '{' */
