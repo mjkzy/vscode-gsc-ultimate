@@ -117,15 +117,27 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                         return completionItems;
                     }
 
-                    // grab path from FunctionPointerExternal
-                    let functionPointerExternal: GscGroup | undefined;
+                    console.log(`groupAtCursor.type: ${groupAtCursor.type}`);
+                    console.log(`groupAtCursor.parent?.type: ${groupAtCursor.parent?.type}`);
+                    console.log(`groupAtCursor.parent.parent?.type: ${groupAtCursor.parent.parent?.type}`);
 
-                    if (groupAtCursor.type === GroupType.Token &&
+                    const isSearchingExternalFileFunctions = (
+                        groupAtCursor.type === GroupType.Token &&
                         groupAtCursor.parent?.type === GroupType.FunctionPointer &&
                         groupAtCursor.parent.parent?.type === GroupType.FunctionPointerExternal
-                    ) {
+                    );
+
+                    // if you're trying to do this at the end of a function, you get different token types. 
+                    // TODO: handle that here
+                    const isSearchingExternalFileFunctionsTwo = (
+                        groupAtCursor.type === GroupType.Unknown &&
+                        groupAtCursor.parent?.type === GroupType.FunctionScope &&
+                        groupAtCursor.parent.parent?.type === GroupType.FunctionDefinition
+                    );
+
+                    if (isSearchingExternalFileFunctions || isSearchingExternalFileFunctionsTwo) {
                         const functionPointerExternal = groupAtCursor.parent.parent;
-                        const pathGroup = functionPointerExternal.items[0];
+                        const pathGroup = functionPointerExternal?.items[0];
                         if (pathGroup?.type === GroupType.Path) {
                             const rawPath = pathGroup.getTokensAsString().replace(/\\/g, "/");
                             const refFile = GscFiles.getReferencedFileForFile(gscFile, rawPath);
@@ -149,6 +161,9 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                                     completionItems.push(item);
                                 }
                             }
+
+                            console.log(`returning ${completionItems.length} items for specific file funcs`);
+                            console.log(`refFile? ${refFile}`);
 
                             return completionItems;
                         }
