@@ -37,34 +37,43 @@ _This is a modified fork of [vscode-cod-gsc](https://github.com/eyza-cod2/vscode
 
 ### Syntax Highlighting
 <div align="center">
-  <img src="images/vscode-syntax-highlight-1.png" width="30%">
+  <img src="images/vscode-syntax-highlight-1.png" width="50%">
 </div>
 
 ### Completion Items (variables, preprocessors, functions, included functions, builtins, workspaces)
 <div align="center">
-  <img src="images/vscode-completion-4.png" width="30%">
-  <img src="images/vscode-completion-5.png" width="30%">
-  <img src="images/vscode-completion-3.png" width="30%">
-  <img src="images/vscode-completion-2.gif" width="30%">
-  <img src="images/vscode-completion-1.png" width="30%">
-  <img src="images/vscode-completion-6.png" width="30%">
+  <img src="images/1.1.0/vscode-better-func-autofill-1.png" width="50%">
+  <img src="images/vscode-completion-3.png" width="60%">
+  <img src="images/vscode-completion-2.gif" width="50%">
+  <img src="images/vscode-completion-1.png" width="50%">
+  <img src="images/vscode-completion-6.png" width="40%">
 </div>
 
 ### Diagnostics (error messages, invalid file for #include/#using, possible missing semicolon)
 <div align="center">
   <img src="images/vscode-diagnostics-1.png" width="30%">
-  <img src="images/vscode-diagnostics-include.png" width="30%">
-  <img src="images/vscode-diagnostics-single-line.png" width="30%">
+  <img src="images/vscode-diagnostics-include.png" width="60%">
+  <img src="images/vscode-diagnostics-single-line.png" width="50%">
 </div>
 
-### Functions (go to definition, hover info for various things, references, rename)
+### Go to Definition, Hover information, References, Rename
+Various Visual Studio Code quick actions that support both functions & variables in GSC.
+
 <div align="center">
-  <img src="images/vscode-function-definition.gif" width="30%">
-  <img src="images/vscode-function-hover.gif" width="30%">
+  <img src="images/vscode-function-definition.gif" width="50%">
+  <img src="images/vscode-function-hover.gif" width="50%">
   <img src="images/vscode-function-hover-spawn.png" width="30%">
-  <img src="images/vscode-hover-path.png" width="30%">
-  <img src="images/vscode-references-function.png" width="30%">
+  <img src="images/vscode-hover-path.png" width="80%">
+  <img src="images/vscode-references-function.png" width="70%">
   <img src="images/vscode-rename-function.png" width="30%">
+</div>  
+
+
+### Call Hierarchy
+Supports functions called from the same and other files in the workspace, showing what function is calling the selected function in a hierarchy.
+
+<div align="center">
+  <img src="images/1.1.0/vscode-call-hierarchy-1.png" width="70%">
 </div>
 
 ### Workspace folders
@@ -74,7 +83,7 @@ The order of how files are being searched is now determined by how the workspace
 The last folder is searched first.
 
 <div align="center">
-  <img src="images/vscode-workspace-order.png" width="60%">
+  <img src="images/vscode-workspace-order.png" width="70%">
 </div>
 
 It can simulate your .IWD files - their file name determines which files gets loaded first in the game.
@@ -94,13 +103,11 @@ The order of the workspace folders must be the same!
 
 ### Code actions (include folder for file reference, ignore missing)
 <div align="center">
-  <img src="images/vscode-workspace-folder-include.gif" width="50%">
-  <img src="images/vscode-quick-fix.png" width="50%">
+  <img src="images/vscode-workspace-folder-include.gif" width="70%">
+  <img src="images/vscode-quick-fix.png" width="70%">
 </div>
 
-### GSC Files
-
-#### Visualization of replaced (unreachable) files.
+### Visualization of replaced (unreachable) GSC files.
 
 When GSC file is replaced by another GSC file in multi-root workspace because of the same game path, the code in text editor is shown as semi-transparent (unreachable code)<br>
 
@@ -108,13 +115,13 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
   <img src="images/vscode-workspace-replaced-file-code.png" width="30%">
 </div>
 
-### Other
-
-#### Status bar
+### Status bar
 <div align="center">
   <img src="images/vscode-statusbar-game.png" width="30%">
   <img src="images/vscode-sidebar.png" width="30%">
 </div>
+
+### and many more quality of life improvements and touchups for a great scripting experience.
 
 ## List of Features
 - GSC file parser
@@ -178,7 +185,7 @@ When GSC file is replaced by another GSC file in multi-root workspace because of
 - When renaming GSC file, ask for reference update in other GSC files
 ### Non priority
 - Code action - implement unknown function
-- Add .csc files (client side scripts)
+- Add diagnostics and support for .csc files (Treyarch client side scripts)
 - Parser for .menu files
 - Improve detection of variable types - now it's detected only by explicitly assigned constant value
 - Show available string constants for `notify` `waittill` `waittillmatch` `endon` in completion item provider
