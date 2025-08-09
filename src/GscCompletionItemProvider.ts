@@ -184,7 +184,7 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                     const allMacros = [...gscFile.data.macroVariableDefinitions];
 
                     for (const inlinePath of gscFile.data.inlines) {
-                        const file = GscFiles.getReferencedFileForFile(gscFile, inlinePath);
+                        const file = GscFiles.getReferencedFileForFile(gscFile, inlinePath, true);
                         if (file) {
                             allMacros.push(...file.gscFile.data.macroVariableDefinitions);
                         }

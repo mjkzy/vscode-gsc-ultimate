@@ -398,7 +398,7 @@ export class GscDiagnosticsCollection {
                                     // check if the macro is included via #inline and that macro has the data we need
                                     let isInlineMacro = false;
                                     for (const inlinePath of gscFile.data.inlines) {
-                                        const file = GscFiles.getReferencedFileForFile(gscFile, inlinePath);
+                                        const file = GscFiles.getReferencedFileForFile(gscFile, inlinePath, true);
                                         if (file && file.gscFile.data.macroVariableDefinitions.some(m => m.name === name)) {
                                             isInlineMacro = true;
                                             break;
