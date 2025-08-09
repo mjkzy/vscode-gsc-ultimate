@@ -418,9 +418,9 @@ export class GscFiles {
      * @param referencedFilePath Path in GSC file format (e.g. scripts\scriptName)
      * @returns The reference status and the parsed file data if found
      */
-    public static getReferencedFileForFile(gscFile: GscFile, referencedFilePath: string): GscFileAndReferenceState | undefined {
+    public static getReferencedFileForFile(gscFile: GscFile, referencedFilePath: string, isFindingMacros: boolean = false): GscFileAndReferenceState | undefined {
 
-        const file = this.getReferencedFilesForFile(gscFile, referencedFilePath, true);
+        const file = this.getReferencedFilesForFile(gscFile, referencedFilePath, true, isFindingMacros);
 
         if (file.length > 0) {
             return file[0];
@@ -438,7 +438,7 @@ export class GscFiles {
      * @param referencedFilePath Path in GSC file format (e.g. scripts\scriptName)
      * @returns Array of reference status and the parsed file data if found
      */
-    public static getReferencedFilesForFile(gscFile: GscFile, referencedFilePath: string, exitOnFirst: boolean = false): GscFileAndReferenceState[] {
+    public static getReferencedFilesForFile(gscFile: GscFile, referencedFilePath: string, exitOnFirst: boolean = false, isFindingMacros: boolean = false): GscFileAndReferenceState[] {
         const referencedFiles: GscFileAndReferenceState[] = [];
 
         if (!gscFile.workspaceFolder) {
@@ -449,7 +449,7 @@ export class GscFiles {
             let gscFilePathUri = vscode.Uri.joinPath(referenceableGameRoot.uri, referencedFilePath.replace(/\\/g, '/') + ".gsc");
             let gsc = GscFiles.getCachedFile(gscFilePathUri, referenceableGameRoot.workspaceFolder.uri);
 
-            if (gsc === undefined || !gsc.workspaceFolder) {
+            if (isFindingMacros || gsc === undefined || !gsc.workspaceFolder) {
                 gscFilePathUri = vscode.Uri.joinPath(referenceableGameRoot.uri, referencedFilePath.replace(/\\/g, '/') + ".gsh");
                 gsc = GscFiles.getCachedFile(gscFilePathUri, referenceableGameRoot.workspaceFolder.uri);
             }

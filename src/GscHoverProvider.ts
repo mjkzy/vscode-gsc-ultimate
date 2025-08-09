@@ -274,7 +274,7 @@ export class GscHoverProvider implements vscode.HoverProvider {
         if (!macro) {
             isInlineMacro = false;
             for (const i_inlinePath of gscFile.data.inlines) {
-                const file = GscFiles.getReferencedFileForFile(gscFile, i_inlinePath);
+                const file = GscFiles.getReferencedFileForFile(gscFile, i_inlinePath, true);
                 if (!file) {
                     continue;
                 }
