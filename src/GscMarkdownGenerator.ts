@@ -104,7 +104,7 @@ export class GscMarkdownGenerator {
         md.appendMarkdown(`\`Preprocessor macro\``);
 
         if (isInlineMacro) {
-            md.appendMarkdown(`\n\nFile: \`${vscode.workspace.asRelativePath(inlinePath, true)}\``);
+            md.appendMarkdown(`\n\nFile: \`${vscode.workspace.asRelativePath(inlinePath, true)}.gsh\``);
         }
 
         return md;

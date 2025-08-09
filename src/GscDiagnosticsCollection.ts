@@ -542,9 +542,10 @@ export class GscDiagnosticsCollection {
             }
         }
 
+        const isHeaderInclude = ( kw === "#insert" || kw === "#inline" );
         const referenceData = GscFiles.getReferencedFileForFile(gscFile, path);
 
-        if (!gscFile.config.gameConfig.includeFileItself && referenceData?.gscFile.uri.toString() === gscFile.uri.toString()) {
+        if (!isHeaderInclude && !gscFile.config.gameConfig.includeFileItself && referenceData?.gscFile.uri.toString() === gscFile.uri.toString()) {
             return new vscode.Diagnostic(range, "File is including itself", vscode.DiagnosticSeverity.Error);
         }
 

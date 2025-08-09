@@ -2481,15 +2481,18 @@ export class GscFileParser {
 
                     // Save include and inlines paths
                     case GroupType.Path:
+                        const isMacroInclude = parentGroup?.getFirstToken()?.name === "#inline" ||
+                            parentGroup?.getFirstToken()?.name === "#insert";
+
                         if ((parentGroup.type === GroupType.PreprocessorStatement || parentGroup.type === GroupType.PreprocessorStatementInline)
                             && (parentGroup.getFirstToken().name === "#include" ||
-                                parentGroup.getFirstToken().name === "#inline" ||
-                                parentGroup.getFirstToken().name === "#using"
+                                parentGroup.getFirstToken().name === "#using" ||
+                                isMacroInclude
                             )) {
                             // Add path to includes - duplicate paths are ignored via Set<>
                             data.includes.add(innerGroup.getTokensAsString());
 
-                            if (parentGroup.getFirstToken().name === "#inline") {
+                            if (isMacroInclude) {
                                 data.inlines.add(innerGroup.getTokensAsString());
                             }
                         }

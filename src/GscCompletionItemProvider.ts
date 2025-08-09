@@ -117,10 +117,6 @@ export class GscCompletionItemProvider implements vscode.CompletionItemProvider 
                         return completionItems;
                     }
 
-                    console.log(`groupAtCursor.type: ${groupAtCursor.type}`);
-                    console.log(`groupAtCursor.parent?.type: ${groupAtCursor.parent?.type}`);
-                    console.log(`groupAtCursor.parent.parent?.type: ${groupAtCursor.parent.parent?.type}`);
-
                     const isSearchingExternalFileFunctions = (
                         groupAtCursor.type === GroupType.Token &&
                         groupAtCursor.parent?.type === GroupType.FunctionPointer &&
