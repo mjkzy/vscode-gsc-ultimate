@@ -181,7 +181,7 @@ export class GscCodeActionProvider implements vscode.CodeActionProvider {
                 codeActions.push(action0);
 
 
-                const action = new vscode.CodeAction('Ignore file "' + filePath + '" (workspace settings)', vscode.CodeActionKind.QuickFix);
+                const action = new vscode.CodeAction('Ignore file "' + filePath + '" (workspace-only settings)', vscode.CodeActionKind.QuickFix);
                 action.command = {
                     title: 'Add "' + filePath + '" to workspace settings',
                     command: 'gsc.addFilePathIntoIgnored',
@@ -190,7 +190,7 @@ export class GscCodeActionProvider implements vscode.CodeActionProvider {
                 codeActions.push(action);
 
                 if (fileParentFolder) {
-                    const action = new vscode.CodeAction('Ignore folder "' + fileParentFolder + '" (workspace settings)', vscode.CodeActionKind.QuickFix);
+                    const action = new vscode.CodeAction('Ignore entire folder "' + fileParentFolder + '" (workspace-only settings)', vscode.CodeActionKind.QuickFix);
                     action.command = {
                         title: 'Add "' + fileParentFolder + '" to workspace settings',
                         command: 'gsc.addFilePathIntoIgnored',
@@ -199,15 +199,13 @@ export class GscCodeActionProvider implements vscode.CodeActionProvider {
                     codeActions.push(action);
                 }
 
-                const action2 = new vscode.CodeAction('Ignore all missing files (workspace settings)', vscode.CodeActionKind.QuickFix);
+                const action2 = new vscode.CodeAction('Ignore all missing files (workspace-only settings)', vscode.CodeActionKind.QuickFix);
                 action2.command = {
                     title: 'Ignore all missing files (workspace settings)',
                     command: 'gsc.addAllMissingFilePathsIntoIgnored',
                     arguments: [workspaceFolder.uri]
                 };
                 codeActions.push(action2);
-
-
 
                 // Check if this file is deeper in the folder structure or is in another workspace folder
                 const filePathWithExtension = (filePath.replace(/\\/g, '/') + ".gsc").toLowerCase();
@@ -332,7 +330,7 @@ export class GscCodeActionProvider implements vscode.CodeActionProvider {
                     continue;
                 }
 
-                const action = new vscode.CodeAction('Disable all error diagnostics for workspace folder "' + workspaceFolder.name + '" (workspace settings)', vscode.CodeActionKind.QuickFix);
+                const action = new vscode.CodeAction('Disable all error diagnostics for workspace folder "' + workspaceFolder.name + '" (workspace-only settings)', vscode.CodeActionKind.QuickFix);
                 action.command = {
                     title: action.title,
                     command: 'gsc.disableErrorDiagnostics',

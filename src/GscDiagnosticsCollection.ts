@@ -9,13 +9,14 @@ import { assert } from 'console';
 import { LoggerOutput } from './LoggerOutput';
 import { Issues } from './Issues';
 import { Events } from './Events';
-
-type DiagnosticsUpdateHandler = (gscFile: GscFile) => Promise<void> | void;
+import { exists } from 'fs';
 
 export class GscDiagnosticsCollection {
     public static diagnosticCollection: vscode.DiagnosticCollection | undefined;
     private static statusBarItem: vscode.StatusBarItem | undefined;
     private static currentCancellationTokenSource: vscode.CancellationTokenSource | null = null;
+
+    private static askedToIgnoreMissing = false;
 
     static async activate(context: vscode.ExtensionContext) {
         LoggerOutput.log("[GscDiagnosticsCollection] Activating");
@@ -35,6 +36,87 @@ export class GscDiagnosticsCollection {
         context.subscriptions.push(vscode.commands.registerCommand('gsc.refreshDiagnosticsCollection', () => this.refreshDiagnosticsCollection()));
     }
 
+
+    /**
+     * Ask the user if they want to ignore all missing files. This is needed for like 80% of users since not everyone has a GSC dump on standby.
+     */
+    private static async promptIgnoreAllMissingOnce() {
+        console.log(`calling promptIgnoreAllMissingOnce`);
+
+        if (this.askedToIgnoreMissing) {
+            return;
+        }
+        this.askedToIgnoreMissing = true;
+
+        console.log(`calling promptIgnoreAllMissingOnce (passed 2)`);
+
+        const choice = await vscode.window.showInformationMessage(
+            "Would you like to ignore all missing files in this workspace (folder)? This is recommended since the GSC files cannot be found in your workspace, and will clear up unnecessary errors but may limit the amount of features available.",
+            "Ignore all",
+            "No"
+        );
+
+        if (choice === "Ignore all") {
+            await vscode.workspace.getConfiguration('gsc').update(
+                'ignoreMissingFilesInWorkspace',
+                true,
+                vscode.ConfigurationTarget.Workspace
+            );
+
+            await this.refreshDiagnosticsCollection();
+        }
+    }
+
+    /** 
+     * Check if the first folder of `path` exists in any workspace folder
+     */
+    private static async checkTopLevelFolderAndMaybePrompt(path: string) {
+        const ignoreAllMissing = vscode.workspace.getConfiguration('gsc').get<boolean>('ignoreMissingFilesInWorkspace') === true;
+        if (ignoreAllMissing) {
+            console.log(`ignoreAllMissing return`);
+            return;
+        }
+
+        console.log(path);
+
+        // paths are like `maps\_utility`
+        const norm = path.replace(/\\/g, '/').replace(/^\/+/, '');
+        const first = norm.split('/')[0] || '';
+        if (!first) {
+            return;
+        }
+
+        console.log(`[gsc] checkTopLevelFolderAndMaybePrompt first='${first}' raw='${path}'`);
+
+        const wsf = vscode.workspace.workspaceFolders ?? [];
+        if (wsf.length === 0) {
+            return;
+        }
+
+        console.log(`yooo 2?`);
+
+        // <workspace>/<first> exist?
+        let existsSomewhere = false;
+        await Promise.all(wsf.map(async (wf) => {
+            try {
+                const uri = vscode.Uri.joinPath(wf.uri, first);
+                const stat = await vscode.workspace.fs.stat(uri);
+                if (stat) {
+                    existsSomewhere = true;
+                }
+                console.log(`${wf.uri}? ${existsSomewhere}`);
+            } catch (err) {
+                /* not found in this folder */
+                console.warn(err);
+            }
+        }));
+
+        console.log(`existsSomewhere? ${existsSomewhere}`);
+
+        if (!existsSomewhere) {
+            await this.promptIgnoreAllMissingOnce();
+        }
+    }
 
 
     /**
@@ -542,7 +624,7 @@ export class GscDiagnosticsCollection {
             }
         }
 
-        const isHeaderInclude = ( kw === "#insert" || kw === "#inline" );
+        const isHeaderInclude = (kw === "#insert" || kw === "#inline");
         const referenceData = GscFiles.getReferencedFileForFile(gscFile, path);
 
         if (!isHeaderInclude && !gscFile.config.gameConfig.includeFileItself && referenceData?.gscFile.uri.toString() === gscFile.uri.toString()) {
@@ -599,7 +681,7 @@ export class GscDiagnosticsCollection {
             }
             const d = new vscode.Diagnostic(
                 range,
-                `File '${path}.gsc' was not found in workspace folder ${gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ")}`,
+                `Could not find file '${path}.gsc' in workspace folder ${gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ")}`,
                 vscode.DiagnosticSeverity.Error);
             d.code = "unknown_file_path_" + path;
             return d;
@@ -695,7 +777,7 @@ export class GscDiagnosticsCollection {
                         }
                         var r = (funcInfo.pathGroup) ? funcInfo.pathGroup.getRange() : group.getRange();
                         const folders = gscFile.config.referenceableGameRootFolders.map(f => "'" + f.relativePath + "'").join(", ");
-                        const d = new vscode.Diagnostic(r, `File '${funcInfo.path}.gsc' was not found in workspace folder ${folders}`, vscode.DiagnosticSeverity.Error);
+                        const d = new vscode.Diagnostic(r, `Could not find file '${funcInfo.path}.gsc' in workspace folder ${folders}`, vscode.DiagnosticSeverity.Error);
                         d.code = "unknown_file_path_" + funcInfo.path;
 
                         return d;
