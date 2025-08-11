@@ -224,6 +224,8 @@ export class GscFileParser {
         var levelChangeStart = -1;
         var line = 0; // line number (starting from 0)
         var char = 0; // char number (starting from 0)
+        let lineHasNonWs = false;
+
         var skip = 0;
         var sLastComment: string | undefined = undefined;
         var lastToken: GscToken | undefined = undefined;
@@ -233,6 +235,11 @@ export class GscFileParser {
         for (let i = 0; i <= len; i++) {
             const c = i < len ? content[i] : '';
             const c_prev = i > 0 ? content[i - 1] : '';
+
+            if (c !== '' && c !== '\n' && c !== '\r' && c !== '\t' && c !== ' ' && c !== '\f' && c !== '\v') {
+                lineHasNonWs = true;
+            }
+
             const c_next = i < len - 1 ? content[i + 1] : '';
 
             /* First we need to tokenize the big blocks:
@@ -248,20 +255,17 @@ export class GscFileParser {
             // Windows: "\r\n"    Linux:  "\n"
             let previousLine = line;
 
-            if (i > 0) {
-                if (content[i - 1] === '\n') {
-                    line++;
-                    char = 0;
-
-                    // If the previous line was blank and we had a pending comment, clear it
-                    const lineContent = content
-                        .split('\n')[previousLine]?.trim();
-                    if (lineContent === '' && sLastComment) {
-                        sLastComment = undefined;
-                    }
-                } else {
-                    char++;
+            if (i > 0 && c_prev === '\n') {
+                // if the previous line was blank and we had a pending comment, clear it
+                if (!lineHasNonWs && sLastComment) { 
+                    sLastComment = undefined;
                 }
+
+                line++;
+                char = 0;
+                lineHasNonWs = false;
+            } else {
+                char++;
             }
 
             // This char must be skipped, because is already processed

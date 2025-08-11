@@ -178,9 +178,7 @@ export class GscFiles {
         const files = [...filesGsc, ...filesGsh];
 
         const parseFile = async (file: vscode.Uri, index: number) => {
-            const gsc = await this.getFileData(file, true, "parsing all files");
-            GscFiles.statusBarItem.text = `$(sync~spin) Parsing GSC file ${index + 1}/${files.length}...`;
-            GscFiles.statusBarItem.tooltip = file.fsPath;
+            await this.getFileData(file, true, "parsing all files");
         };
 
         await Promise.allSettled(files.map((file, index) => parseFile(file, index)));
